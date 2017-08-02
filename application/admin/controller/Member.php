@@ -23,7 +23,7 @@ class Member extends Base {
             ]
         ]);
         // 查询状态为1的用户数据 并且每页显示10条数据
-        $count = db('article')->count('*');
+        $count = db('member')->count('*');
         $this->assign('count',$count);
         $this->assign('aid',$aid);
         $this->assign('list',$list);
@@ -35,7 +35,8 @@ class Member extends Base {
             'name'=>'添加用户'
         ];
         if($id){
-            $vo = db('ad')->field('dates',true)->find($id);
+            $vo = db('member')->field('dates',true)->find($id);
+            //p($vo);die;
             $this->assign('info',$vo);
         }
         $this->assign('model',$model);
@@ -67,6 +68,30 @@ class Member extends Base {
         return $where;
     }
 
+    public function set_password($id=0){
+        if(!$id){
+            return json([
+               'status'=>0,
+               'msg'=>'参数错误'
+            ]);
+        }
+        if(!db('member')->update([
+            'id'=>$id,
+            'password'=>substr(md5('123456'),10,15),
+            'dates'=>time(),
+            'status'=>0
+        ])){
+            return json([
+                'status'=>0,
+                'msg'=>'操作失败'
+            ]);
+        }
+        return json([
+            'status'=>1,
+            'msg'=>'恭喜您初始化成功,初始密码是:123456',
+            'reditect'=>Url('index')
+        ]);
+    }
     /**
      * [status 状态操作]
      * @param  [type] $id [修改id]

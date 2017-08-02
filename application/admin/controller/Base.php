@@ -17,8 +17,7 @@ class Base extends Controller{
 		$this->check_priv(); 
 		//获取功能导航
 		$nav = $this->auth_list();
-		//获取栏目导航
-		$col = $this->column_list();
+
         //获取网站配置
         $this->site = db('Config')->order('id desc')->find();
         $controller = db('model')->field('id,title,name')->where('title','eq',$this->controller)->find();
@@ -35,7 +34,6 @@ class Base extends Controller{
 		//输出导航
 		$this->assign('site',$this->site);
 		$this->assign('nav',$nav);
-		$this->assign('col',$col);
 		$this->assign('action',strtolower($this->action));
 		$this->assign('controller',strtolower($this->controller));
 		$this->assign('module',strtolower($this->module));
@@ -45,7 +43,7 @@ class Base extends Controller{
 	 * @return [type] [description]
 	 */
 	protected function column_list(){
-		$column=db("column")->where('status=0 and type!=6')->order('id asc')->select();
+		$column = db("column")->where('status=0 and type!=6')->order('sort asc,id asc')->select();
 		foreach ($column as $k => $v) {
 			$column[$k]['col']=1;
 		}
@@ -63,16 +61,16 @@ class Base extends Controller{
 
         $nav=array();
         if($gid!=-1 && !empty($gid)){
-            $model = db('model')->where('fid=0 and "show"=0 and status=0 and id in('.$gid.')')->select();
+            $model = db('model')->where('fid=0 and "show"=0 and status=0 and id in('.$gid.')')->order('sort asc')->select();
         }else{
-            $model = db('model')->where('fid=0 and "show"=0 and status=0')->select();
+            $model = db('model')->where('fid=0 and "show"=0 and status=0')->order('sort asc')->select();
         }
 
 		foreach ($model as  $v) {
 			$map['fid']=$v['id'];
 			$map['status']=0;
             $map['show']=0;
-			$child=db('model')->where($map)->order('sort asc')->select();
+			$child=db('model')->where($map)->order('sort asc,id asc')->select();
 			foreach ($child as $k1 => $v1) {
 				$child[$k1]['col']=0;
 			}

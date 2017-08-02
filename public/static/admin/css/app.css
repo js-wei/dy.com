@@ -4,3 +4,5 @@
 .table-striped>tbody>tr:nth-child(odd)>td,.table-striped>tbody>tr:nth-child(even)>td{text-overflow:ellipsis;-o-text-overflow:ellipsis;-webkit-text-overflow:ellipsis;-moz-text-overflow:ellipsis;white-space:nowrap;}
 .table-striped>tbody>tr>td{cursor:pointer;}
 .zindex{z-index:100;overflow:hidden;}
+.base-info{}
+.base-info li{line-height:2em;}

@@ -64,9 +64,11 @@ class Index extends Base{
                 'msg'=>'支付宝不能为空'
             ]);
         }
+
         $param = request()->param();
         $param['date']=time();
         unset($param['repeat_password']);
+		$param['password'] = substr(md5($password),10,15);
 
         if(!db('member')->insert($param)){
             return json([

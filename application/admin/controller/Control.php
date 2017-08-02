@@ -9,7 +9,7 @@ class Control extends Base{
 	public function index(){
 		
 		$model = db('model')->where(['title'=>$this->controller])->find();
-		$controller = db('model')->select();
+		$controller = db('model')->order('sort asc')->select();
 		$controller = \Service\Category::LimitForLevel($controller);
 		$count = db('model')->count('*');
 		$this->assign('count',$count);
