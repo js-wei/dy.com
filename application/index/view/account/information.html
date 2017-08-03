@@ -1,0 +1,239 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>后台管理系统首页 Bootstrap响应式后台管理系统模版Detail - JS代码网</title>
+    <meta name="keywords" content="Bootstrap模版,Bootstrap模版下载,Bootstrap教程,Bootstrap中文,后台管理系统模版,后台模版下载,后台管理系统,后台管理模版" />
+    <meta name="description" content="JS代码网提供Bootstrap模版,后台管理系统模版,后台管理界面,Bootstrap教程,Bootstrap中文翻译等相关Bootstrap插件下载" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- bootstrap -->
+    <link href="__CSS__/bootstrap/bootstrap.css" rel="stylesheet" />
+    <link href="__CSS__/bootstrap/bootstrap-overrides.css" type="text/css" rel="stylesheet" />
+
+    <!-- libraries -->
+    <link href="__CSS__/lib/jquery-ui-1.10.2.custom.css" rel="stylesheet" type="text/css" />
+    <link href="__CSS__/lib/font-awesome.css" type="text/css" rel="stylesheet" />
+
+    <!-- global styles -->
+    <link rel="stylesheet" type="text/css" href="__CSS__/compiled/layout.css">
+    <link rel="stylesheet" type="text/css" href="__CSS__/compiled/elements.css">
+    <link rel="stylesheet" type="text/css" href="__CSS__/compiled/icons.css">
+
+    <!-- this page specific styles -->
+    <link rel="stylesheet" href="__CSS__/compiled/index.css" type="text/css" media="screen" />
+
+    <!-- open sans font -->
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+    <!-- lato font -->
+    <link href='http://fonts.googleapis.com/css?family=Lato:300,400,700,900,300italic,400italic,700italic,900italic' rel='stylesheet' type='text/css'>
+
+    <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+</head>
+<body>
+<!-- navbar -->
+<header class="navbar navbar-inverse" role="banner">
+    <div class="navbar-header">
+        <button class="navbar-toggle" type="button" data-toggle="collapse" id="menu-toggler">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="index.html"><img src="img/logo.png"></a>
+    </div>
+    <ul class="nav navbar-nav pull-right hidden-xs">
+        <li class="hidden-xs hidden-sm">
+            <input class="search" type="text" />
+        </li>
+        <li class="dropdown">
+            <a href="#" class="dropdown-toggle hidden-xs hidden-sm" data-toggle="dropdown">
+                你的账号
+                <b class="caret"></b>
+            </a>
+            <ul class="dropdown-menu">
+                <li><a href="personal-info.html">个人信息</a></li>
+                <li><a href="#">账号设置</a></li>
+            </ul>
+        </li>
+        <li class="settings hidden-xs hidden-sm">
+            <a href="personal-info.html" role="button">
+                <i class="icon-cog"></i>
+            </a>
+        </li>
+        <li class="settings hidden-xs hidden-sm">
+            <a href="signin.html" role="button">
+                <i class="icon-share-alt"></i>
+            </a>
+        </li>
+    </ul>
+</header>
+<!-- end navbar -->
+<include file="public:sidebar"/>
+<!-- main container -->
+<div class="content">
+    <!-- upper main stats -->
+    <div id="main-stats">
+        <div class="row stats-row">
+            <div class="col-md-3 col-sm-3 stat">
+                <div class="data">
+                    <span class="number">2457</span>
+                    发送
+                </div>
+                <span class="date">今天</span>
+            </div>
+
+            <div class="col-md-3 col-sm-3 stat">
+                <div class="data">
+                    <span class="number">322</span>
+                    订单
+                </div>
+                <span class="date">本周</span>
+            </div>
+            <div class="col-md-3 col-sm-3 stat last">
+                <div class="data">
+                    <span class="number">$2,340</span>
+                    销售金额
+                </div>
+                <span class="date">最近70天</span>
+            </div>
+        </div>
+    </div>
+    <!-- end upper main stats -->
+
+    <div id="pad-wrapper">
+        <!-- statistics chart built with jQuery Flot -->
+        <div class="row chart">
+            <div class="col-md-12">
+                <h4 class="clearfix">
+                    Statistics
+                    <div class="btn-group pull-right">
+                        <button class="glow left">日</button>
+                        <button class="glow middle active">月</button>
+                        <button class="glow right">年</button>
+                    </div>
+                </h4>
+            </div>
+            <div class="col-md-12">
+                <div id="statsChart"></div>
+            </div>
+        </div>
+        <!-- end statistics chart -->
+        <!-- UI Elements section -->
+        <div class="row section ui-elements">
+            <div class="col-md-12">
+                <h4>最新消息</h4>
+            </div>
+            <div class="col-md-5 knobs">
+
+            </div>
+        </div>
+        <!-- end UI elements section -->
+    </div>
+</div>
+<!-- scripts -->
+<script src="http://code.jquery.com/jquery-latest.js"></script>
+<script src="__JS__/bootstrap.min.js"></script>
+<script src="__JS__/jquery-ui-1.10.2.custom.min.js"></script>
+<!-- knob -->
+<script src="__JS__/jquery.knob.js"></script>
+<!-- flot charts -->
+<script src="__JS__/jquery.flot.js"></script>
+<script src="__JS__/jquery.flot.stack.js"></script>
+<script src="__JS__/jquery.flot.resize.js"></script>
+<script src="__JS__/theme.js"></script>
+
+<script type="text/javascript">
+    $(function () {
+
+        // jQuery Flot Chart
+        var order = [[1, 50], [2, 40], [3, 45], [4, 23],[5, 55],[6, 65],[7, 61],[8, 70],[9, 65],[10, 75],[11, 57],[12, 59]];
+        var sender = [[1, 25], [2, 50], [3, 23], [4, 48],[5, 38],[6, 40],[7, 47],[8, 55],[9, 43],[10,50],[11,47],[12, 39]];
+
+        var plot = $.plot($("#statsChart"),
+            [ { data: order, label: "下单"},
+                { data: sender, label: "发送" }], {
+                series: {
+                    lines: { show: true,
+                        lineWidth: 1,
+                        fill: true,
+                        fillColor: { colors: [ { opacity: 0.1 }, { opacity: 0.13 } ] }
+                    },
+                    points: { show: true,
+                        lineWidth: 2,
+                        radius: 3
+                    },
+                    shadowSize: 0,
+                    stack: true
+                },
+                grid: { hoverable: true,
+                    clickable: true,
+                    tickColor: "#f9f9f9",
+                    borderWidth: 0
+                },
+                legend: {
+                    // show: false
+                    labelBoxBorderColor: "#fff"
+                },
+                colors: ["#a7b5c5", "#30a0eb"],
+                xaxis: {
+                    ticks: [[1, "一月"], [2, "二月"], [3, "三月"], [4,"四月"], [5,"五月"], [6,"六月"],
+                        [7,"七月"], [8,"八月"], [9,"九月"], [10,"十月"], [11,"十一月"], [12,"十二月"]],
+                    font: {
+                        size: 12,
+                        family: "Open Sans, Arial",
+                        variant: "small-caps",
+                        color: "#697695"
+                    }
+                },
+                yaxis: {
+                    ticks:3,
+                    tickDecimals: 0,
+                    font: {size:12, color: "#9da3a9"}
+                }
+            });
+
+        function showTooltip(x, y, contents) {
+            $('<div id="tooltip">' + contents + '</div>').css( {
+                position: 'absolute',
+                display: 'none',
+                top: y - 30,
+                left: x - 50,
+                color: "#fff",
+                padding: '2px 5px',
+                'border-radius': '6px',
+                'background-color': '#000',
+                opacity: 0.80
+            }).appendTo("body").fadeIn(200);
+        }
+
+        var previousPoint = null;
+        $("#statsChart").bind("plothover", function (event, pos, item) {
+            if (item) {
+                if (previousPoint != item.dataIndex) {
+                    previousPoint = item.dataIndex;
+
+                    $("#tooltip").remove();
+                    var x = item.datapoint[0].toFixed(0),
+                        y = item.datapoint[1].toFixed(0);
+
+                    var month = item.series.xaxis.ticks[item.dataIndex].label;
+
+                    showTooltip(item.pageX, item.pageY,
+                        item.series.label + " /" + month + ": " + y);
+                }
+            }
+            else {
+                $("#tooltip").remove();
+                previousPoint = null;
+            }
+        });
+    });
+</script>
+</body>
+</html>

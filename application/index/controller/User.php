@@ -9,133 +9,11 @@ class User extends Base{
 	public function get_verify(){
 		return view();
 	}
-	/**
-	 * [Login 登陆处理]
-	 */
-	public function login_handler($username='',$password=''){
-		if(!request()->isPost()){
-			return jsonp(['status'=>0,'msg'=>'请求方式错误']);
-		}
-		//逻辑判断
-		if(empty($username)){
-			return jsonp(['status'=>0,'msg'=>'请输入您的账号']);
-		}
-		if(empty($password)){
-			return jsonp(['status'=>0,'msg'=>'请输入您的密码']);
-		}
-		$pwd = substr(strtolower($password),10,10);
-		$username=strtolower($username);
 
-		if(strstr($username,'@')){
-			$where=[
-				'username'=>$username
-			];
-		}else{
-			$where=[
-				'email'=>$username
-			];
-		}
 
-		$admin = db("member")->field('date',true)->where($where)->find();
 
-		if(!$admin){
-			return jsonp(['status'=>0,'msg'=>'您的账号输入有误']);
-		}
-		if($admin['password']!=$pwd){
-			return jsonp(['status'=>0,'msg'=>'您的密码输入有误']);
-		}
-		if($admin['status']==1){
-			return jsonp(['status'=>0,'msg'=>'非法操作账号已锁定，请联系管理员解封']);
-		}
-		//更新登录信息
-		$data=array(
-			'id'=>$admin['id'],
-			'last_login_time'=>time(),
-			'last_login_ip'=>request()->ip()
-		);
 
-		db("member")->update($data);
 
-		//保存登录状态
-		session('_id',$admin['id']);
-		session('_name',ucfirst($admin['username']));
-		session('_nickname',$admin['nickname']);
-		session('logined',$admin);
-		//跳转目标页
-		return jsonp(['status'=>1,'msg'=>'登录成功','redirect'=>Url('user/personal')]);
-	}
-
-	/**
-	 * @author 魏巍
-	 * @description 发送验证码邮件
-	 * @return 返回发送结果
-	 */
-	public function send_email($email='',$type=0){
-		if(!request()->isPost()){
-			return jsonp(['status'=>0,'msg'=>'请求方式错误']);
-		}
-		if(empty($email)){
-			return jsonp(['status'=>0,'msg'=>'请填写邮箱']);
-		}
-		if(!check_email($email)){
-			return jsonp(['status'=>0,'msg'=>'抱歉邮箱格式错误']);
-		}
-		if(cookie('?_session_code')){
-			cookie('_session_code',null,time()-60*2);
-		}
-
-		$_code = NoRand(0,9,6);
-		$type = $type?"找回密码":"注册功能";
-		cookie($_code.'_session_code',$_code,60*15);
-		$html = "【".$this->site['title'].$type."】:"."您在正在【".$this->site['title']
-			."】会员账号的".$type.",下面是您的验证码:".$_code.",有效时间为15分钟.如果您没有使用【".$this->site['title']
-			."】的".$type."功能,请自动忽略此邮件谢谢:)";
-
-		if(!think_send_mail($email,$email,"【".$this->site['title']."】".$type,$html)){
-			return jsonp(['status'=>0,'msg'=>'验证码发送失败,请稍后重试:(']);
-		}
-		return jsonp(['status'=>1,'msg'=>'验证码发送成功,请及时查收:)']);
-	}
-
-	/**
-	 * @author 魏巍
-	 * @descrition 注册方法
-	 */
-	public function register_handler($username='',$password='',$comfr_password='',$verify=''){
-		if(request()->isPost()){
-			return jsonp(['status'=>0,'msg'=>'错误的请求方式']);
-		}
-		if(empty($verify)){
-			return jsonp(['status'=>0,'msg'=>'请输入验证码']);
-		}
-		if(empty($username)){
-			return jsonp(['status'=>0,'msg'=>'请输入用户名']);
-		}
-		if(empty($password)){
-			return jsonp(['status'=>0,'msg'=>'请输入您的密码']);
-		}
-		if(empty($comfr_password)){
-			return jsonp(['status'=>0,'msg'=>'请输入您的确认密码']);
-		}
-		if(empty(cookie($verify.'_session_code'))){
-			return jsonp(['status'=>0,'msg'=>'验证码已失效']);
-		}
-		if($verify!=cookie($verify.'_session_code')){
-			return jsonp(['status'=>0,'msg'=>'验证码错误请稍后重试']);
-		}
-		if($password!=$comfr_password){
-			return jsonp(['status'=>0,'msg'=>'两次输入密码的不一致']);
-		}
-		$member = [
-			'username'=>strtolower($username),
-			'password'=>substr($password,10,10),
-			'create_time'=>time()
-		];
-		if(!db('member')->insert($member)){
-			return jsonp(['status'=>0,'msg'=>'注册失败,请稍后重试']);
-		}
-		return jsonp(['status'=>1,'msg'=>'恭喜您注册成功,现在就去登录','redirect'=>Url('user/login')]);
-	}
 
 	/**
 	 * @author 魏巍
@@ -202,7 +80,7 @@ class User extends Base{
 	 * @param string $pwd
 	 * @param string $verify
 	 */
-   public function set_password($id=0,$old_password='',$new_password='',$comfr_password='',$verify=''){
+   public function set_password($id=0,$phone=0,$old_password='',$new_password='',$comfr_password='',$verify=''){
 	   if(!captcha_check($verify)){
 		    return jsonp(['status'=>0,'msg'=>'请填写正确的验证码']);
 	   }
@@ -215,8 +93,12 @@ class User extends Base{
 	   if(empty($comfr_password)){
 		    return jsonp(['status'=>0,'msg'=>'确认密码不能为空']);
 	   }
+       if($id){
+           $admin = db('member')->find($id);
+       }else{
+           $admin = db('member')->where('phone','eq',$phone)->find($id);
+       }
 
-	   $admin = db('member')->find($id);
 	   if($admin['password']!=substr(md5(strtolower($old_password)),5,10)){
 		    return jsonp(['status'=>0,'msg'=>'原始密码不正确']);
 	   }
@@ -230,50 +112,6 @@ class User extends Base{
 	   }
 	   return jsonp(['status'=>1,'msg'=>'密修改成功']);
    }
-	/**
-	 * @author 魏巍
-	 * @description 设置新密码
-	 * @param string $new_password
-	 * @param string $comfr_password
-	 * @param string $verify
-	 * @param int	$muid
-	 */
-	public function set_new_password($new_password='',$comfr_password='',$verify=''){
-		if(empty($verify)){
-			return jsonp(['status'=>0,'msg'=>'验证码不能为空']);
-		}
-		if(empty($new_password)){
-			return jsonp(['status'=>0,'msg'=>'新密码不能为空']);
-		}
-		if(empty($comfr_password)){
-			return jsonp(['status'=>0,'msg'=>'确认密码不能为空']);
-		}
-		if(empty($muid)){
-			return jsonp(['status'=>0,'msg'=>'修改失败请重试']);
-		}
-		if(!captcha_check($verify)){
-			return jsonp(['status'=>0,'msg'=>'验证码错误']);
-		}
-
-		$admin = db('member')->find(session('_id'));
-		if(empty($admin)){
-			return jsonp(['status'=>0,'msg'=>'没有登录']);
-		}
-		if(!db('member')->update([
-			'id'=>$admin['id'],
-			'password'=>substr(md5($new_password),10,10),
-			'date'=>time()
-		])){
-			return jsonp(['status'=>0,'msg'=>'修改失败请重试']);
-		}
-
-		session('_id',null);
-		session('_name',null);
-		session('_nickname',null);
-		session('logined',null);
-		return jsonp(['status'=>1,'msg'=>'密码修改成功,请重新登录','redirect'=>Url('user/login')]);
-	}
-
 
 	/**
 	 * @author 魏巍
@@ -304,6 +142,25 @@ class User extends Base{
 		return jsonp(['status'=>1,'msg'=>'修改成功','redirect'=>U('user/userInfo')]);
 	}
 
+    /**
+     * 验证验证码
+     * @param string $verify         验证码
+     * @return \think\response\json
+     */
+    public function check_sms($verify=''){
+        if(empty($verify)){
+            return json(['status'=>0,'msg'=>'请输入验证码']);
+        }
+        $d = cookie('?'.$verify.'_session_code');
+        if(empty(cookie('?'.$verify.'_session_code'))){
+            return json(['status'=>0,'msg'=>'验证码已失效']);
+        }
+        if($verify!=$d){
+            return json(['status'=>0,'msg'=>'验证码错误']);
+        }
+        return json(['status'=>1,'msg'=>'验证码输入正确']);
+    }
+
 	/**
 	 * @author 魏巍
 	 * @description 设置手机
@@ -332,6 +189,12 @@ class User extends Base{
 		}
 		return jsonp(['status'=>1,'msg'=>'修改成功','redirect'=>Url('user/userInfo')]);
 	}
+
+	public function forget(){
+	    return view();
+    }
+
+
 
 	/**
 	 * @author 魏巍
@@ -371,6 +234,34 @@ class User extends Base{
 		cookie($verify.'_session_code',time()-60*2);
 		return jsonp(['status'=>1,'msg'=>'修改成功,请登录','redirect'=>Url('duobao/login')]);
 	}
+
+	public function find_password($phone='',$password='',$confirm_password=''){
+        if(empty($phone)){
+            return json(['status'=>0,'msg'=>'参数错误']);
+        }
+        if(empty($password)){
+            return json(['status'=>0,'msg'=>'请输入密码']);
+        }
+        if(empty($confirm_password)){
+            return json(['status'=>0,'msg'=>'请输入确认密码']);
+        }
+        if($confirm_password!=$password){
+            return json(['status'=>0,'msg'=>'两次密码不一致']);
+        }
+        $member = db('member')->field('date',true)->where('phone','eq',$phone)->find();
+        if(empty($member)){
+            return json(['status'=>0,'msg'=>'用户名不存在,请填写正确的用户名']);
+        }
+        if(!db('member')->update([
+            'id'=>$member['id'],
+            'password'=>substr(md5($password),10,15),
+            'dates'=>time()
+        ])){
+            return json(['status'=>0,'msg'=>'修改失败请重试']);
+        }
+        return json(['status'=>1,'msg'=>'修改成功,请登录','redirect'=>Url('/user/login')]);
+    }
+
 
 	/**
 	 * @author 魏巍

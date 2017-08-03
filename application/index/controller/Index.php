@@ -7,68 +7,63 @@ class Index extends Base{
     public function index(){
 	    return view();
     }
+    public function login(){
+        return view();
+    }
 
-    public function register($nickname='',$city='',$address='',$phone='',$email='',$password='',$repeat_password='',$alipay=''){
-        if(!request()->isPost()){
-            return json([
-               'status'=>0,
-               'msg'=>'错误的请求方式'
-            ]);
+    /**
+     * 检测用户
+     * @param $phone
+     * @return bool
+     */
+    public function check_phone($phone){
+        $i = db('member')->where('phone','eq',$phone)->count();
+        return $i?false:true;
+    }
+
+    public function signup($phone='',$verify='',$password='',$confirm_password=''){
+        if(request()->IsGet()){
+            return view();
         }
 
-        if(empty($nickname)){
-            return json([
-                'status'=>0,
-                'msg'=>'姓名不能为空'
-            ]);
-        }
-        if(empty($city)){
-            return json([
-                'status'=>0,
-                'msg'=>'城市不能为空'
-            ]);
-        }
-        if(empty($address)){
-            return json([
-                'status'=>0,
-                'msg'=>'详细地址不能为空'
-            ]);
-        }
         if(empty($phone)){
             return json([
                 'status'=>0,
-                'msg'=>'手机号不能为空'
+                'msg'=>'请输入手机号'
             ]);
         }
-        if(empty($email)){
+        if(empty($verify)){
             return json([
                 'status'=>0,
-                'msg'=>'邮箱不能为空'
+                'msg'=>'请输入验证码'
             ]);
         }
         if(empty($password)){
             return json([
                 'status'=>0,
-                'msg'=>'密码不能为空'
+                'msg'=>'请输入密码'
             ]);
         }
-        if(empty($repeat_password)){
+        if(empty($confirm_password)){
             return json([
                 'status'=>0,
-                'msg'=>'确认密码不能为空'
+                'msg'=>'请输入确认密码'
             ]);
         }
-        if(empty($alipay)){
+        if($verify!=cookie($verify.'_session_code')){
+            return json(['status'=>0,'msg'=>'验证码错误']);
+        }
+        if($confirm_password!=$password){
             return json([
                 'status'=>0,
-                'msg'=>'支付宝不能为空'
+                'msg'=>'输入的密码不一致'
             ]);
         }
-
         $param = request()->param();
         $param['date']=time();
-        unset($param['repeat_password']);
-		$param['password'] = substr(md5($password),10,15);
+        unset($param['confirm_password']);
+        unset($param['verify']);
+        $param['password'] = substr(md5($password),10,15);
 
         if(!db('member')->insert($param)){
             return json([
@@ -77,9 +72,9 @@ class Index extends Base{
             ]);
         }
         return json([
-           'status'=>1,
-           'msg'=>'恭喜你注册成功,是否登录管理后台!',
-           'redirect'=>Url('/admin')
+            'status'=>1,
+            'msg'=>'恭喜你注册成功,是否登录管理后台!',
+            'redirect'=>Url('/')
         ]);
     }
 }

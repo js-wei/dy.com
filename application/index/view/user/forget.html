@@ -1,0 +1,192 @@
+<include file="public:header" title="找回密码"/>
+<link rel="stylesheet" href="__CSS__/compiled/signup.css" type="text/css" media="screen" />
+<style>
+    .login-wrapper .box .content-wrap{
+        text-align:left;
+    }
+    .login-wrapper .box .content-wrap .action{
+        text-align:center;
+    }
+    label.error{
+        color:red;
+    }
+</style>
+<div class="container-fluid">
+    <div class="header">
+        <a href="index.html">
+            <img src="{$site.logo}" class="logo" />
+        </a>
+    </div>
+    <div class="login-wrapper">
+        <div class="col-md-12 with-sidebar text-center">
+            <h1>{$site.title}推广平台</h1>
+            <footer>加入我们成为新伙伴<cite title="Source Title">互利共赢</cite></footer>
+            <div class="description">
+                <p>
+                    {$site.description}
+                </p>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+        <div class="box">
+            <div class="content-wrap first" >
+                <h3>忘记密码</h3>
+                <hr>
+                <input class="form-control" type="text" name="phone" id="phone" placeholder="手机号" autocomplete="off">
+                <div class="clearfix"></div>
+                <input type="text" class="form-control" placeholder="验证码" name="verify" id="verify" style="width:70%;float:left" autocomplete="off">
+                <span class="input-group-addon btnVerify" style="height:40px;width:30%;display:block;line-height:22px;cursor:pointer;   float:right">获取验证码</span>
+                <div class="clearfix"></div>
+                <div class="action">
+                    <button type="button" class="btn-glow primary signup next">下一步</button>
+                </div>
+            </div>
+            <div class="content-wrap second" style="display:none;">
+                <h3>设置密码</h3>
+                <hr>
+                <input class="form-control" type="password"  name="password" id="password" placeholder="密码">
+                <input class="form-control" type="password"  name="confirm_password" id="confirm_password" placeholder="确认密码">
+                <div class="action">
+                    <button type="button" class="btn-glow primary signup set">设置新密码</button>
+                </div>
+            </div>
+        </div>
+        <div class="already">
+            <p>回忆起密码!</p>
+            <a href="{:Url('/')}">登录</a>
+        </div>
+    </div>
+</div>
+<script>
+    var countdown=60,strat_flag=true;
+    $(function () {
+        $(document).on('click','.set',function (e) {
+            e.preventDefault();
+            var password = $('#password').val(),
+                confirm_password = $('#confirm_password').val(),
+                phone = $('#phone').val();
+            if(password==''){
+                layer.msg("请输入新密码", {
+                    offset: 'm',
+                    anim: 3
+                });
+                return false;
+            }
+            if(confirm_password==''){
+                layer.msg("请输入确认密码", {
+                    offset: 'm',
+                    anim: 3
+                });
+                return false;
+            }
+            if(confirm_password!=password){
+                layer.msg("两次输入密码不一致", {
+                    offset: 'm',
+                    anim: 3
+                });
+                return false;
+            }
+            var index = layer.load(2, {
+                shard: [0.6, "#000"]
+            });
+            $.post('__URL__/find_password',{phone:phone,password:password,confirm_password:confirm_password},function (result) {
+                layer.close(index);
+                if(result.status==0){
+                    layer.msg(result.msg, {
+                        offset: 'm',
+                        anim: 6
+                    });
+                }else{
+                    layer.confirm(result.msg,{
+                        icon:6,
+                        title:'提示信息',
+                        btn: ['现在登录','以后登录']
+                    },function(){
+                        window.location.href=result.redirect;
+                    },function () {
+                       window.location.reload();
+                    });
+                }
+            });
+        });
+
+        $(document).on('click','.next',function(){
+            var verify = $('input[name="verify"]').val();
+            var phone = $('input[name="phone"]').val();
+            if(phone==''){
+                layer.msg("请输入手机号", {
+                    offset: 'm',
+                    anim: 3
+                });
+                return false;
+            }
+            if(verify==''){
+                layer.msg("请输入验证码", {
+                    offset: 'm',
+                    anim: 3
+                });
+                return false;
+            }
+            if(!/^1(3|4|5|7|8)\d{9}$/.test(phone)){
+                layer.msg("请输入正确的手机号", {
+                    offset: 'm',
+                    anim: 3
+                });
+                return false;
+            }
+            var index = layer.load(2, {
+                shard: [0.6, "#000"]
+            });
+            $.post('__URL__/check_sms',{verify:verify},function (result) {
+                layer.close(index);
+                if(result.status==0){
+                    layer.msg(result.msg, {
+                        offset: 'm',
+                        anim: 3
+                    });
+                }else{
+                    $('.first').hide();
+                    $('.second').show();
+                }
+            });
+
+        });
+        $(document).on('click','.btnVerify',function(){
+            var phone = $('input[name="phone"]').val();
+            if(phone==''){
+                layer.msg("请输入手机号", {
+                    offset: 'm',
+                    anim: 3
+                });
+                return false;
+            }
+            if(!/^1(3|4|5|7|8)\d{9}$/.test(phone)){
+                layer.msg("请输入正确的手机号", {
+                    offset: 'm',
+                    anim: 3
+                });
+                return false;
+            }
+            if(strat_flag){
+                settime();
+                strat_flag=false;
+                $.post('{:Url("/user/message")}',{tel:phone,t:1},function (result){ });
+            }
+        });
+    });
+    function settime() {
+        if (countdown == 0) {
+            strat_flag = true;
+            $('.btnVerify').text("获取验证码");
+            countdown = 60;
+        }else{
+            strat_flag = false;
+            $('.btnVerify').html("重新发送(" + countdown + ")");
+            countdown--;
+            setTimeout(function() {
+                settime();
+            },1000);
+        }
+    }
+</script>
+<include file="public:footer"/>

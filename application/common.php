@@ -631,6 +631,33 @@ function tagstr($str,$start=0,$length=250){
 	return $temp;
 }
 
+/**
+ * 发送短信
+ * @param string  $to                       发送人
+ * @param string $templateId                短信模板id
+ * @param int $t                            用户检测
+ * @return array
+ */
+function send_sms($to,$templateId= "107658",$t=0){
+    if($t){	//检测用户
+        $member = db('member')->where(['username'=>$to])->count();
+        if($member){
+            return ['status'=>0,'msg'=>'抱歉用户名已被使用'];
+        }
+    }
+    $options['accountsid']= config('Ucpaas.accountSid');
+    $options['token']=config('Ucpaas.authToken');
+    $appId = config('Ucpaas.appId');
+    $d = NoRand(0,9,4);
+    $ucpass = new \service\Ucpaas($options);
+    $param ="{$d}";	//参数
+    $arr=$ucpass->templateSMS($appId,$to,$templateId,$param);
+    if(cookie('?'.$d.'_session_code')){
+        cookie($d.'_session_code',null,time()-60*2);
+    }
+    cookie($d.'_session_code',$d,60*5);
+    return $arr;
+}
 
 /**  
  * * 系统邮件发送函数  

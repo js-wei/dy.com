@@ -21,6 +21,7 @@ class Base extends Controller{
     }
 
     public function get_location($ip=''){
+        $_result='';
         $ip = $ip?$ip:get_client_ip();
         $curl = new \Curl\Curl();
         $curl->post('http://freeapi.ipip.net', array(
@@ -30,7 +31,11 @@ class Base extends Controller{
             return false;
         }
         else {
-            echo $curl->response;
+            $temp = explode('",',$curl->response);
+            $temp[1]=str_replace('"','',$temp[1]);
+            $temp[2] = str_replace('"','',$temp[2]);
+            $_result = $temp[2]?$temp[2]:$temp[1];
         }
+        return $_result;
     }
 }

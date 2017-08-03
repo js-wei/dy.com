@@ -1,0 +1,158 @@
+<include file="public:header" title="注册"/>
+<link rel="stylesheet" href="__CSS__/compiled/signup.css" type="text/css" media="screen" />
+<style>
+    .login-wrapper .box .content-wrap{
+        text-align:left;
+    }
+    .login-wrapper .box .content-wrap .action{
+        text-align:center;
+    }
+    label.error{
+        color:red;
+    }
+</style>
+<div class="container-fluid">
+    <div class="header">
+        <a href="index.html">
+            <img src="{$site.logo}" class="logo" />
+        </a>
+    </div>
+    <div class="login-wrapper">
+        <div class="col-md-12 with-sidebar text-center">
+            <h1>{$site.title}推广平台</h1>
+            <footer>加入我们成为新伙伴<cite title="Source Title">互利共赢</cite></footer>
+            <div class="description">
+                <p>
+                    {$site.description}
+                </p>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+        <div class="box">
+            <form action="__SELF__" autocomplete="off" id="commentForm">
+                <div class="content-wrap">
+                    <h3>注册</h3>
+                    <hr>
+                    <input class="form-control" type="text" name="phone" id="phone" placeholder="手机号">
+                    <div class="clearfix"></div>
+                    <input type="text" class="form-control" placeholder="验证码" name="verify" style="width:70%;float:left">
+                    <span class="input-group-addon btnVerify" style="height:40px;width:30%;display:block;line-height:22px;cursor:pointer;   float:right">获取验证码</span>
+                    <div class="clearfix"></div>
+                    <input class="form-control" type="password"  name="password" id="password" placeholder="密码">
+                    <input class="form-control" type="password"  name="confirm_password" placeholder="确认密码">
+                    <div class="action">
+                        <button type="submit" class="btn-glow primary signup">注册</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="already">
+            <p>我现在已有账号!</p>
+            <a href="{:Url('/')}">登录</a>
+        </div>
+    </div>
+</div>
+<script src="http://static.runoob.com/assets/jquery-validation-1.14.0/dist/jquery.validate.min.js"></script>
+<script src="http://static.runoob.com/assets/jquery-validation-1.14.0/dist/localization/messages_zh.js"></script>
+<script src="__PLUG__/jquery.validate.ext.js"></script>
+<script>
+    var countdown=60,strat_flag=true;
+   $(function () {
+       $("#commentForm").validate({
+           rules: {
+               phone: {
+                   required: true,
+                   isMobile:true,
+                   remote: {
+                       url: "__URL__/check_phone",
+                       type: "post",
+                       dataType: "json",
+                       data: {
+                           phone: function() {
+                               return $("#phone").val();
+                           }
+                       }
+                   }
+               },
+               password: {
+                   required: true,
+                   minlength: 6
+               },
+               confirm_password: {
+                   required: true,
+                   minlength: 6,
+                   equalTo: "#password"
+               }
+           },
+           messages: {
+               phone: {
+                   required: "请输入用手机号",
+                   isMobile:'请输入正确的手机号',
+                   remote:'用户手机号已存在'
+               },
+               password: {
+                   required: "请输入密码",
+                   minlength: "密码长度不能小于 5 个字母"
+               },
+               confirm_password: {
+                   required: "请输入密码",
+                   minlength: "密码长度不能小于 5 个字母",
+                   equalTo: "两次密码输入不一致"
+               }
+           }
+       });
+       $(document).on('submit','form',function (e) {
+           e.preventDefault();
+           var index = layer.load(2, {
+               shard: [0.6, "#000"]
+           });
+           var form = $('form');
+           $.post(form.attr('action'),form.serialize(),function (result) {
+               layer.close(index);
+               if(result.status==0){
+                   layer.msg(result.msg, {
+                       offset: 'b',
+                       anim: 6
+                   });
+               }else{
+                   layer.confirm(result.msg,{
+                       icon:6,
+                       title:'提示信息',
+                       btn: ['现在登录','以后登录']
+                   },function(){
+                       window.location.href=result.redirect;
+                   },function () {
+                       form[0].resetForm();
+                   });
+               }
+           });
+       });
+       $(document).on('click','.btnVerify',function(){
+           var phone = $('input[name="phone"]').val();
+           $("form").validate().element($("#phone"));
+           if(phone==''){
+               return false;
+           }
+           if(strat_flag){
+               settime();
+               strat_flag=false;
+               $.post('{:Url("/user/message")}',{tel:phone,t:1},function (result){ });
+           }
+       });
+   });
+   function settime() {
+       if (countdown == 0) {
+           strat_flag = true;
+           $('.btnVerify').text("获取验证码");
+           countdown = 60;
+       }else{
+           strat_flag = false;
+           $('.btnVerify').html("重新发送(" + countdown + ")");
+           countdown--;
+           setTimeout(function() {
+               settime();
+           },1000);
+       }
+   }
+</script>
+<include file="public:footer"/>

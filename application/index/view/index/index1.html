@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{$site.title}</title>
+    <!-- CSS -->
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:400,100,300,500">
+    <link rel="stylesheet" href="__PLUG__/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="__PLUG__/font-awesome-4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="__CSS__/form-elements.css">
+    <link rel="stylesheet" href="__PLUG__/city/city.css">
+    <script src="__PLUG__/city/Popt.js"></script>
+    <script src="__PLUG__/city/cityJson.js"></script>
+    <script src="__PLUG__/city/citySet.js"></script>
+    <link rel="stylesheet" href="__CSS__/style.css">
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <!-- Favicon and touch icons -->
+    <!--<link rel="shortcut icon" href="/favicon.ico">-->
+</head>
+<body data-id="__IMAGES__/backgrounds/1.jpg">
+<!-- Top menu -->
+<nav class="navbar navbar-inverse navbar-no-bg" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#top-navbar-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="{:Url('/')}">{$site.title}</a>
+        </div>
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="top-navbar-1">
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <!-- <span class="li-text">
+                        Put some text or
+                    </span>
+                    <a href="#"><strong>links</strong></a>
+                    <span class="li-text">
+                        here, or some icons:
+                    </span>
+                    <span class="li-social">
+                        <a href="#"><i class="fa fa-facebook"></i></a>
+                        <a href="#"><i class="fa fa-twitter"></i></a>
+                        <a href="#"><i class="fa fa-envelope"></i></a>
+                        <a href="#"><i class="fa fa-skype"></i></a>
+                    </span> -->
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<!-- Top content -->
+<div class="top-content">
+    <div class="inner-bg">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-8 col-sm-offset-2 text">
+                    <h1>{$site.title}推广平台</h1>
+                    <footer>加入我们成为新伙伴<cite title="Source Title">互利共赢</cite></footer>
+                    <div class="description">
+                        <p>
+                            {$site.description}
+                            <a href="{:Url('/admin')}"><strong>管理入口</strong></a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6 col-sm-offset-3 form-box">
+                    <form role="form" action="{:Url('/user/register')}" method="post" class="registration-form" autocomplete="off">
+                        <fieldset>
+                            <div class="form-top">
+                                <div class="form-top-left">
+                                    <h3>步骤 1 / 3</h3>
+                                    <p>基本信息</p>
+                                </div>
+                                <div class="form-top-right">
+                                    <i class="fa fa-user"></i>
+                                </div>
+                            </div>
+                            <div class="form-bottom">
+                                <div class="form-group">
+                                    <label class="sr-only">姓名</label>
+                                    <input type="text" name="nickname" placeholder="姓名..." class="form-last-name form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label class="sr-only">地址</label>
+                                    <input type="text" name="city" id="city" class=" form-control" readonly="readonly" value="江苏省-苏州市-姑苏区" />
+                                </div>
+                                <div class="form-group">
+                                    <label class="sr-only">详细住址</label>
+                                    <input type="text" name="address" placeholder="详细住址..." class="form-last-name form-control">
+                                </div>
+                                <button type="button" class="btn btn-next">下一步</button>
+                            </div>
+                        </fieldset>
+                        <fieldset>
+                            <div class="form-top">
+                                <div class="form-top-left">
+                                    <h3>步骤 2 / 3</h3>
+                                    <p>账户信息</p>
+                                </div>
+                                <div class="form-top-right">
+                                    <i class="fa fa-key"></i>
+                                </div>
+                            </div>
+                            <div class="form-bottom">
+                                <div class="form-group">
+                                    <label class="sr-only" for="form-email">手机</label>
+                                    <input type="text" name="phone" placeholder="手机..." class="form-email form-control phone" id="form-phone">
+                                </div>
+                                <div class="form-group">
+                                    <label class="sr-only" for="form-email">邮箱</label>
+                                    <input type="text" name="email" placeholder="邮箱..." class="form-email form-control email" id="form-email">
+                                </div>
+                                <div class="form-group">
+                                    <label class="sr-only" for="form-password">密码</label>
+                                    <input type="password" name="password" placeholder="密码..." class="form-password form-control password" id="form-password">
+                                </div>
+                                <div class="form-group">
+                                    <label class="sr-only" for="form-repeat-password">确认密码</label>
+                                    <input type="password" name="repeat_password" placeholder="确认密码..."
+                                           class="form-repeat-password form-control" id="form-repeat-password">
+                                </div>
+                                <button type="button" class="btn btn-previous">上一步</button>
+                                <button type="button" class="btn btn-next">下一步</button>
+                            </div>
+                        </fieldset>
+                        <fieldset>
+                            <div class="form-top">
+                                <div class="form-top-left">
+                                    <h3>步骤 3 / 3</h3>
+                                    <p>支付账号</p>
+                                </div>
+                                <div class="form-top-right">
+                                    <i class="fa fa-credit-card"></i>
+                                </div>
+                            </div>
+                            <div class="form-bottom">
+                                <div class="form-group">
+                                    <label class="sr-only" for="form-facebook">支付宝</label>
+                                    <input type="text" name="alipay" placeholder="支付宝..." class="form-facebook form-control" id="form-facebook">
+                                    <div class="text-danger">
+                                        *更多付款可以在管理后台设置
+                                    </div>
+                                </div>
+                                <button type="button" class="btn btn-previous">上一步</button>
+                                <button type="submit" class="btn">注册并加入我们!</button>
+                            </div>
+                        </fieldset>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<footer>
+    <address>
+       {$site.copyright}<br/>
+        <abbr title="联系方式">P:</abbr>{$site.tel}<notempty name="site.phone">/{$site.phone}</notempty>
+        {$site.code|htmlspecialchars_decode}
+    </address>
+</footer>
+<!-- Javascript -->
+<script src="__JS__/jquery-1.11.1.min.js"></script>
+<script src="__PLUG__/bootstrap/js/bootstrap.min.js"></script>
+<script src="__JS__/jquery.backstretch.min.js"></script>
+<script src="__JS__/retina-1.1.0.min.js"></script>
+<script src="__PLUG__/layer/layer.js"></script>
+<script src="__JS__/scripts.js"></script>
+<!--[if lt IE 10]>
+<script src="__JS__/js/placeholder.js"></script>
+<![endif]-->
+</body>
+</html>

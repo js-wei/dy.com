@@ -57,6 +57,12 @@ return [
 		'FROM_EMAIL'=>'jswei30@163.com',
 		'FROM_NAME'=>'官方邮件'
 	],
+    //云之讯短信接口
+    'Ucpaas'=>[
+        'accountSid'=>'ef4229d8fec0ae20745fd85910fe6dcc',
+        'authToken'=>'0dee9248eebd1e63d1d0fa88f050bbfe',
+        'appId'=>'5ce06e3147f444fdb994294fe55d5243',
+    ],
 	'UPLOADE'=>[
 		'path'=>ROOT_PATH . 'public' . DS.'uploads',
 	],
