@@ -16,7 +16,7 @@
             </div>
             <div class="widget-body">
                 <div class="col-xs-4 col-md-6 pb10 zindex">
-                    <a href="__URL__/add?aid={:input('aid')}" class="btn btn-success">添加用户</a>
+                    <!--<a href="__URL__/add?aid={:input('aid')}" class="btn btn-success">添加用户</a>-->
                     <a href="__URL__/status" data-role="forbidden" class="btn btn-warning status">选中禁用</a>
                     <a href="__URL__/status" data-role="enable" class="btn btn-info status">选中启用</a>
                     <a href="__URL__/status" data-role="delete-all" class="btn btn-danger status">选中删除</a>
@@ -36,7 +36,7 @@
                         <th>用户账号</th>
                         <th class="hidden-xs">用户昵称</th>
                         <!--<th class="hidden-xs">用户头像</th>-->
-                        <th class="hidden-xs">用户授权码</th>
+                        <!--<th class="hidden-xs">用户授权码</th>-->
                         <th class="hidden-xs">最近登录地点</th>
                         <th class="hidden-xs">最近登录IP</th>
                         <th class="hidden-xs">最近登录时间</th>
@@ -65,21 +65,35 @@
                             <!--<td class="hidden-xs" >-->
                                 <!--<img src="{$vo.head}" alt="" class="img-thumbnail img-responsive">-->
                             <!--</td>-->
-                            <td class="hidden-xs">{$vo.auth}</td>
+                            <!--<td class="hidden-xs">{$vo.auth}</td>-->
                             <td class="hidden-xs">
-                                {$vo.last_login_address|sub_str=0,20,false}
+                                <notempty name="vo.last_login_address">
+                                    {$vo.last_login_address}
+                                    <else />
+                                    暂无登陆
+                                </notempty>
                             </td>
                             <td class="hidden-xs">
-                                {$vo.last_login_ip}
+                                <notempty name="vo.last_login_ip">
+                                    {$vo.last_login_ip}
+                                    <else />
+                                    暂无登陆
+                                </notempty>
                             </td>
                             <td class="hidden-xs">
-                                {$vo.last_login_time|date='Y-m-d H:i:s',###}
+                                <notempty name="vo.last_login_time">
+                                    {$vo.last_login_time|date='Y-m-d H:i:s',###}
+                                    <else />
+                                    暂无登陆
+                                </notempty>
                             </td>
                             <td class="hidden-xs">
                                 {$vo.date|date='Y-m-d H:i:s',###}
                             </td>
                             <td>
-                                <eq name="vo.status" value="0"> <span class="text-success">正常</span><else /><span class="text-danger">禁用</span></eq>
+                                <eq name="vo.status" value="0"><span class="text-success">正常</span></eq>
+                                <eq name="vo.status" value="1"><span class="text-danger">禁用</span></eq>
+                                <eq name="vo.status" value="2"><span class="text-danger">密码重置</span></eq>
                             </td>
                             <td>
                                 <a href="__URL__/add?id={$vo['id']}&aid={:input('aid')}">详细</a>
@@ -87,6 +101,9 @@
                                     <a href="__URL__/status&aid={:input('aid')}&p={:input('p')}" data-role="forbidden" data-id="{$vo.id}" class="status">禁用</a>
                                     <else />
                                     <a href="__URL__/status&aid={:input('aid')}&p={:input('p')}" data-role="enable" data-id="{$vo.id}" class="status">正常</a>
+                                </eq>
+                                <eq name="vo.status" value="2">
+                                <a href="__URL__/set_password?id={$vo['id']}" class="reset-password">初始化密码</a>
                                 </eq>
                                 <a href="__URL__/status" data-role="delete"  data-id="{$vo.id}" class="status">删除</a>
                             </td>
@@ -105,7 +122,7 @@
     $(function(){
         $('#simpledatatable').dataTable({
             "sDom": "Tflt",
-            "iDisplayLength": {$count},
+            "iDisplayLength":'{$count}',
             "searching": false,
             "paging":false,
             "oTableTools": {
@@ -128,7 +145,7 @@
                 { "bSortable": true },
                 { "bSortable": false },
 //                { "bSortable": false },
-                { "bSortable": false },
+//                { "bSortable": false },
                 { "bSortable": false },
                 { "bSortable": false },
                 { "bSortable": true },
@@ -152,6 +169,30 @@
             });
 
         });
+        $(document).on('click','.reset-password',function (e) {
+            e.preventDefault();
+            var url = $(this).attr('href');
+            layer.confirm('您确定要初始化吗?初始化后原密码不可用!', {
+                btn: ['是的确定','不没想好'] //按钮
+            }, function(){
+                var index = layer.load(2, {
+                    shard: [0.6, "#000"]
+                });
+                $.get(url,function(result){
+                    layer.close(index);
+                    if (result.status==1) {
+                        layer.alert(result.msg, {
+                            icon: 6,
+                            end: function() {
+                                window.location.reload();
+                            }
+                        });
+                    }else{
+                        layer.alert(result.msg,{icon:5});
+                    }
+                });
+            });
+        })
     });
 </script>
 <include file="public/footer"/>
