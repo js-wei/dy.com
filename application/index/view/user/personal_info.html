@@ -1,0 +1,126 @@
+<include file="public:header" title="基本信息" this="__CSS__/compiled/user-profile.css"/>
+<include file="public:navbar"/>
+<include file="public:sidebar"/>
+<div class="content">
+    <div id="pad-wrapper" class="user-profile">
+        <!-- header -->
+        <div class="row header">
+            <div class="col-md-8">
+                <img src="{$info.head|default='__IMAGES__/contact-profile.png'}" class="avatar img-circle">
+                <h3 class="name">{$Think.session._m}</h3>
+                <span class="area">
+                    <eq name="info.is_check" value="1">
+                        <i class="icon-bookmark"></i> 已认证
+                        <else />
+                        <i class="icon-bookmark-empty"></i> 未认证
+                        <a href="{:Url('/account/check')}" style="font-style:normal;font-size:12px;">去认证</a>
+                    </eq>
+                </span>
+            </div>
+        </div>
+
+        <div class="row profile">
+            <!-- bio, new note & orders column -->
+            <div class="col-md-9 bio">
+                <div class="profile-box">
+                    <div class="col-md-12 section">
+                        <h6>账号信息 <small><code>安全设置</code> </small></h6>
+                        <form class="form-horizontal">
+                            <div class="form-group">
+                                <label for="phone" class="col-sm-2 control-label">手机</label>
+                                <div class="col-sm-5">
+                                    <input type="text" class="form-control" id="phone" value="{$info.phone}" disabled="disabled" placeholder="手机">
+                                </div>
+                                <div class="col-sm-5">
+                                    <button type="button" class="btn btn-link">修改</button>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="email" class="col-sm-2 control-label">邮箱</label>
+                                <div class="col-sm-5">
+                                    <input type="email" value="{$info.email}" class="form-control" id="email" disabled="disabled" placeholder="邮箱">
+                                </div>
+                                <div class="col-sm-5">
+                                    <button type="button" class="btn btn-link">修改</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-md-12 section">
+                        <h6>支付信息 <small><code>支付设置</code> </small></h6>
+                        <form class="form-horizontal">
+                            <div class="form-group">
+                                <label  class="col-sm-2 control-label">支付宝</label>
+                                <div class="col-sm-5">
+                                    <input type="text" class="form-control"  value="" disabled="disabled" placeholder="支付宝">
+                                </div>
+                                <div class="col-sm-5">
+                                    <button type="button" class="btn btn-link">修改</button>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">银行卡</label>
+                                <div class="col-sm-5">
+                                    <input type="email" value="" class="form-control" disabled="disabled" placeholder="银行卡">
+                                </div>
+                                <div class="col-sm-5">
+                                    <button type="button" class="btn btn-link">修改</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-md-12 section">
+                        <h6>地址信息 <small><code>地址设置</code> </small></h6>
+                        <form class="form-horizontal">
+                            <div class="form-group">
+                                <label  class="col-sm-2 control-label">城市</label>
+                                <div class="col-sm-5">
+                                    <input type="text" class="form-control"  value="" disabled="disabled" placeholder="城市">
+                                </div>
+                                <div class="col-sm-5">
+                                    <button type="button" class="btn btn-link">修改</button>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">详细地址</label>
+                                <div class="col-sm-5">
+                                    <input type="email" value="" class="form-control" disabled="disabled" placeholder="街道/楼牌">
+                                </div>
+                                <div class="col-sm-5">
+                                    <button type="button" class="btn btn-link">修改</button>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">邮编</label>
+                                <div class="col-sm-5">
+                                    <input type="zip_code" value="" class="form-control" disabled="disabled" placeholder="邮编">
+                                </div>
+                                <div class="col-sm-5">
+                                    <button type="button" class="btn btn-link">修改</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <!-- side address column -->
+            <div class="col-md-3 col-xs-12 address pull-right">
+                <h6>联系方式</h6>
+                <ul>
+                    <li>{$info.city}</li>
+                    <li>{$info.address}</li>
+                    <li>Zip Code, CN {$info.zip_code|default='250000'}.</li>
+                    <li class="ico-li">
+                        <i class="ico-phone"></i>
+                        {$info.phone}
+                    </li>
+                    <li class="ico-li">
+                        <i class="ico-mail"></i>
+                        <a href="#">{$info.email|default='您还没有填写'}</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<include file="public:footer"/>

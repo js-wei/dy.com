@@ -10,6 +10,9 @@ namespace app\index\controller;
 class Account extends Base{
     protected function _initialize(){
         parent::_initialize();
+        if(!session('?_mid')){
+            $this->redirect('/');
+        }
     }
     public function information(){
         return view();

@@ -15,7 +15,10 @@ Route::rule('user/get_location','index/index/get_location');
 Route::rule('user/signup','index/index/signup');
 Route::rule('user/message','index/publish/send_message');
 Route::rule('user/login','index/publish/login');
-Route::rule('user/personal','index/user/personal');
+Route::rule('user/logout','index/publish/logout');
+Route::rule('user/forget','index/publish/forget');
+
 // 给Account控制器设置快捷路由
 Route::rule('account/information','index/account/information');
+Route::rule('account/personal_info','index/user/personal_info');
 

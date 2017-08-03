@@ -1,12 +1,16 @@
 <?php
 namespace app\index\controller;
 use think\Validate;
+use think\Session;
 
 class Publish extends Base{
 	
 	protected function  _initialize(){
 		parent::_initialize();
 	}
+    public function forget(){
+        return view();
+    }
 
 	public function get_site(){
 		$data=[
@@ -91,6 +95,7 @@ class Publish extends Base{
         db("member")->update($data);
         //保存登录状态
         session('_mid',$admin['id']);
+        session('_m',$admin['phone']);
 
         //跳转目标页
         unset($admin['password']);
@@ -98,7 +103,15 @@ class Publish extends Base{
         unset($admin['status']);
         return json(['status'=>1,'msg'=>'登录成功','data'=>$admin,'redirect'=>Url('/account/information')]);
     }
-
+    /**
+     * [logout 用户退出]
+     * @return [type] [description]
+     */
+    public function logout(){
+        Session::delete('_mid');
+        Session::delete('_m');
+        return array('status'=>1,'msg'=>'退出成功','redirect'=> Url('/'));
+    }
     /**
      * @author 魏巍
      * @description 发送验证码邮件
