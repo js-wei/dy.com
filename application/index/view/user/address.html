@@ -1,0 +1,60 @@
+<include file="public:header" this=""/>
+<link rel="stylesheet" href="__PLUG__/city/city.css">
+<style>
+    .setting{
+        margin-top:100px;
+        margin-left:20%;
+    }
+    .form-control{
+        margin-top:10px;
+    }
+    .next{
+        width:150px;
+        height:40px;
+        margin-top:10px;
+    }
+</style>
+<div class="container-fluid">
+    <div class="col-xs-6  text-center setting">
+        <input class="form-control" value="" type="text" name="address"  placeholder="城镇/街道/楼牌号" autocomplete="off">
+        <div class="action">
+            <button type="button" class="btn-glow primary signup next" >设置详细地址</button>
+        </div>
+    </div>
+</div>
+<script>
+    var countdown=60,strat_flag=true;
+    $(function () {
+        $(document).on('click','.next',function(){
+            var address = $('input[name="address"]').val();
+            if(address==''){
+                layer.msg("请输入详细地址", {
+                    offset: 'b',
+                    anim: 3
+                });
+                return false;
+            }
+            var index = layer.load(2, {
+                shard: [0.6, "#000"]
+            });
+            $.post('/user/address',{address:address},function (result) {
+                layer.close(index);
+                if(result.status==0){
+                    layer.msg(result.msg, {
+                        offset: 'b',
+                        anim: 3
+                    });
+                }else{
+                    layer.alert(result.msg, {
+                        icon:6,
+                        end:function () {
+                            layer.closeAll();
+                            window.parent.location.reload();
+                        }
+                    });
+                }
+            });
+        });
+    });
+</script>
+<include file="public:footer"/>

@@ -1,0 +1,54 @@
+<include file="public:header" title="基本信息" this="__CSS__/compiled/gallery.css"/>
+<include file="public:navbar"/>
+<include file="public:sidebar"/>
+<style>
+    .icon i{
+        color:white;
+        font-size:22px;
+    }
+</style>
+<!-- main container -->
+<div class="content">
+    <div id="pad-wrapper" class="gallery">
+        <div class="row header">
+            <div class="col-md-12">
+                <h3>可申请产品</h3>
+            </div>
+            <div class="clearfix"></div>
+            <hr>
+        </div>
+        <!-- gallery wrapper -->
+        <div class="gallery-wrapper">
+            <div class="row gallery-row">
+                <!-- single image -->
+                <div class="col-md-3 img-container">
+                    <div class="img-box">
+                        <span class="icon edit">
+                             <i class="icon-plus" title="申请产品"></i>
+                        </span>
+                        <img src="__IMAGES__/gallery3.jpg" class="img-responsive" />
+                        <p class="title">
+                            Beach pic title
+                        </p>
+                        <p>价格 <span class="text-danger">119.00</span></p>
+                        <p>分成 <span class="text-danger">8%</span></p>
+                    </div>
+                </div>
+                <div class="col-md-3 img-container">
+                    <div class="img-box">
+                        <span class="icon edit">
+                          <i class="icon-plus"  title="申请产品"></i>
+                        </span>
+                        <img src="__IMAGES__/gallery3.jpg" class="img-responsive" />
+                        <p class="title">Beach pic title </p>
+                        <p>价格 <span class="text-danger">199.00</span></p>
+                        <p>分成 <span class="text-danger">10%</span></p>
+                    </div>
+                </div>
+            </div>
+        <!-- end gallery wrapper -->
+        <!-- end blank state -->
+    </div>
+ </div>
+</div>
+<include file="public:footer"/>

@@ -1,0 +1,114 @@
+<include file="public:header" this=""/>
+<style>
+    .setting{
+        margin-top:100px;
+        margin-left:20%;
+    }
+    .form-control{
+        margin-top:10px;
+    }
+    .next{
+        width:150px;
+        height:40px;
+        margin-top:10px;
+    }
+</style>
+<div class="container-fluid">
+    <div class="col-xs-6  text-center setting">
+        <input class="form-control" type="text" name="email" id="email" placeholder="邮箱" autocomplete="off">
+        <div class="clearfix"></div>
+        <input type="text" class="form-control" placeholder="验证码" name="verify" id="verify" style="width:70%;float:left" autocomplete="off">
+        <span class="input-group-addon btnVerify" style="color:#000000;height:34px;width:30%;display:block;line-height:20px;margin-top: 10px;cursor:pointer; float:right">获取验证码</span>
+        <div class="clearfix"></div>
+        <div class="action">
+            <button type="button" class="btn-glow primary signup next" >设置邮箱</button>
+        </div>
+    </div>
+</div>
+<script>
+    var countdown=60,strat_flag=true;
+    $(function () {
+        $(document).on('click','.next',function(){
+            var email = $('input[name="email"]').val();
+            var verify = $('input[name="verify"]').val();
+            if(email==''){
+                layer.msg("请输入邮箱", {
+                    offset: 'b',
+                    anim: 3
+                });
+                return false;
+            }
+            if(verify==''){
+                layer.msg("请输入验证码", {
+                    offset: 'b',
+                    anim: 3
+                });
+                return false;
+            }
+            if(!/^((([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6}\;))*(([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})))$/.test(email)){
+                layer.msg("请输入正确的邮箱", {
+                    offset: 'b',
+                    anim: 3
+                });
+                return false;
+            }
+            var index = layer.load(2, {
+                shard: [0.6, "#000"]
+            });
+            $.post('/user/email',{email:email,verify:verify},function (result) {
+                layer.close(index);
+                if(result.status==0){
+                    layer.msg(result.msg, {
+                        offset: 'b',
+                        anim: 3
+                    });
+                }else{
+                    layer.alert(result.msg, {
+                        icon:6,
+                        end:function () {
+                            layer.closeAll();
+                            window.parent.location.reload();
+                        }
+                    });
+                }
+            });
+        });
+        $(document).on('click','.btnVerify',function(){
+            var email = $('input[name="email"]').val();
+            if(email==''){
+                layer.msg("请输入邮箱", {
+                    offset: 'b',
+                    anim: 3
+                });
+                return false;
+            }
+            if(!/^((([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6}\;))*(([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})))$/.test(email)){
+                layer.msg("请输入正确的邮箱", {
+                    offset: 'b',
+                    anim: 3
+                });
+                return false;
+            }
+            if(strat_flag){
+                settime();
+                strat_flag=false;
+                $.post('{:Url("/user/send_email")}',{email:email,t:1},function (result){ });
+            }
+        });
+    });
+    function settime() {
+        if (countdown == 0) {
+            strat_flag = true;
+            $('.btnVerify').text("获取验证码");
+            countdown = 60;
+        }else{
+            strat_flag = false;
+            $('.btnVerify').html("重新发送(" + countdown + ")");
+            countdown--;
+            setTimeout(function() {
+                settime();
+            },1000);
+        }
+    }
+</script>
+<include file="public:footer"/>

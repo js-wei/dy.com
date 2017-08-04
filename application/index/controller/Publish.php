@@ -116,11 +116,9 @@ class Publish extends Base{
      * @author 魏巍
      * @description 发送验证码邮件
      * @param string   $email       邮箱
-     * @param int     $uid        用户id
-     * @param int      $t           类型:0注册,1找回密码,默认:找回密码
      * @return 返回发送结果
      */
-    public function send_email($email='',$uid=0,$t=0){
+    public function send_email($email=''){
         if(!request()->isPost()){
             return json(['status'=>0,'msg'=>'请求方式错误']);
         }
@@ -134,22 +132,13 @@ class Publish extends Base{
             cookie('_session_code',null,time()-60*2);
         }
         $_code = NoRand(0,9,6);
-        if(!$t){
-            $type = "注册功能";
-            cookie($_code.'_session_code',$_code,60*15);
-            $html = "【".$this->site['title'].$type."】:"."您在正在使用【".$this->site['title']
-                ."】会员账号的".$type.",下面是您的验证码:".$_code.",有效时间为15分钟.如果您没有使用【".$this->site['title']
-                ."】的".$type."功能,请自动忽略此邮件谢谢:)";
-        }else{
-            $type = "找回密码";
-            $timespan = base64_encode(time());
-            $uid = base64_encode("jswei_".time()."_{$uid}");
-            $url = urlencode("{$this->site['url']}/user/find_password?timespan={$timespan}&uid={$uid}&email={$email}");
-            $html = "【".$this->site['title'].$type."】:"."您在正在使用【".$this->site['title']
-                ."】会员账号的".$type."功能,请点击以下链接进行密码找回".$url.",若没有使用{$type}请自动忽略此邮件谢谢:)";
-        }
 
-        if(!think_send_mail($email,$email,"【".$this->site['title']."】".$type,$html)){
+        cookie($_code.'_session_code',$_code,60*15);
+        $html = "【".$this->site['title']."】:您本次的验证码:".$_code.",有效时间为15分钟.如果您没有使用【".$this->site['title']
+            ."】相关产品,请自动忽略此邮件谢谢:)";
+
+
+        if(!think_send_mail($email,$email,"【".$this->site['title']."】",$html)){
             return json(['status'=>0,'msg'=>'验证码发送失败,请稍后重试:(']);
         }
         return json(['status'=>1,'msg'=>'验证码发送成功,请及时查收:)']);

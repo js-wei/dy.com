@@ -1,0 +1,268 @@
+<include file="public:header" title="认真信息" this="__CSS__/compiled/user-profile.css"/>
+<link rel="stylesheet" href="__PLUG__/Uploadify/uploadify.css" />
+<script type="text/javascript" src="__PLUG__/Uploadify/jquery.uploadify.min.js"></script>
+<include file="public:navbar"/>
+<include file="public:sidebar"/>
+<div class="content">
+    <div id="pad-wrapper" class="user-profile">
+        <!-- header -->
+        <div class="row header">
+            <div class="col-md-8">
+                <img src="{$info.head|default='__IMAGES__/portrait.png'}" class="avatar img-circle">
+                <h3 class="name">{$Think.session._m}</h3>
+                <span class="area">
+                    <eq name="info.is_check" value="1">
+                        <i class="icon-bookmark"></i> 已认证
+                     </eq>
+                    <eq name="info.is_check" value="0">
+                        <i class="icon-bookmark-empty"></i> 未认证
+                        <a href="{:Url('/account/check')}" style="font-style:normal;font-size:12px;">去认证</a>
+                    </eq>
+                    <eq name="info.is_check" value="2">
+                        <i class="icon-bookmark-empty"></i> 审核中
+                     </eq>
+                </span>
+            </div>
+        </div>
+        <div class="row profile">
+            <!-- bio, new note & orders column -->
+            <div class="col-md-12 bio">
+                <div class="profile-box">
+                    <div class="col-md-11  section">
+                        <h6 style="margin-left:8%;">认证信息<small><code>认证后方可使用平台产品</code> </small></h6>
+                        <div class="bs-mt-15"></div>
+                        <eq name="info.is_check" value="0">
+                            <form class="form-horizontal" autocomplete="off">
+                                <div class="form-group">
+                                    <label  class="col-sm-2 control-label">真实姓名</label>
+                                    <div class="col-sm-3">
+                                        <input type="text" class="form-control" name="real_name" placeholder="真实姓名">
+                                        <input type="hidden" name="mid" value="{$Think.session._mid}">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">证件类型</label>
+                                    <div class="col-sm-2">
+                                        <select name="idcard_type" class="form-control">
+                                            <option value="身份证">身份证</option>
+                                            <!--<option value="军官证">军官证</option>-->
+                                            <!--<option value="驾驶证">驾驶证</option>-->
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label  class="col-sm-2 control-label">证件号</label>
+                                    <div class="col-sm-3">
+                                        <input type="text" class="form-control" name="card" placeholder="证件号">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label  class="col-sm-2 control-label">证件照</label>
+                                    <div class="col-sm-6">
+                                        <div>
+                                            <div style="float:left; margin-top:8px;margin-right:6px;"><input type="button" name="fileImg" id="fileImg" size="16" value="上传" class="table_btn"/></div>
+                                            <div style="clear:both;"></div>
+                                        </div>
+                                        <div>
+                                            <p>上传的半身照</p>
+                                            <div class="image-preview">
+                                                <img src="" id="images_preview" width="250" height="auto">
+                                            </div>
+                                            <input type="hidden"  name="image" id="reply_img">
+                                        </div>
+                                        <div class="bs-mt-10"></div>
+                                        <div>
+                                            <p>正确的半身照参考图</p>
+                                            <img src="__IMAGES__/card.png" width="250" height="auto" style="display:block;">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-sm-3 col-lg-offset-2">
+                                        <button type="submit" class="btn btn-warning">认证</button>
+                                    </div>
+                                </div>
+                            </form>
+                            <else />
+                            <form class="form-horizontal" autocomplete="off">
+                                <fieldset disabled>
+                                    <div class="form-group">
+                                        <label  class="col-sm-2 control-label">真实姓名</label>
+                                        <div class="col-sm-3">
+                                            <input type="text" class="form-control" name="real_name" value="{$auth.real_name}" placeholder="真实姓名">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">证件类型</label>
+                                        <div class="col-sm-2">
+                                            <select name="idcard_type" class="form-control">
+                                                <option value="身份证">身份证</option>
+                                                <!--<option value="军官证">军官证</option>-->
+                                                <!--<option value="驾驶证">驾驶证</option>-->
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label  class="col-sm-2 control-label">证件号</label>
+                                        <div class="col-sm-3">
+                                            <input type="text" class="form-control" name="card" value="{$auth.card}" placeholder="证件号">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label  class="col-sm-2 control-label">证件照</label>
+                                        <div class="col-sm-6">
+                                            <div>
+                                                <p>上传的半身照</p>
+                                                <div class="image-preview">
+                                                    <img src="{$auth.image}" width="250" height="auto">
+                                                </div>
+                                                <input type="hidden"  name="image" value="{$auth.image}">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </form>
+                        </eq>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(function () {
+        //照片
+        $("#fileImg").uploadify({
+            fileTypeDesc    : '图片文件',
+            fileTypeExts    : '*.png;*.jpg;*.jpeg;*.gif;',
+            buttonText      : '选择图片',
+            buttonClass     : 'upload_button',
+            fileObjName     : 'image',          //上传文件接收名
+            swf             : '__PLUG__/Uploadify/uploadify.swf',
+            uploader        : "{:Url('Uploadify/uploadimg')}",
+            multi           : false,
+            onUploadSuccess : function(file, data) {
+                $("#reply_img").val(data);
+                $("#images_preview").attr('src',data);
+            }
+        });
+        $('form').submit(function (e) {
+            e.preventDefault();
+            var real_name = $('input[name="real_name"]').val(),
+                idcard_type = $('select[name="idcard_type"]').val(),
+                card  =   $('input[name="card"]').val(),
+                image  =   $('input[name="image"]').val();
+
+            if(real_name==''){
+                layer.msg("请输入真实姓名", {
+                    offset: 't',
+                    anim: 3
+                });
+                return false;
+            }
+            if(card==''){
+                layer.msg("请输入证件号", {
+                    offset: 't',
+                    anim: 3
+                });
+                return false;
+            }
+            if(idcard_type=='身份证'){
+                if(!idcards(card)){
+                    layer.msg("身份证件号不正确", {
+                        offset: 't',
+                        anim: 3
+                    });
+                    return false;
+                }
+            }
+            if(idcard_type=='军官证'){
+                if(!jun(idcard)){
+                    layer.msg("军官证号不正确", {
+                        offset: 't',
+                        anim: 3
+                    });
+                    return false;
+                }
+            }
+            if(idcard_type=='驾驶证'){
+                if(!/(\d{15})$/.test(idcard)){
+                    layer.msg("驾驶证号不正确", {
+                        offset: 't',
+                        anim: 3
+                    });
+                    return false;
+                }
+            }
+            if(image==''){
+                layer.msg("还没有上传证件照", {
+                    offset: 't',
+                    anim: 3
+                });
+                return false;
+            }
+            var index = layer.load(2, {
+                shard: [0.6, "#000"]
+            });
+            $.post('/account/auth',$('form').serialize(),function (result) {
+                layer.close(index);
+                if(result.status==0){
+                    layer.msg(result.msg, {
+                        offset: 'b',
+                        anim: 3
+                    });
+                }else{
+                    layer.alert(result.msg, {
+                        icon:6,
+                        end:function () {
+                            layer.closeAll();
+                            window.location.reload();
+                        }
+                    });
+                }
+            });
+        });
+    });
+    var idcards = function(value) {
+        var city = {
+            11: "北京",12: "天津",13: "河北", 14: "山西", 15: "内蒙古", 21: "辽宁", 22: "吉林", 23: "黑龙江 ", 31: "上海",32: "江苏",33: "浙江",34: "安徽", 35: "福建",36: "江西",37: "山东",
+            41: "河南",42: "湖北 ", 43: "湖南", 44: "广东",45: "广西", 46: "海南", 50: "重庆",  51: "四川",  52: "贵州",53: "云南", 54: "西藏 ", 61: "陕西",  62: "甘肃", 63: "青海",64: "宁夏", 65: "新疆",
+            71: "台湾",  81: "香港",   82: "澳门",  91: "国外 "
+        };
+        var pass = true;
+        if(!value || !/^\d{6}(18|19|20)?\d{2}(0[1-9]|1[12])(0[1-9]|[12]\d|3[01])\d{3}(\d|X)$/i.test(value)) {
+            pass = false;
+        } else if(!city[value.substr(0, 2)]) {
+            pass = false;
+        } else {
+            if(value.length == 18) {
+                value = value.split('');
+                var factor = [7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2];
+                var parity = [1, 0, 'X', 9, 8, 7, 6, 5, 4, 3, 2];
+                var sum = 0;
+                var ai = 0;
+                var wi = 0;
+                for(var i = 0; i < 17; i++) {
+                    ai = value[i];
+                    wi = factor[i];
+                    sum += ai * wi;
+                }
+                var last = parity[sum % 11];
+                if(parity[sum % 11] != value[17]) {
+                    pass = false;
+                }
+            }
+        }
+        return pass;
+    };
+    var jun = function (value) {
+        var reg = /南字第(\d{8})号|北字第(\d{8})号|沈字第(\d{8})号|兰字第(\d{8})号|成字第(\d{8})号|济字第(\d{8})号|广字第(\d{8})号|海字第(\d{8})号|空字第(\d{8})号|参字第(\d{8})号|政字第(\d{8})号|后字第(\d{8})号|装字第(\d{8})号/;
+        value =  value.replace(/(^\s*)|(\s*$)/g, "");
+        if(reg.test(value) === false) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+</script>
+<include file="public:footer"/>

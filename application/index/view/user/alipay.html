@@ -1,0 +1,81 @@
+<include file="public:header" this=""/>
+<style>
+    .setting{
+        margin-top:100px;
+        margin-left:20%;
+    }
+    .form-control{
+        margin-top:10px;
+    }
+    .next{
+        width:150px;
+        height:40px;
+        margin-top:10px;
+    }
+</style>
+<div class="container-fluid">
+    <div class="col-xs-6  text-center setting">
+        <input class="form-control" type="text" name="alipay" id="alipay" placeholder="支付宝账号" autocomplete="off">
+        <div class="clearfix"></div>
+        <div class="action">
+            <button type="button" class="btn-glow primary signup next" >设置支付宝账号</button>
+        </div>
+    </div>
+</div>
+<script>
+    var countdown=60,strat_flag=true;
+    $(function () {
+        $(document).on('click','.next',function(){
+            var alipay = $('input[name="alipay"]').val();
+            if(alipay==''){
+                layer.msg("请输入支付宝账号", {
+                    offset: 'b',
+                    anim: 3
+                });
+                return false;
+            }
+            var email = /^((([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6}\;))*(([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})))$/.test(alipay);
+            var phone = /^1(3|4|5|7|8)\d{9}$/.test(alipay);
+
+            if(alipay.indexOf('@')>-1){
+                if(!email){
+                    layer.msg("支付宝账号仅为邮箱或手机号", {
+                        offset: 'b',
+                        anim: 3
+                    });
+                    return false;
+                }
+            }else{
+                if(!phone){
+                    layer.msg("支付宝账号仅为邮箱或手机号", {
+                        offset: 'b',
+                        anim: 3
+                    });
+                    return false;
+                }
+            }
+
+            var index = layer.load(2, {
+                shard: [0.6, "#000"]
+            });
+            $.post('/user/alipay',{alipay:alipay},function (result) {
+                layer.close(index);
+                if(result.status==0){
+                    layer.msg(result.msg, {
+                        offset: 'b',
+                        anim: 3
+                    });
+                }else{
+                    layer.alert(result.msg, {
+                        icon:6,
+                        end:function () {
+                            layer.closeAll();
+                            window.parent.location.reload();
+                        }
+                    });
+                }
+            });
+        });
+    });
+</script>
+<include file="public:footer"/>

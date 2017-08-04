@@ -6,19 +6,22 @@
         <!-- header -->
         <div class="row header">
             <div class="col-md-8">
-                <img src="{$info.head|default='__IMAGES__/contact-profile.png'}" class="avatar img-circle">
+                <img src="{$info.head|default='__IMAGES__/portrait.png'}" class="avatar img-circle">
                 <h3 class="name">{$Think.session._m}</h3>
                 <span class="area">
                     <eq name="info.is_check" value="1">
                         <i class="icon-bookmark"></i> 已认证
-                        <else />
+                     </eq>
+                    <eq name="info.is_check" value="0">
                         <i class="icon-bookmark-empty"></i> 未认证
                         <a href="{:Url('/account/check')}" style="font-style:normal;font-size:12px;">去认证</a>
                     </eq>
+                    <eq name="info.is_check" value="2">
+                        <i class="icon-bookmark-empty"></i> 审核中
+                     </eq>
                 </span>
             </div>
         </div>
-
         <div class="row profile">
             <!-- bio, new note & orders column -->
             <div class="col-md-9 bio">
@@ -32,7 +35,7 @@
                                     <input type="text" class="form-control" id="phone" value="{$info.phone}" disabled="disabled" placeholder="手机">
                                 </div>
                                 <div class="col-sm-5">
-                                    <button type="button" class="btn btn-link">修改</button>
+                                    <a href="javascript:void(0);" class="link" data-role="phone">修改</a>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -41,7 +44,7 @@
                                     <input type="email" value="{$info.email}" class="form-control" id="email" disabled="disabled" placeholder="邮箱">
                                 </div>
                                 <div class="col-sm-5">
-                                    <button type="button" class="btn btn-link">修改</button>
+                                    <a href="javascript:void(0);" class="link" data-role="email">修改</a>
                                 </div>
                             </div>
                         </form>
@@ -52,19 +55,21 @@
                             <div class="form-group">
                                 <label  class="col-sm-2 control-label">支付宝</label>
                                 <div class="col-sm-5">
-                                    <input type="text" class="form-control"  value="" disabled="disabled" placeholder="支付宝">
+                                    <input type="text" class="form-control"  value="{$info.alipay}" disabled="disabled" placeholder="支付宝">
                                 </div>
                                 <div class="col-sm-5">
-                                    <button type="button" class="btn btn-link">修改</button>
+                                    <a href="javascript:void(0);" class="link" data-role="alipay">修改</a>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="col-sm-2 control-label">银行卡</label>
                                 <div class="col-sm-5">
+                                    <input type="email" value="" class="form-control" disabled="disabled" placeholder="开户银行">
+                                    <div class="bs-mt-10"></div>
                                     <input type="email" value="" class="form-control" disabled="disabled" placeholder="银行卡">
                                 </div>
                                 <div class="col-sm-5">
-                                    <button type="button" class="btn btn-link">修改</button>
+                                    <a href="javascript:void(0);" class="link" data-role="bank">修改</a>
                                 </div>
                             </div>
                         </form>
@@ -75,28 +80,28 @@
                             <div class="form-group">
                                 <label  class="col-sm-2 control-label">城市</label>
                                 <div class="col-sm-5">
-                                    <input type="text" class="form-control"  value="" disabled="disabled" placeholder="城市">
+                                    <input type="text" class="form-control"  value="{$info.city|default=''}" disabled="disabled" placeholder="城市">
                                 </div>
                                 <div class="col-sm-5">
-                                    <button type="button" class="btn btn-link">修改</button>
+                                    <a href="javascript:void(0);" class="link" data-role="city">修改</a>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="col-sm-2 control-label">详细地址</label>
                                 <div class="col-sm-5">
-                                    <input type="email" value="" class="form-control" disabled="disabled" placeholder="街道/楼牌">
+                                    <input type="email" value="{$info.address|default=''}" class="form-control" disabled="disabled" placeholder="城镇/街道/楼牌号">
                                 </div>
                                 <div class="col-sm-5">
-                                    <button type="button" class="btn btn-link">修改</button>
+                                    <a href="javascript:void(0);" class="link" data-role="address">修改</a>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="col-sm-2 control-label">邮编</label>
                                 <div class="col-sm-5">
-                                    <input type="zip_code" value="" class="form-control" disabled="disabled" placeholder="邮编">
+                                    <input type="text" value="{$info.zip_code|default=''}" class="form-control" disabled="disabled" placeholder="邮编">
                                 </div>
                                 <div class="col-sm-5">
-                                    <button type="button" class="btn btn-link">修改</button>
+                                    <a href="javascript:void(0);" class="link" data-role="zipcode">修改</a>
                                 </div>
                             </div>
                         </form>

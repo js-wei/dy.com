@@ -19,24 +19,24 @@
             </a>
             <ul class="submenu" <eq name="controller" value="user">style="display:block;"</eq>>
                 <li><a href="{:Url('/account/personal_info')}"  <eq name="action" value="personal_info">class="active"</eq>>基本信息</a></li>
-                <li><a href="new-user.html">认证信息</a></li>
-                <li><a href="user-profile.html">最新消息</a></li>
+                <li><a href="{:Url('/account/check')}" <eq name="action" value="check">class="active"</eq>>认证信息</a></li>
+                <li><a href="{:Url('/account/message')}" <eq name="action" value="message">class="active"</eq>>我的消息</a></li>
             </ul>
         </li>
-        <li>
+        <li <eq name="controller" value="product">class="active"</eq>>
             <a class="dropdown-toggle" href="javascript:;">
                 <i class="icon-edit"></i>
                 <span>产品信息</span>
                 <i class="icon-chevron-down"></i>
             </a>
-            <ul class="submenu">
-                <li><a href="form-showcase.html">可申请产品</a></li>
-                <li><a href="form-wizard.html">已申请产品</a></li>
+            <ul class="submenu" <eq name="controller" value="product">style="display:block;"</eq>>
+                <li><a href="{:Url('/account/product')}" <eq name="action" value="index">class="active"</eq>>可申请产品</a></li>
+                <li><a href="{:Url('/account/has')}"  <eq name="action" value="has">class="active"</eq>>已申请产品</a></li>
             </ul>
         </li>
 
         <li>
-            <a href="personal-info.html">
+            <a href="{:Url('/account/income')}" <eq name="action" value="index">class="active"</eq>>
                 <i class="icon-cog"></i>
                 <span>我的收益</span>
             </a>

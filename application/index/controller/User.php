@@ -8,12 +8,100 @@ class User extends Base{
             $this->redirect('/');
         }
 	}
+	public function index(){}
+
 	public function personal_info(){
 	    $id = session('_mid');
 	    $userinfo = db('member')->field('password,dates',true)->find($id);
 	    $this->assign('info',$userinfo);
 		return view();
 	}
+
+	public function check(){
+        $id = session('_mid');
+        $userinfo = db('member')->field('password,dates',true)->find($id);
+        $auth = db('authentication')->field('dates',true)->where('mid','eq',$id)->find();
+
+        $this->assign('auth',$auth);
+        $this->assign('info',$userinfo);
+        return view();
+    }
+
+    public function auth($real_name='',$idcard_type='',$card='',$image=''){
+        $id = session('_mid');
+        if(!$id){
+            return json(['status'=>0,'msg'=>'没有登录']);
+        }
+
+        if(empty($real_name)){
+            return json(['status'=>0,'msg'=>'请输入真实姓名']);
+        }
+        if(empty($idcard_type)){
+            return json(['status'=>0,'msg'=>'请输入证件类型']);
+        }
+        if(empty($card)){
+            return json(['status'=>0,'msg'=>'请输入证件号']);
+        }
+        if(empty($image)){
+            return json(['status'=>0,'msg'=>'请输入证件照']);
+        }
+        $data = request()->param();
+        $data['date']=time();
+        if(!db('authentication')->insert($data)){
+            return json(['status'=>0,'msg'=>'操作失败,请稍后再试']);
+        }
+        db('member')->update([
+            'id'=>$id,
+            'is_check'=>2,
+            'date'=>time()
+        ]);
+        return json(['status'=>1,'msg'=>'操作成功,等待审核']);
+    }
+
+    public function message(){
+        $id = session('_mid');
+        if(!$id){
+            return json(['status'=>0,'msg'=>'没有登录']);
+        }
+        return view();
+    }
+
+
+    /**
+     * 修改信息
+     * @param string $t
+     * @return \think\response\View
+     */
+	public function alter($t='phone'){
+	    switch ($t){
+            case 'phone':
+                $tpl='phone';
+                break;
+            case 'email':
+                $tpl='email';
+                break;
+            case 'alipay':
+                $tpl='alipay';
+                break;
+            case 'bank':
+                $tpl='bank';
+                break;
+            case 'city':
+                $tpl='city';
+                break;
+            case 'address':
+                $tpl='address';
+                break;
+            case 'zipcode':
+                $tpl='zipcode';
+                break;
+            default:
+                $tpl='phone';
+        }
+        return  view($tpl);
+    }
+
+
 
 	/**
 	 * @author 魏巍
@@ -120,27 +208,188 @@ class User extends Base{
 	 * @param string $verify 验证码
 	 */
 	public function setEmail($email='',$verify=''){
+        $id = session('_mid');
+        if(!$id){
+            return json(['status'=>0,'msg'=>'没有登录']);
+        }
+
 		if(empty($email)){
-			return jsonp(['status'=>0,'msg'=>'请输入邮箱']);
+			return json(['status'=>0,'msg'=>'请输入邮箱']);
 		}
 		if(empty($verify)){
-			return jsonp(['status'=>0,'msg'=>'请输入验证码']);
+			return json(['status'=>0,'msg'=>'请输入验证码']);
 		}
-		if(cookie('?_session_code')){
-			return jsonp(['status'=>0,'msg'=>'验证码已失效']);
+		if(!cookie('?'.$verify.'_session_code')){
+			return json(['status'=>0,'msg'=>'验证码已失效']);
 		}
-		if($verify!=cookie('_session_code')){
-			return jsonp(['status'=>0,'msg'=>'请输入正确的验证码']);
+		if($verify!=cookie($verify.'_session_code')){
+			return json(['status'=>0,'msg'=>'请输入正确的验证码']);
 		}
-		if(!db('member')->save([
-			'id'=>session('_id'),
+        $member = db('member')->field('id')->find($id);
+        if(empty($member)){
+            return json(['status'=>0,'msg'=>'没有此账号']);
+        }
+
+        if(!db('member')->update([
+			'id'=>$id,
 			'email'=>$email,
 			'date'=>time()
 		])){
-			return jsonp(['status'=>0,'msg'=>'修改失败,请重试']);
+			return json(['status'=>0,'msg'=>'操作失败,请重试']);
 		}
-		return jsonp(['status'=>1,'msg'=>'修改成功','redirect'=>U('user/userInfo')]);
+		return json(['status'=>1,'msg'=>'操作成功']);
 	}
+
+    /**
+     * 设置支付宝
+     * @param string $alipay
+     * @return \think\response\Json
+     */
+	public function alipay($alipay=''){
+        $id = session('_mid');
+        if(!$id){
+            return json(['status'=>0,'msg'=>'没有登录']);
+        }
+        if(empty($alipay)){
+            return json(['status'=>0,'msg'=>'请输入支付宝账号']);
+        }
+        $member = db('member')->field('id')->find($id);
+        if(empty($member)){
+            return json(['status'=>0,'msg'=>'没有此账号']);
+        }
+        if(!db('member')->update([
+            'id'=>$id,
+            'alipay'=>$alipay,
+            'date'=>time()
+        ])){
+            return json(['status'=>0,'msg'=>'操作失败,请重试']);
+        }
+        return json(['status'=>1,'msg'=>'操作成功']);
+
+    }
+
+    /**
+     * 银行卡号
+     * @param string $bank_name
+     * @param string $bank_no
+     * @param string $bank_people
+     * @return \think\response\Json
+     */
+    public function bank($bank_name='',$bank_no='',$bank_people=''){
+        $id = session('_mid');
+        if(!$id){
+            return json(['status'=>0,'msg'=>'没有登录']);
+        }
+        if(empty($bank_name)){
+            return json(['status'=>0,'msg'=>'请输入开户银行']);
+        }
+        if(empty($bank_people)){
+            return json(['status'=>0,'msg'=>'请输入开户人']);
+        }
+
+        if(empty($bank_no)){
+            return json(['status'=>0,'msg'=>'请输入银行卡号']);
+        }
+
+        $member = db('member')->field('id')->find($id);
+        if(empty($member)){
+            return json(['status'=>0,'msg'=>'没有此账号']);
+        }
+        if(!db('member')->update([
+            'id'=>$id,
+            'bank_name'=>$bank_name,
+            'bank_no'=>$bank_no,
+            'bank_people'=>$bank_people,
+            'date'=>time()
+        ])){
+            return json(['status'=>0,'msg'=>'操作失败,请重试']);
+        }
+        return json(['status'=>1,'msg'=>'操作成功']);
+    }
+
+    /**
+     * 修改城市
+     * @param string $city
+     * @return \think\response\Json
+     */
+    public function city($city=''){
+        $id = session('_mid');
+        if(!$id){
+            return json(['status'=>0,'msg'=>'没有登录']);
+        }
+        if(empty($city)){
+            return json(['status'=>0,'msg'=>'请输入所在城市']);
+        }
+
+        $member = db('member')->field('id')->find($id);
+        if(empty($member)){
+            return json(['status'=>0,'msg'=>'没有此账号']);
+        }
+        if(!db('member')->update([
+            'id'=>$id,
+            'city'=>$city,
+            'date'=>time()
+        ])){
+            return json(['status'=>0,'msg'=>'操作失败,请重试']);
+        }
+        return json(['status'=>1,'msg'=>'操作成功']);
+    }
+
+    /**
+     * 详细地址
+     * @param string $address
+     * @return \think\response\Json
+     */
+    public function address($address=''){
+        $id = session('_mid');
+        if(!$id){
+            return json(['status'=>0,'msg'=>'没有登录']);
+        }
+        if(empty($address)){
+            return json(['status'=>0,'msg'=>'请输入详细地址']);
+        }
+
+        $member = db('member')->field('id')->find($id);
+        if(empty($member)){
+            return json(['status'=>0,'msg'=>'没有此账号']);
+        }
+        if(!db('member')->update([
+            'id'=>$id,
+            'address'=>$address,
+            'date'=>time()
+        ])){
+            return json(['status'=>0,'msg'=>'操作失败,请重试']);
+        }
+        return json(['status'=>1,'msg'=>'操作成功']);
+    }
+
+    /**
+     * 设置邮编
+     * @param string $zip_code
+     * @return \think\response\Json
+     */
+    public function zip_code($zip_code=''){
+        $id = session('_mid');
+        if(!$id){
+            return json(['status'=>0,'msg'=>'没有登录']);
+        }
+        if(empty($zip_code)){
+            return json(['status'=>0,'msg'=>'请输入邮编']);
+        }
+        $member = db('member')->field('id')->find($id);
+        if(empty($member)){
+            return json(['status'=>0,'msg'=>'没有此账号']);
+        }
+        if(!db('member')->update([
+            'id'=>$id,
+            'zip_code'=>$zip_code,
+            'date'=>time()
+        ])){
+            return json(['status'=>0,'msg'=>'操作失败,请重试']);
+        }
+        return json(['status'=>1,'msg'=>'操作成功']);
+    }
+
 
     /**
      * 验证验证码
@@ -151,7 +400,7 @@ class User extends Base{
         if(empty($verify)){
             return json(['status'=>0,'msg'=>'请输入验证码']);
         }
-        $d = cookie('?'.$verify.'_session_code');
+        $d = cookie($verify.'_session_code');
         if(empty(cookie('?'.$verify.'_session_code'))){
             return json(['status'=>0,'msg'=>'验证码已失效']);
         }
@@ -164,33 +413,43 @@ class User extends Base{
 	/**
 	 * @author 魏巍
 	 * @description 设置手机
-	 * @param string $tel 手机
+	 * @param string $phone 手机
 	 * @param string $verify 验证码
 	 */
-	public function setTel($tel='',$verify=''){
-		if(empty($tel)){
-			return jsonp(['status'=>0,'msg'=>'请输入邮箱']);
+	public function setTel($phone='',$verify=''){
+        $id = session('_mid');
+        if(!$id){
+            return json(['status'=>0,'msg'=>'没有登录']);
+        }
+		if(empty($phone)){
+			return json(['status'=>0,'msg'=>'请输入邮箱']);
 		}
 		if(empty($verify)){
-			return jsonp(['status'=>0,'msg'=>'请输入验证码']);
+			return json(['status'=>0,'msg'=>'请输入验证码']);
 		}
-		if(cookie('?_session_code')){
-			return jsonp(['status'=>0,'msg'=>'验证码已失效']);
+
+		if(!cookie('?'.$verify.'_session_code')){
+			return json(['status'=>0,'msg'=>'验证码已失效']);
 		}
-		if($verify!=cookie('_session_code')){
-			return jsonp(['status'=>0,'msg'=>'请输入正确的验证码']);
+
+		if($verify!=cookie($verify.'_session_code')){
+			return json(['status'=>0,'msg'=>'请输入正确的验证码']);
 		}
-		if(!db('member')->save([
-			'id'=>session('_id'),
-			'email'=>$tel,
+
+        $member = db('member')->field('id')->find($id);
+		if(empty($member)){
+            return json(['status'=>0,'msg'=>'没有此账号']);
+        }
+
+		if(!db('member')->update([
+			'id'=>$member['id'],
+			'phone'=>$phone,
 			'date'=>time()
 		])){
-			return jsonp(['status'=>0,'msg'=>'修改失败,请重试']);
+			return json(['status'=>0,'msg'=>'修改失败,请重试']);
 		}
-		return jsonp(['status'=>1,'msg'=>'修改成功','redirect'=>Url('user/userInfo')]);
+		return json(['status'=>1,'msg'=>'修改成功']);
 	}
-
-
 
 
 	/**

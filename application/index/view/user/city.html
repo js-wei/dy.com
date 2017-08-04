@@ -1,0 +1,69 @@
+<include file="public:header" this=""/>
+<link rel="stylesheet" href="__PLUG__/city/city.css">
+<script src="__PLUG__/city/Popt.js"></script>
+<script src="__PLUG__/city/cityJson.js"></script>
+<script src="__PLUG__/city/citySet.js"></script>
+<style>
+    .setting{
+        margin-top:100px;
+        margin-left:20%;
+    }
+    .form-control{
+        margin-top:10px;
+    }
+    .next{
+        width:150px;
+        height:40px;
+        margin-top:10px;
+    }
+</style>
+<div class="container-fluid">
+    <div class="col-xs-6  text-center setting">
+        <input class="form-control" value="江苏省-苏州市-姑苏区" type="text" name="city" id="city"  readonly="readonly" placeholder="城市" autocomplete="off">
+        <div class="text-left">
+            <a href="javascript:void(0);" class="select">点击选择城市</a>
+        </div>
+        <div class="action">
+            <button type="button" class="btn-glow primary signup next" >设置所在城市</button>
+        </div>
+    </div>
+</div>
+<script>
+    var countdown=60,strat_flag=true;
+    $(function () {
+        $(document).on('click','.next',function(){
+            var city = $('input[name="city"]').val();
+            if(city==''){
+                layer.msg("请输入选择所在城市", {
+                    offset: 'b',
+                    anim: 3
+                });
+                return false;
+            }
+            var index = layer.load(2, {
+                shard: [0.6, "#000"]
+            });
+            $.post('/user/city',{city:city},function (result) {
+                layer.close(index);
+                if(result.status==0){
+                    layer.msg(result.msg, {
+                        offset: 'b',
+                        anim: 3
+                    });
+                }else{
+                    layer.alert(result.msg, {
+                        icon:6,
+                        end:function () {
+                            layer.closeAll();
+                            window.parent.location.reload();
+                        }
+                    });
+                }
+            });
+        });
+        $("#city,.select").click(function (e) {
+            SelCity(this,e);
+        });
+    });
+</script>
+<include file="public:footer"/>
