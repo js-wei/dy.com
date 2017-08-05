@@ -21,7 +21,10 @@
         "topthink/think-captcha": "^1.0",
         "topthink/think-image": "^1.0",
         "curl/curl": "^1.7",
-        "phpmailer/phpmailer": "^5.2"
+        "phpmailer/phpmailer": "^5.2",
+        "sinergi/browser-detector": "^6.1",
+        "ikimea/browser": "dev-master",
+        "riverslei/payment": "~4.0"
     },
     "extra": {
         "think-path": "thinkphp"

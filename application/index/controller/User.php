@@ -10,6 +10,10 @@ class User extends Base{
 	}
 	public function index(){}
 
+    /**
+     * 个人信息
+     * @return \think\response\View
+     */
 	public function personal_info(){
 	    $id = session('_mid');
 	    $userinfo = db('member')->field('password,dates',true)->find($id);
@@ -17,22 +21,76 @@ class User extends Base{
 		return view();
 	}
 
-	public function check(){
+    /**
+     * 选取产品
+     * @param int $id
+     * @return \think\response\Json
+     */
+	public function add_product($id=0){
+        $mid = session('_mid');
+        if(!$mid){
+            return json(['status'=>0,'msg'=>'没有登录']);
+        }
+        if(empty($id)){
+            return json(['status'=>0,'msg'=>'参数错误']);
+        }
+        $count = db('my_product')->where('pid','eq',$id)->count();
+
+        $member = db('member')->field('id,status,is_check')->find($mid);
+
+        if($member['is_check']==0){
+            return json(['status'=>0,'msg'=>'您尚未认证不能获取相关产品']);
+        }
+        if($member['is_check']==2){
+            return json(['status'=>0,'msg'=>'您正处于认证审核阶段,请审核通过在选取产品']);
+        }
+        if(!empty($count)){
+            return json(['status'=>0,'msg'=>'您已经获取过此产品,产品只能获取一次']);
+        }
+        $url = $this->site['url'].'/product/detail.html?id='.$id.'&code='.base64_encode($mid+10000);
+        $short_url = json_decode($this->get_short_url($url),true);
+        $data = [
+            'mid'=>$mid,
+            'pid'=>$id,
+            'url'=>$url,
+            'short_url'=>$short_url[0]['url_short'],
+            'date'=>time()
+        ];
+        if(!db('my_product')->insert($data)){
+            return json(['status'=>0,'msg'=>'获取产品失败,请稍后再试']);
+        }
+        return json(['status'=>1,'msg'=>'获取产品失败,现在就去分享赚钱!']);
+    }
+
+    /**
+     * 认证
+     * @param int $r
+     * @return \think\response\View
+     */
+	public function check($r=0){
         $id = session('_mid');
         $userinfo = db('member')->field('password,dates',true)->find($id);
         $auth = db('authentication')->field('dates',true)->where('mid','eq',$id)->find();
 
+        $this->assign('r',$r);
         $this->assign('auth',$auth);
         $this->assign('info',$userinfo);
         return view();
     }
 
+    /**
+     * 申请认证
+     * @param string $real_name
+     * @param string $idcard_type
+     * @param string $card
+     * @param string $image
+     * @return \think\response\Json
+     */
     public function auth($real_name='',$idcard_type='',$card='',$image=''){
         $id = session('_mid');
         if(!$id){
             return json(['status'=>0,'msg'=>'没有登录']);
         }
-
         if(empty($real_name)){
             return json(['status'=>0,'msg'=>'请输入真实姓名']);
         }
@@ -45,7 +103,15 @@ class User extends Base{
         if(empty($image)){
             return json(['status'=>0,'msg'=>'请输入证件照']);
         }
+
         $data = request()->param();
+        if(!empty($data['_id'])){
+            $auth = db('authentication')->find($data['_id']);
+            if(!unlink('.'.$auth['image'])){
+                return json(['status'=>0,'msg'=>'删除原证件照失败,请稍后再试']);
+            }
+        }
+        unset($data['_id']);
         $data['date']=time();
         if(!db('authentication')->insert($data)){
             return json(['status'=>0,'msg'=>'操作失败,请稍后再试']);
@@ -58,14 +124,61 @@ class User extends Base{
         return json(['status'=>1,'msg'=>'操作成功,等待审核']);
     }
 
-    public function message(){
-        $id = session('_mid');
-        if(!$id){
-            return json(['status'=>0,'msg'=>'没有登录']);
+    /**
+     * 删除
+     * @param int $id
+     * @return \think\response\Json
+     */
+    public function delete($id=0){
+        if(!db('message')->delete($id)){
+            return json(['status'=>0,'msg'=>'删除失败']);
         }
-        return view();
+        return json(['status'=>1,'msg'=>'删除成功']);
     }
 
+    /**
+     * 删除所有
+     * @param string $id
+     * @return \think\response\Json
+     */
+    public function delete_all($id=''){
+        if(empty($id)){
+            return json(['status'=>0,'msg'=>'参数错误']);
+        }
+        if(!db('message')->where('id','in',$id)->delete()){
+            return json(['status'=>0,'msg'=>'删除失败']);
+        }
+        return json(['status'=>1,'msg'=>'删除成功']);
+    }
+
+    /**
+     * 消息
+     * @param int $id
+     * @param int $status
+     * @return \think\response\Json|\think\response\View
+     */
+    public function message($id=0,$status=-1){
+        $tl='';
+        if($id){
+            $vo = db('message')->find($id);
+            $this->assign('vo',$vo);
+            $tl='detail';
+            db('message')->update([
+               'id'=>$id,
+               'status'=>1,
+               'date'=>time()
+            ]);
+        }else{
+            $where=[];
+            if($status>-1){
+                $where['status']=$status;
+            }
+            $list = db('message')->where($where)->order('date desc')->paginate(8);
+            $this->assign('list',$list);
+            $this->assign('status',$status);
+        }
+        return view($tl);
+    }
 
     /**
      * 修改信息

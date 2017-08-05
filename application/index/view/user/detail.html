@@ -1,0 +1,22 @@
+<include file="public:header" title="认真信息" this="__CSS__/compiled/user-profile.css"/>
+<link rel="stylesheet" href="__PLUG__/Uploadify/uploadify.css" />
+<script type="text/javascript" src="__PLUG__/Uploadify/jquery.uploadify.min.js"></script>
+<include file="public:navbar"/>
+<include file="public:sidebar"/>
+<div class="content">
+    <div id="pad-wrapper" class="user-profile">
+        <div class="row profile">
+            <div class="col-md-12 bio"><a class="area icon-reply" href="{:Url('/account/message')}">返回</a>
+                <div class="text-center">
+                    <h3>{$vo.title}</h3>
+                    <p>{$vo.date|date='Y-m-d H:i:s',###}</p>
+                </div>
+                <hr>
+                <div class="col-md-11 col-lg-11 col-mg-offset-1 col-lg-offset-1">
+                    {$vo.content}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<include file="public:footer"/>

@@ -21,6 +21,10 @@
                     <eq name="info.is_check" value="2">
                         <i class="icon-bookmark-empty"></i> 审核中
                      </eq>
+                    <eq name="info.is_check" value="3">
+                        <i class="icon-bookmark-empty"></i> 未通过
+                        <a href="{:Url('/account/check')}" style="font-style:normal;font-size:12px;" class="reauth">重新认证</a>
+                    </eq>
                 </span>
             </div>
         </div>
@@ -28,7 +32,7 @@
             <!-- bio, new note & orders column -->
             <div class="col-md-12 bio">
                 <div class="profile-box">
-                    <div class="col-md-11  section">
+                    <div class="col-md-11 section">
                         <h6 style="margin-left:8%;">认证信息<small><code>认证后方可使用平台产品</code> </small></h6>
                         <div class="bs-mt-15"></div>
                         <eq name="info.is_check" value="0">
@@ -38,6 +42,7 @@
                                     <div class="col-sm-3">
                                         <input type="text" class="form-control" name="real_name" placeholder="真实姓名">
                                         <input type="hidden" name="mid" value="{$Think.session._mid}">
+                                        <input type="hidden" name="_id" value="">
                                     </div>
                                 </div>
                                 <div class="form-group">
@@ -45,8 +50,6 @@
                                     <div class="col-sm-2">
                                         <select name="idcard_type" class="form-control">
                                             <option value="身份证">身份证</option>
-                                            <!--<option value="军官证">军官证</option>-->
-                                            <!--<option value="驾驶证">驾驶证</option>-->
                                         </select>
                                     </div>
                                 </div>
@@ -85,41 +88,55 @@
                             </form>
                             <else />
                             <form class="form-horizontal" autocomplete="off">
-                                <fieldset disabled>
-                                    <div class="form-group">
-                                        <label  class="col-sm-2 control-label">真实姓名</label>
-                                        <div class="col-sm-3">
-                                            <input type="text" class="form-control" name="real_name" value="{$auth.real_name}" placeholder="真实姓名">
-                                        </div>
+                                <fieldset <eq name="r" value="0">disabled</eq> >
+                                <div class="form-group">
+                                    <label  class="col-sm-2 control-label">真实姓名</label>
+                                    <div class="col-sm-3">
+                                        <input type="text" class="form-control" name="real_name" value="{$auth.real_name}" placeholder="真实姓名">
+                                        <input type="hidden" name="mid" value="{$Think.session._mid}">
+                                        <input type="hidden" name="_id" value="{$auth.id}">
                                     </div>
-                                    <div class="form-group">
-                                        <label class="col-sm-2 control-label">证件类型</label>
-                                        <div class="col-sm-2">
-                                            <select name="idcard_type" class="form-control">
-                                                <option value="身份证">身份证</option>
-                                                <!--<option value="军官证">军官证</option>-->
-                                                <!--<option value="驾驶证">驾驶证</option>-->
-                                            </select>
-                                        </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">证件类型</label>
+                                    <div class="col-sm-2">
+                                        <select name="idcard_type" class="form-control">
+                                            <option value="身份证">身份证</option>
+                                        </select>
                                     </div>
-                                    <div class="form-group">
-                                        <label  class="col-sm-2 control-label">证件号</label>
-                                        <div class="col-sm-3">
-                                            <input type="text" class="form-control" name="card" value="{$auth.card}" placeholder="证件号">
-                                        </div>
+                                </div>
+                                <div class="form-group">
+                                    <label  class="col-sm-2 control-label">证件号</label>
+                                    <div class="col-sm-3">
+                                        <input type="text" class="form-control" name="card" value="{$auth.card}" placeholder="证件号">
                                     </div>
-                                    <div class="form-group">
-                                        <label  class="col-sm-2 control-label">证件照</label>
-                                        <div class="col-sm-6">
-                                            <div>
-                                                <p>上传的半身照</p>
-                                                <div class="image-preview">
-                                                    <img src="{$auth.image}" width="250" height="auto">
-                                                </div>
-                                                <input type="hidden"  name="image" value="{$auth.image}">
+                                </div>
+                                <div class="form-group">
+                                    <label  class="col-sm-2 control-label">证件照</label>
+                                    <div class="col-sm-6">
+                                        <div style="display:none;" class="upload">
+                                            <div style="float:left; margin-top:8px;margin-right:6px;"><input type="button" name="fileImg" id="fileImg" size="16" value="上传" class="table_btn"/></div>
+                                            <div style="clear:both;"></div>
+                                        </div>
+                                        <div>
+                                            <p>上传的半身照</p>
+                                            <div class="image-preview">
+                                                <img src="{$auth.image}" id="images_preview" width="250" height="auto">
                                             </div>
+                                            <input type="hidden"  name="image" id="reply_img">
+                                        </div>
+                                        <div class="bs-mt-10"></div>
+                                        <div>
+                                            <p>正确的半身照参考图</p>
+                                            <img src="__IMAGES__/card.png" width="250" height="auto" style="display:block;">
                                         </div>
                                     </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-sm-3 col-lg-offset-2">
+                                        <button type="submit" class="btn btn-warning">认证</button>
+                                    </div>
+                                </div>
                                 </fieldset>
                             </form>
                         </eq>
@@ -131,6 +148,11 @@
 </div>
 <script>
     $(function () {
+        $(document).on('click','.reauth',function (e) {
+            e.preventDefault();
+            $('form').find('fieldset').removeAttr('disabled');
+            $('.upload').show();
+        });
         //照片
         $("#fileImg").uploadify({
             fileTypeDesc    : '图片文件',

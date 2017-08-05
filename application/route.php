@@ -35,11 +35,16 @@ Route::rule('user/address','index/user/address');
 Route::rule('user/zip_code','index/user/zip_code');
 Route::rule('account/message','index/user/message');
 Route::rule('account/income','index/income/index');
+Route::rule('account/add_product','index/user/add_product');
+
 
 
 // 给Account控制器设置快捷路由
 Route::rule('account/product','index/product/index');
 Route::rule('account/has','index/product/has');
+Route::rule('product/detail','index/publish/detail');
+Route::rule('account/add_order','index/publish/add_order');
+
 
 
 

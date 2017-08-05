@@ -8,70 +8,83 @@
         <div class="table-wrapper products-table section">
             <div class="row head">
                 <div class="col-md-12">
-                    <h4>我的消息</h4>
+                    <h4>我的产品</h4>
                 </div>
             </div>
             <div class="row filter-block">
                 <div class="pull-right">
-                    <div class="ui-select">
-                        <select style="width:150px;">
-                            <option value="-1" <eq name="status" value="-1">selected</eq>>全部</option>
-                            <option value="0" <eq name="status" value="0">selected</eq>>未查看</option>
-                            <option value="1" <eq name="status" value="1">selected</eq>>已查看</option>
-                        </select>
-                    </div>
                     <a class="btn-flat success new-product delete-all">选中删除</a>
                 </div>
             </div>
 
             <div class="row">
                 <notempty name="list">
-                <table class="table table-hover">
-                    <thead>
-                    <tr>
-                        <th class="col-md-3">
-                            <input type="checkbox">
-                            消息标题
-                        </th>
-                        <th class="col-md-3">
-                            <span class="line"></span>消息时间
-                        </th>
-                        <th class="col-md-3">
-                            <span class="line"></span>消息状态
-                        </th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <!-- row -->
+                    <table class="table table-hover">
+                        <thead>
+                        <tr>
+                            <th class="col-md-3">
+                                <input type="checkbox">
+                                产品名称
+                            </th>
+                            <th class="col-md-3">
+                                <span class="line"></span>产品图片
+                            </th>
+                            <th class="col-md-3">
+                                <span class="line"></span>产品价格
+                            </th>
+                            <th class="col-md-3">
+                                <span class="line"></span>产品分成
+                            </th>
+                            <th class="col-md-3">
+                                <span class="line"></span>分享地址
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <!-- row -->
                         <volist name="list" id="vo">
                             <tr class="first">
                                 <td>
                                     <input type="checkbox" value="{$vo.id}" class="message">
                                     <a href="__SELF__?id={$vo.id}" class="name">{$vo.title}</a>
                                 </td>
+                                <td class="">
+                                    <img src="{$vo.image}" alt="{$vo.title}" height="145">
+                                </td>
                                 <td class="description">
-                                    {$vo.date|date='Y-m-d H:i:s',###}
+                                    {$vo.price}
                                 </td>
                                 <td>
-                                    <eq name="vo.status" value="0">
-                                        <span class="label label-danger">未查看</span>
-                                        <else />
-                                        <span class="label label-success">已查看</span>
-                                    </eq>
+                                    {$vo.divides*100}%
+                                </td>
+                                <td>
+                                    <p>
+                                        短地址: <code class="code{$vo.id}">{$vo.short_url}</code>
+                                        <a href="javascript:;" class="copy" data-clipboard-action="copy" data-clipboard-target="code.code{$vo.id}">
+                                            复制地址
+                                        </a>
+                                    </p>
+                                    <p>
+                                        长地址: <code class="url{$vo.id}">{$vo.url}</code>
+                                        <a href="javascript:;"  class="copy" data-clipboard-action="copy" data-clipboard-target="code.url{$vo.id}">
+                                            复制地址
+                                        </a>
+                                    </p>
+                                    <br>
                                     <ul class="actions">
-                                        <li><a href="__SELF__?id={$vo.id}">查看</a></li>
+                                        <!--<li><a href="__SELF__?id={$vo.id}">查看</a></li>-->
                                         <li class="last"><a href="__URL__/delete?id={$vo.id}" class="delete">删除</a></li>
                                     </ul>
                                 </td>
                             </tr>
                         </volist>
-                    </tbody>
-                </table>
-                <else />
-                <div class="text-center">
-                    <h3>暂无消息</h3>
-                </div>
-            </notempty>
+                        </tbody>
+                    </table>
+                    <else />
+                    <div class="text-center">
+                        <h3>暂无消息</h3>
+                    </div>
+                </notempty>
             </div>
             <hr>
             <div>
@@ -81,8 +94,10 @@
         <!-- end products table -->
     </div>
 </div>
+<script src="__PLUG__/clipboard.js/dist/clipboard.js"></script>
 <script>
     $(function () {
+        var clipboard = new Clipboard('.copy');
         $(document).on('click','.delete',function (e) {
             e.preventDefault();
             var url = $(this).attr('href');

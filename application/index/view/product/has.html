@@ -20,41 +20,37 @@
         <!-- gallery wrapper -->
         <div class="gallery-wrapper">
             <div class="row gallery-row">
+
                 <!-- single image -->
-                <div class="col-md-3 img-container">
-                    <div class="img-box">
-                        <span class="icon edit">
-                             <i class="icon-trash"  title="删除产品"></i>
-                        </span>
-                        <span class="icon trash">
-                            <i class="icon-eye-open" title="查看收益"></i>
-                        </span>
-                        <img src="__IMAGES__/gallery3.jpg" class="img-responsive" />
-                        <p class="title">
-                            Beach pic title
-                        </p>
-                        <p>价格 <span class="text-danger">119.00</span></p>
-                        <p>分成 <span class="text-danger">8%</span></p>
+                <volist name="list" id="vo">
+                    <div class="col-md-3 img-container">
+                        <div class="img-box">
+                        <!--<span class="icon edit">-->
+                             <!--<i class="icon-trash"  title="删除产品"></i>-->
+                        <!--</span>-->
+                            <!--<span class="icon trash">-->
+                            <!--<i class="icon-eye-open" title="查看收益"></i>-->
+                        <!--</span>-->
+                            <img src="{$vo.image}" height="200" width="220"/>
+                            <p class="title">{$vo.title}</p>
+                            <p>价格 <span class="text-danger">{$vo.price}</span></p>
+                            <p>分成 <span class="text-danger">{$vo.divides*100}%</span></p>
+                            <p>短地址: <code>{$vo.short_url}</code> <a href="javascript:;" class="copy" data-clipboard-action="copy" data-clipboard-target="code">复制地址</a></p>
+                            <p>长地址: <span class="url">{$vo.url}</span> <a href="javascript:;"  class="copy" data-clipboard-action="copy" data-clipboard-target="span.url">复制地址</a></p>
+                        </div>
                     </div>
-                </div>
-                <div class="col-md-3 img-container">
-                    <div class="img-box">
-                        <span class="icon edit">
-                            <i class="icon-trash" title="删除产品"></i>
-                        </span>
-                        <span class="icon trash">
-                            <i class="icon-eye-open" title="查看收益"></i>
-                        </span>
-                        <img src="__IMAGES__/gallery3.jpg" class="img-responsive" />
-                        <p class="title">Beach pic title </p>
-                        <p>价格 <span class="text-danger">199.00</span></p>
-                        <p>分成 <span class="text-danger">10%</span></p>
-                    </div>
-                </div>
+                </volist>
             </div>
-            <!-- end gallery wrapper -->
-            <!-- end blank state -->
+            <div>
+                {$list->render()}
+            </div>
         </div>
     </div>
 </div>
+<script src="__PLUG__/clipboard.js/dist/clipboard.js"></script>
+<script>
+    $(function () {
+        var clipboard = new Clipboard('.copy');
+    });
+</script>
 <include file="public:footer"/>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css">
+    <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js"></script>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-4"></div>
+            <div class="col-md-4" style="margin-top:100px">
+                <form >
+                    <div class="form-group">
+                        <label for="name">姓名</label>
+                        <input type="text" class="form-control" id="name"  placeholder="姓 名">
+                        <small class="form-text text-muted">*你的姓名(必填选项)</small>
+                        <input type="hidden" value="{$code}" name="code">
+                        <input type="hidden" value="{$pid}" name="pid">
+                    </div>
+                    <div class="form-group">
+                        <label for="address">地址</label>
+                        <input type="text" class="form-control" id="address" placeholder="地 址">
+                        <small  class="form-text text-muted">*你的地址(必填选项)</small>
+                    </div>
+                    <button type="button" class="btn btn-primary buy">提交</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    $(function () {
+        $(document).on('click','.buy',function (e) {
+            e.preventDefault();
+            $.post('{:Url("/account/add_order")}',$('form').serialize(),function (result) {
+
+            });
+        });
+    })
+</script>
+</html>

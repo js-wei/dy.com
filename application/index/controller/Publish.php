@@ -40,6 +40,29 @@ class Publish extends Base{
 	}
 
 
+    /**
+     * 产品
+     * @param int $id
+     * @param string $code
+     * @return \think\response\View
+     */
+    public function detail($id=0,$code=''){
+        if(empty($id) || empty($code)){
+            exit('关键参数错误');
+        }
+        $code = base64_decode($code)-10000;     //个人代码
+        $product = db('product')->find($id);
+
+        $tpl = is_weixin()?'wechat_default':'';
+        $this->assign('product',$product);
+        $this->assign('code',$code);
+        $this->assign('pid',$id);
+        return view($tpl);
+    }
+
+    public function add_order(){
+        p(request()->param());
+    }
 
 
 

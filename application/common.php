@@ -11,9 +11,15 @@
 
 // 应用公共文件
 
-
-
-
+/**
+ * 微信浏览器
+ * @return bool
+ */
+function is_weixin() {
+    if (strpos(request()->header()['user-agent'], 'MicroMessenger') !== false) {
+        return true;
+    } return false;
+}
 
 /**
  * 打印函数
