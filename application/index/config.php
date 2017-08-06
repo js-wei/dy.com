@@ -15,5 +15,8 @@ return [
 	    'type'     => 'bootstrap',
 	    'var_page' => 'p',
 	    'list_rows'=>10
-	]
+	],
+     'alipay'=>[
+
+    ]
 ];

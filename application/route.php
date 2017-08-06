@@ -44,6 +44,8 @@ Route::rule('account/product','index/product/index');
 Route::rule('account/has','index/product/has');
 Route::rule('product/detail','index/publish/detail');
 Route::rule('account/add_order','index/publish/add_order');
+//给Callback控制器设置快捷路由
+Route::rule('notify/callback_alipay','index/callback/callback_alipay');
 
 
 

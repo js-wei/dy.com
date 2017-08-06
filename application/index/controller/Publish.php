@@ -1,7 +1,12 @@
 <?php
 namespace app\index\controller;
+use app\admin\controller\Config;
 use think\Validate;
 use think\Session;
+use Payment\Common\PayException;
+use Payment\Client\Charge;
+use think\Loader;
+
 
 class Publish extends Base{
 	
@@ -50,8 +55,15 @@ class Publish extends Base{
         if(empty($id) || empty($code)){
             exit('关键参数错误');
         }
-        $code = base64_decode($code)-10000;     //个人代码
+        $code = base64_decode($code);     //个人代码
         $product = db('product')->find($id);
+
+        //点击
+        db('my_product')
+            ->where('pid','eq',$id)
+            ->where('mid','eq',$code-10000)
+            ->setInc('click');
+
 
         $tpl = is_weixin()?'wechat_default':'';
         $this->assign('product',$product);
@@ -60,11 +72,101 @@ class Publish extends Base{
         return view($tpl);
     }
 
-    public function add_order(){
-        p(request()->param());
+    /**
+     * @param string $name
+     * @param string $address
+     * @param string $price
+     * @param int $number
+     * @param int $pid
+     * @param int $code
+     * @return \think\response\Json
+     */
+    public function add_order($name='',$address='',$price='',$number=1,$pid=0,$code=0){
+        if(empty($name)){
+            return json(['status'=>0,'msg'=>'请输入您的姓名']);
+        }
+        if(empty($address)){
+            return json(['status'=>0,'msg'=>'请输入您的地址']);
+        }
+        if(empty($price)){
+            return json(['status'=>0,'msg'=>'价格不能为空']);
+        }
+        if(empty($pid)){
+            return json(['status'=>0,'msg'=>'产品id不能为空']);
+        }
+        if(empty($code)){
+            return json(['status'=>0,'msg'=>'推广code不能为空']);
+        }
+        $product = db('product')->field('id,title,price')->find($pid);
+        $product['total'] = $number * $product['price'];
+        $product['address'] = $address;
+        $product['name'] = $name;
+
+        $data = [
+            'mid'=> $code-10000,
+            'proid'=>$pid,
+            'ordid'=>build_order_no(),
+            'ordtime'=>time(),
+            'product'=>json_encode($product),
+            'ordtitle'=>$product['title'],
+            'ordbuynum'=>$number,
+            'ordprice'=>$product['price'],
+            'ordfee'=>$product['total'],
+        ];
+        if(!db('order')->insert($data)){
+            return json([
+               'status'=>0,
+               'msg'=>'添加订单失败'
+            ]);
+        }
+        $html_text =  $this->alipay1($data,1);
+        $content = '<iframe src="'.$html_text.'" name="iframepage" id="iframepage"  scrolling="no" frameborder="0"></iframe>';
+        $this->assign('content',$content);
+        return view('pay');
     }
 
-
+    /**
+     * 支付宝支付
+     * @param array $order      订单
+     * @param int $t            类型:0正常支付,1测试支付
+     * @return string
+     */
+    public function alipay1($order=[],$t=0){
+        require_once(VENDOR_PATH.'alipay/alipay.config.php');
+        Vendor('alipay.lib.alipay_submit','.class.php');
+        /**************************请求参数**************************/
+        //商户订单号，商户网站订单系统中唯一订单号，必填
+        $out_trade_no = $order['ordid'];
+        //订单名称，必填
+        $subject = $order['ordtitle'];
+        //付款金额，必填
+        $total_fee = $t?0.01:$order['ordfee'];  //$order['ordfee']
+        //商品描述，可空
+        $body = '';
+        /************************************************************/
+        //构造要请求的参数数组，无需改动
+        $parameter = array(
+            "service"       	=> "create_direct_pay_by_user",
+            "partner"       	=> '2088021699723760',
+            "seller_id"  		=> '2088021699723760',
+            "payment_type"	=> "1",
+            "qr_pay_mode"     => 4,
+            'qrcode_width'   => '120',
+            //"notify_url"		=> $this->site['url']."/notify/callback_alipay",
+            "return_url"		=> $this->site['url']."/notify/callback_alipay",
+            "out_trade_no"		=> $out_trade_no,
+            "subject"			=> $subject,
+            "total_fee"			=> $total_fee,
+            "body"				=> "$body",
+            "_input_charset"	=> trim(strtolower(strtolower('utf-8'))),
+            //其他业务参数根据在线开发文档，添加参数.文档地址:https://doc.open.alipay.com/doc2/detail.htm?spm=a219a.7629140.0.0.kiX33I&treeId=62&articleId=103740&docType=1
+            "extra_common_param"=> ''
+        );
+        //建立请求
+        $alipaySubmit = new \AlipaySubmit($alipay_config);
+        $html_text = $alipaySubmit->buildRequestForm1($parameter,"post", "提交");
+        return $html_text;
+    }
 
     /**
      * 登陆
