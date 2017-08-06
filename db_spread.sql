@@ -3,9 +3,9 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: 2017-08-04 16:48:21
+-- Generation Time: 2017-08-06 23:53:59
 -- 服务器版本： 5.5.48-log
--- PHP Version: 7.1.5
+-- PHP Version: 5.5.36
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS `think_admin` (
 --
 
 INSERT INTO `think_admin` (`id`, `gid`, `username`, `password`, `hash`, `status`, `date`, `last_date`, `last_ip`) VALUES
-(1, -1, '524314430@qq.com', 'ba59abbe56e057f', '', 0, 1476171916, 1501563668, '192.168.5.1');
+(1, -1, '524314430@qq.com', 'ba59abbe56e057f', '', 0, 1476171916, 1502033119, '192.168.254.1');
 
 -- --------------------------------------------------------
 
@@ -61,14 +61,15 @@ CREATE TABLE IF NOT EXISTS `think_authentication` (
   `status` int(11) NOT NULL DEFAULT '0' COMMENT '认证状态',
   `date` int(11) NOT NULL DEFAULT '0' COMMENT '认证时间',
   `dates` int(11) DEFAULT '0' COMMENT '时间戳'
-) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
 
 --
 -- 转存表中的数据 `think_authentication`
 --
 
 INSERT INTO `think_authentication` (`id`, `mid`, `real_name`, `idcard_type`, `card`, `image`, `status`, `date`, `dates`) VALUES
-(4, 6, '位巍', '身份证', '320324198804141879', '/uploads/uploadify/auth/20170804/7b0c29fd1ef00ad27ff5360541d7c7ba.png', 0, 1501830826, 0);
+(7, 6, '魏巍', '身份证', '320324198804141879', '/uploads/uploadify/auth/20170805/93c2def63be52069ecb402bbf8428bb6.png', 1, 1501945198, 0),
+(6, 6, '魏巍', '身份证', '320324198804141879', '/uploads/uploadify/auth/20170805/5f424dc90b568a2fb744c9e992794065.png', 2, 1501938704, 0);
 
 -- --------------------------------------------------------
 
@@ -114,69 +115,6 @@ INSERT INTO `think_config` (`id`, `title`, `logo`, `keywords`, `description`, `c
 -- --------------------------------------------------------
 
 --
--- 表的结构 `think_flink`
---
-
-CREATE TABLE IF NOT EXISTS `think_flink` (
-  `id` mediumint(8) unsigned NOT NULL COMMENT '规则id,自增主键',
-  `title` char(80) NOT NULL DEFAULT '' COMMENT '友情链接中文名称',
-  `name` char(20) NOT NULL DEFAULT '' COMMENT '友情链接英文名称',
-  `description` varchar(500) NOT NULL DEFAULT '' COMMENT '友情链接简单介绍',
-  `ico` char(250) NOT NULL DEFAULT '' COMMENT '友情链接图标',
-  `uri` char(250) NOT NULL DEFAULT '' COMMENT '友情链接链接指向,链接到的地址',
-  `position` int(1) NOT NULL DEFAULT '0' COMMENT '友情链接位置：1首页，2内页',
-  `date` int(11) NOT NULL DEFAULT '0' COMMENT '添加时间',
-  `effective` varchar(150) NOT NULL DEFAULT '0' COMMENT '友情链接有效时间,在有效时间内会显示',
-  `sort` int(11) NOT NULL DEFAULT '0' COMMENT '排序：越小越靠前',
-  `status` int(1) NOT NULL DEFAULT '0' COMMENT '状态：0正常，1禁用'
-) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COMMENT='友情链接表';
-
---
--- 转存表中的数据 `think_flink`
---
-
-INSERT INTO `think_flink` (`id`, `title`, `name`, `description`, `ico`, `uri`, `position`, `date`, `effective`, `sort`, `status`) VALUES
-(5, '百度', '', '百度', '/uploads/20161223/f3c2b09b5e5dab0785b79de2775fa32c.png', 'http://baidu.com', 1, 1482465028, '0', 100, 0);
-
--- --------------------------------------------------------
-
---
--- 表的结构 `think_gather`
---
-
-CREATE TABLE IF NOT EXISTS `think_gather` (
-  `id` int(11) NOT NULL COMMENT '主键自增',
-  `title` varchar(50) DEFAULT NULL COMMENT '标题',
-  `description` varchar(250) DEFAULT NULL COMMENT '描述',
-  `url` varchar(150) DEFAULT NULL COMMENT '采集地址',
-  `rule` varchar(1500) DEFAULT NULL COMMENT '采集规则',
-  `tit` varchar(20) DEFAULT NULL,
-  `charset` int(11) NOT NULL DEFAULT '0' COMMENT '编码',
-  `type` int(11) NOT NULL COMMENT '类型',
-  `status` int(11) NOT NULL DEFAULT '0' COMMENT '状态;0正常,1禁用',
-  `date` int(11) NOT NULL DEFAULT '0' COMMENT '添加时间',
-  `dates` int(11) NOT NULL DEFAULT '0' COMMENT '时间戳'
-) ENGINE=MyISAM AUTO_INCREMENT=11 DEFAULT CHARSET=utf8 COMMENT='采集规则表';
-
---
--- 转存表中的数据 `think_gather`
---
-
-INSERT INTO `think_gather` (`id`, `title`, `description`, `url`, `rule`, `tit`, `charset`, `type`, `status`, `date`, `dates`) VALUES
-(1, '腾讯新闻采集规则', '腾讯新闻采集规则是根据腾讯的滚动新闻动态采集新闻,并根据类别进行保存新闻', 'http://roll.news.qq.com/interface/roll.php?0.25121977164547493&cata=&site=news&date=&page=1&mode=1&of=json', '{"list":{"tit":["span.t-tit","text"],"title":["a","text"],"href":["a","href"],"time":["span.t-time","text"]},"content":{"title":[".hd>h1","text"],"author":["span[bosszone=\\"jgname\\"]","text"],"content":["div[bosszone=\\"content\\"]","html"],"date":[".a_time","text"]}}', '不需填写使用tit采集', 1, 1, 0, 1484707581, 1484806524),
-(2, '军事新闻采集规则', '次规则采集凤凰网的军事频道的新闻', 'http://news.ifeng.com/listpage/7130/1/0/50420222/50501074/list.shtml', '{"list":{"title":[".comListBox>h2>a","text"],"href":[".comListBox>h2>a","href"],"time":[".comListBox>p","text"]},"content":{"title":["h1[itemprop=\\"headline\\"]","text"],"author":["span[itemprop=\\"name\\"].ss03","text"],"content":["#main_content","html"],"date":["span[itemprop=\\"datePublished\\"].ss01","text"]}}', '军事', 2, 1, 0, 1484726029, 1484809370),
-(3, '娱乐新闻采集', '此规则采集ZAKER娱乐频道', 'http://www.myzaker.com/channel/9', '{"list":{"title":["h2.figcaption>a","text"],"href":["h2.figcaption>a","href"]},"content":{"title":["div.article_header>h1","text"],"author":["div.article_header span.auther","text"],"content":["div.article_content>#content","html"],"date":["div.article_header span.time","text"]}}', '娱乐', 0, 1, 0, 1484810493, 1484810691),
-(4, '汽车频道采集规则', '汽车频道采集规则', 'http://www.myzaker.com/channel/7', '{"list":{"title":["h2.figcaption>a","text"],"href":["h2.figcaption>a","href"]},"content":{"title":["div.article_header>h1","text"],"author":["div.article_header span.auther","text"],"content":["div.article_content>#content","html"],"date":["div.article_header span.time","text"]}}', '汽车', 0, 1, 0, 1484811435, 0),
-(5, '体育频道采集规则', '体育频道采集规则', 'http://www.myzaker.com/channel/8', '{"list":{"title":["h2.figcaption>a","text"],"href":["h2.figcaption>a","href"]},"content":{"title":["div.article_header>h1","text"],"author":["div.article_header span.auther","text"],"content":["div.article_content>#content","html"],"date":["div.article_header span.time","text"]}}', '体育', 0, 1, 0, 1484811717, 0),
-(6, '科技频道采集规则', '科技频道采集规则', 'http://www.myzaker.com/channel/13', '{"list":{"title":["h2.figcaption>a","text"],"href":["h2.figcaption>a","href"]},"content":{"title":["div.article_header>h1","text"],"author":["div.article_header span.auther","text"],"content":["div.article_content>#content","html"],"date":["div.article_header span.time","text"]}}', '科技', 0, 1, 0, 1484811822, 0),
-(7, '财经频道采集规则', '财经频道采集规则', 'http://www.myzaker.com/channel/4', '{"list":{"title":["h2.figcaption>a","text"],"href":["h2.figcaption>a","href"]},"content":{"title":["div.article_header>h1","text"],"author":["div.article_header span.auther","text"],"content":["div.article_content>#content","html"],"date":["div.article_header span.time","text"]}}', '财经', 0, 1, 0, 1484811916, 0),
-(8, '互联网采集规则', '互联网采集规则', 'http://www.myzaker.com/channel/5', '{"list":{"title":["h2.figcaption>a","text"],"href":["h2.figcaption>a","href"]},"content":{"title":["div.article_header>h1","text"],"author":["div.article_header span.auther","text"],"content":["div.article_content>#content","html"],"date":["div.article_header span.time","text"]}}', '互联网', 0, 1, 0, 1484812002, 0),
-(9, '教育频道采集规则', '教育频道采集规则', 'http://www.myzaker.com/channel/11', '{"list":{"title":["h2.figcaption>a","text"],"href":["h2.figcaption>a","href"]},"content":{"title":["div.article_header>h1","text"],"author":["div.article_header span.auther","text"],"content":["div.article_content>#content","html"],"date":["div.article_header span.time","text"]}}', '教育', 0, 1, 0, 1484812057, 0),
-(10, '时尚频道采集规则', '时尚频道采集规则', 'http://www.myzaker.com/channel/12', '{"list":{"title":["h2.figcaption>a","text"],"href":["h2.figcaption>a","href"]},"content":{"title":["div.article_header>h1","text"],"author":["div.article_header span.auther","text"],"content":["div.article_content>#content","html"],"date":["div.article_header span.time","text"]}}', '时尚', 0, 1, 0, 1484812130, 0);
-
--- --------------------------------------------------------
-
---
 -- 表的结构 `think_member`
 --
 
@@ -186,7 +124,7 @@ CREATE TABLE IF NOT EXISTS `think_member` (
   `password` varchar(50) DEFAULT NULL COMMENT '密码',
   `nickname` varchar(50) DEFAULT NULL COMMENT '昵称',
   `head` varchar(50) DEFAULT NULL COMMENT '头像',
-  `is_check` int(11) DEFAULT '0' COMMENT '认证',
+  `is_check` int(11) DEFAULT '0' COMMENT '认证:0未认证,1认证通过,2认证中,3认证失败',
   `email` varchar(50) DEFAULT NULL COMMENT '邮箱',
   `city` varchar(150) DEFAULT NULL,
   `address` varchar(150) DEFAULT NULL,
@@ -208,7 +146,7 @@ CREATE TABLE IF NOT EXISTS `think_member` (
 --
 
 INSERT INTO `think_member` (`id`, `phone`, `password`, `nickname`, `head`, `is_check`, `email`, `city`, `address`, `bank_name`, `bank_people`, `bank_no`, `zip_code`, `alipay`, `last_login_address`, `last_login_time`, `last_login_ip`, `status`, `date`, `dates`) VALUES
-(6, '13584866592', 'ba59abbe56e057f', NULL, NULL, 2, '524314430@qq.com', '江苏省-苏州市-姑苏区', '三元一村47幢603室', NULL, NULL, NULL, '215001', '524314430@qq.com', '局域网', '1501830129', '192.168.5.1', 0, 1501830826, 1501749245);
+(6, '13584866592', 'ba59abbe56e057f', NULL, NULL, 1, '524314430@qq.com', '江苏省-苏州市-姑苏区', '三元一村47幢603室', NULL, NULL, NULL, '215001', '524314430@qq.com', '局域网', '1502022024', '192.168.254.1', 0, 1501945198, 1501945429);
 
 -- --------------------------------------------------------
 
@@ -219,12 +157,21 @@ INSERT INTO `think_member` (`id`, `phone`, `password`, `nickname`, `head`, `is_c
 CREATE TABLE IF NOT EXISTS `think_message` (
   `id` int(11) NOT NULL COMMENT '主键，自增长',
   `mid` int(11) NOT NULL DEFAULT '0' COMMENT '用户id',
-  `title` int(11) NOT NULL COMMENT '标题',
-  `content` int(11) NOT NULL COMMENT '内容',
-  `status` int(11) NOT NULL COMMENT '状态',
+  `aid` int(11) NOT NULL DEFAULT '0' COMMENT '认证id',
+  `title` varchar(150) DEFAULT NULL COMMENT '标题',
+  `content` text COMMENT '内容',
+  `type` int(11) NOT NULL DEFAULT '0' COMMENT '类型:0认证,1系统',
+  `status` int(11) NOT NULL DEFAULT '0' COMMENT '状态',
   `date` int(11) NOT NULL DEFAULT '0' COMMENT '时间',
   `dates` int(11) DEFAULT NULL COMMENT '时间戳'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='消息表';
+) ENGINE=MyISAM AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COMMENT='消息表';
+
+--
+-- 转存表中的数据 `think_message`
+--
+
+INSERT INTO `think_message` (`id`, `mid`, `aid`, `title`, `content`, `type`, `status`, `date`, `dates`) VALUES
+(6, 6, 0, '8月新产品', '各位小伙伴们你们好,我们在8月新推出了一款新的产品,欢迎选购', 1, 1, 1502022032, NULL);
 
 -- --------------------------------------------------------
 
@@ -245,7 +192,7 @@ CREATE TABLE IF NOT EXISTS `think_model` (
   `status` int(10) NOT NULL COMMENT '状态:0正常,1锁定',
   `date` int(10) NOT NULL COMMENT '添加日期',
   `dates` int(10) NOT NULL COMMENT '修改日期'
-) ENGINE=MyISAM AUTO_INCREMENT=39 DEFAULT CHARSET=utf8 COMMENT='控制器';
+) ENGINE=MyISAM AUTO_INCREMENT=46 DEFAULT CHARSET=utf8 COMMENT='控制器';
 
 --
 -- 转存表中的数据 `think_model`
@@ -259,7 +206,47 @@ INSERT INTO `think_model` (`id`, `fid`, `title`, `name`, `info`, `ico`, `pic`, `
 (13, 0, 'config', '系统设置', '系统设置', 'fa-cog', '', 100, 0, 0, 1434100605, 1433321682),
 (14, 13, 'index', '基本配置', '基本配置', '', '', 100, 0, 0, 1433321860, 1501549241),
 (37, 0, 'member', '用户管理', '用户管理', '', '', 100, 0, 0, 1501550798, 1501550886),
-(38, 37, 'index', '用户管理', '用户管理', '', '', 100, 0, 0, 1501550820, 0);
+(38, 37, 'index', '用户管理', '用户管理', '', '', 100, 0, 0, 1501550820, 0),
+(39, 0, 'product', '产品管理', '产品管理', '', '', 100, 0, 0, 1501853968, 0),
+(40, 39, 'index', '产品管理', '产品管理', '', '', 100, 0, 0, 1501853987, 0),
+(41, 37, 'auth', '认证管理', '认证管理', '', '', 100, 0, 0, 1501854634, 0),
+(42, 0, 'message', '消息管理', '消息管理', '', '', 100, 0, 0, 1502020714, 0),
+(43, 42, 'index', '消息管理', '消息管理', '', '', 100, 0, 0, 1502020729, 0),
+(44, 0, 'order', '订单管理', '订单管理', '', '', 100, 0, 0, 1502033207, 0),
+(45, 44, 'index', '订单管理', '订单管理', '', '', 100, 0, 0, 1502033237, 0);
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `think_my_product`
+--
+
+CREATE TABLE IF NOT EXISTS `think_my_product` (
+  `id` int(11) NOT NULL COMMENT '主键，自增长',
+  `mid` int(11) NOT NULL DEFAULT '0' COMMENT '用户id',
+  `pid` int(11) NOT NULL DEFAULT '0' COMMENT '产品id',
+  `click` int(11) NOT NULL DEFAULT '0' COMMENT '点击',
+  `buy` int(11) NOT NULL DEFAULT '0' COMMENT '购买',
+  `url` varchar(150) DEFAULT NULL COMMENT '连击',
+  `short_url` varchar(50) DEFAULT NULL COMMENT '短地址',
+  `date` int(11) NOT NULL DEFAULT '0' COMMENT '获取时间',
+  `dates` int(11) NOT NULL DEFAULT '0'
+) ENGINE=MyISAM AUTO_INCREMENT=10 DEFAULT CHARSET=utf8 COMMENT='我的产品表';
+
+--
+-- 转存表中的数据 `think_my_product`
+--
+
+INSERT INTO `think_my_product` (`id`, `mid`, `pid`, `click`, `buy`, `url`, `short_url`, `date`, `dates`) VALUES
+(1, 6, 1, 2, 1, 'http://dy.com/product/detail.html?id=1&code=MTAwMDY=', 'http://t.cn/R9KaZFb', 1501865946, 0),
+(2, 6, 3, 0, 0, 'http://dy.com/product/detail.html?id=3&code=MTAwMDY=', 'http://t.cn/R9Ka5VW', 1501865960, 0),
+(3, 6, 2, 0, 0, 'http://dy.com/product/detail.html?id=2&code=MTAwMDY=', 'http://t.cn/R9Kax4m', 1501866111, 0),
+(4, 6, 4, 0, 0, 'http://dy.com/product/detail.html?id=4&code=MTAwMDY=', 'http://t.cn/R9KarUI', 1501866887, 0),
+(5, 6, 5, 0, 0, 'http://dy.com/product/detail.html?id=5&code=MTAwMDY=', 'http://t.cn/R9Karx4', 1501866893, 0),
+(6, 6, 6, 0, 0, 'http://dy.com/product/detail.html?id=6&code=MTAwMDY=', 'http://t.cn/R9KaroL', 1501866896, 0),
+(7, 6, 8, 0, 0, 'http://dy.com/product/detail.html?id=8&code=MTAwMDY=', 'http://t.cn/R9Kar0j', 1501866899, 0),
+(8, 6, 9, 0, 0, 'http://dy.com/product/detail.html?id=9&code=MTAwMDY=', 'http://t.cn/R9KarnF', 1501866904, 0),
+(9, 6, 7, 0, 0, 'http://dy.com/product/detail.html?id=7&code=MTAwMDY=', 'http://t.cn/R9Kad7u', 1501866911, 0);
 
 -- --------------------------------------------------------
 
@@ -270,6 +257,7 @@ INSERT INTO `think_model` (`id`, `fid`, `title`, `name`, `info`, `ico`, `pic`, `
 CREATE TABLE IF NOT EXISTS `think_order` (
   `id` int(11) NOT NULL,
   `mid` int(11) DEFAULT NULL COMMENT ' 购买者id',
+  `proid` int(11) NOT NULL DEFAULT '0' COMMENT '产品id',
   `ordid` varchar(255) DEFAULT NULL COMMENT '订单号',
   `ordtime` int(11) DEFAULT NULL COMMENT '订单时间',
   `finishtime` int(11) NOT NULL COMMENT '订单完成时间',
@@ -287,7 +275,21 @@ CREATE TABLE IF NOT EXISTS `think_order` (
   `payment_buyer_email` varchar(255) DEFAULT NULL COMMENT '购买者帐号',
   `ordcode` varchar(255) DEFAULT NULL COMMENT '二维码',
   `parameter` text
-) ENGINE=MyISAM AUTO_INCREMENT=613 DEFAULT CHARSET=utf8 COMMENT='订单表';
+) ENGINE=MyISAM AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 COMMENT='订单表';
+
+--
+-- 转存表中的数据 `think_order`
+--
+
+INSERT INTO `think_order` (`id`, `mid`, `proid`, `ordid`, `ordtime`, `finishtime`, `product`, `ordtitle`, `ordbuynum`, `ordprice`, `ordfee`, `ordstatus`, `payment_type`, `payment_trade_no`, `payment_trade_status`, `payment_notify_id`, `payment_notify_time`, `payment_buyer_email`, `ordcode`, `parameter`) VALUES
+(1, 6, 1, '2017080652564898', 1502004772, 0, '{"id":1,"title":"\\u6d4b\\u8bd5\\u4ea7\\u54c1","price":"180.00","total":180,"address":"\\u4e09\\u5143\\u4e8c\\u6751","name":"\\u9b4f\\u5dcd"}', '测试产品', 1, 180.00, 180.00, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(2, 6, 1, '2017080610150994', 1502005006, 0, '{"id":1,"title":"\\u6d4b\\u8bd5\\u4ea7\\u54c1","price":"180.00","total":180,"address":"\\u4e09\\u5143\\u4e8c\\u6751","name":"\\u9b4f\\u5dcd"}', '测试产品', 1, 180.00, 180.00, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(3, 6, 1, '2017080650579757', 1502005394, 0, '{"id":1,"title":"\\u6d4b\\u8bd5\\u4ea7\\u54c1","price":"180.00","total":180,"address":"\\u4e09\\u5143\\u4e8c\\u6751","name":"\\u9b4f\\u5dcd"}', '测试产品', 1, 180.00, 180.00, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(4, 6, 1, '2017080699102485', 1502005644, 0, '{"id":1,"title":"\\u6d4b\\u8bd5\\u4ea7\\u54c1","price":"180.00","total":180,"address":"\\u4e09\\u5143\\u4e8c\\u6751","name":"\\u9b4f\\u5dcd"}', '测试产品', 1, 180.00, 180.00, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(5, 6, 1, '2017080652985510', 1502005812, 0, '{"id":1,"title":"\\u6d4b\\u8bd5\\u4ea7\\u54c1","price":"180.00","total":180,"address":"\\u4e09\\u5143\\u4e8c\\u6751","name":"\\u9b4f\\u5dcd"}', '测试产品', 1, 180.00, 180.00, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(6, 6, 1, '2017080698485254', 1502006507, 1502006544, '{"id":1,"title":"\\u6d4b\\u8bd5\\u4ea7\\u54c1","price":"180.00","total":180,"address":"\\u4e09\\u5143\\u4e8c\\u6751","name":"\\u9b4f\\u5dcd"}', '测试产品', 1, 180.00, 180.00, 1, '支付宝', '2017080621001004260280571585', NULL, NULL, '2017-08-06 16:02:20', '524314430@qq.com', NULL, NULL),
+(7, 6, 1, '2017080652555398', 1502022180, 0, '{"id":1,"title":"\\u6d4b\\u8bd5\\u4ea7\\u54c1","price":"180.00","total":180,"address":"\\u4e09\\u5143\\u4e8c\\u6751","name":"\\u9b4f\\u5dcd"}', '测试产品', 1, 180.00, 180.00, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(8, 6, 1, '2017080651505498', 1502022227, 1502022257, '{"id":1,"title":"\\u6d4b\\u8bd5\\u4ea7\\u54c1","price":"180.00","total":180,"address":"\\u4e09\\u5143\\u4e8c\\u6751","name":"\\u9b4f\\u5dcd"}', '测试产品', 1, 180.00, 180.00, 1, '支付宝', '2017080621001004260281099766', NULL, NULL, '2017-08-06 20:24:12', '524314430@qq.com', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -306,14 +308,22 @@ CREATE TABLE IF NOT EXISTS `think_product` (
   `sort` int(11) NOT NULL DEFAULT '100',
   `date` int(11) NOT NULL DEFAULT '0' COMMENT '时间',
   `dates` int(11) NOT NULL DEFAULT '0' COMMENT '时间戳'
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='产品表';
+) ENGINE=MyISAM AUTO_INCREMENT=10 DEFAULT CHARSET=utf8 COMMENT='产品表';
 
 --
 -- 转存表中的数据 `think_product`
 --
 
 INSERT INTO `think_product` (`id`, `title`, `description`, `image`, `price`, `divides`, `status`, `sort`, `date`, `dates`) VALUES
-(1, '测试产品', '测试产品', '/uploads/uploadify/image/20170802/67deff7d153057eef5c9129079548afa.png', '180.00', '0.01', 0, 100, 1501677687, 0);
+(1, '测试产品', '测试产品', '/uploads/uploadify/image/20170802/67deff7d153057eef5c9129079548afa.png', '180.00', '0.01', 0, 100, 1501677687, 0),
+(2, '测试的产品', '测试的产品', '/uploads/uploadify/image/20170804/a7f11cb39caede0e57bba006fa8d4731.jpg', '199.00', '0.02', 0, 100, 1501854088, 0),
+(3, '测试的产品1', '测试的产品1', '/uploads/uploadify/image/20170804/02ce740ccb14a1a4107d4072e04202df.png', '10.00', '0.03', 0, 100, 1501854131, 0),
+(4, '测试产品3', '测试产品3', '/uploads/uploadify/image/20170804/29ff0d5efa71d3d2d948b8987f69da7c.png', '250.00', '0.10', 0, 100, 1501854299, 0),
+(5, '测试产品4', '测试产品4', '/uploads/uploadify/image/20170804/e0c10a1343741c7213c34fb157b6cf92.png', '250.00', '0.12', 0, 100, 1501854353, 0),
+(6, '测试产品5', '测试产品5', '/uploads/uploadify/image/20170804/94ea723ae7734a65c82a763fd9a8657a.jpg', '450.00', '0.15', 0, 100, 1501854392, 0),
+(7, '测试产品6', '测试产品6', '/uploads/uploadify/image/20170804/175c11fee82d10ff108aa039a41c592a.jpg', '450.00', '0.16', 0, 100, 1501854431, 0),
+(8, '测试产品7', '测试产品7', '/uploads/uploadify/image/20170804/42efb6f57cbd74c99c74930a3b2b9db2.jpg', '500.00', '0.20', 0, 100, 1501854479, 0),
+(9, '测试产品8', '测试产品8', '/uploads/uploadify/image/20170804/eaf086cab7ef087c0762758e2cd735b6.png', '600.00', '0.21', 0, 100, 1501854550, 0);
 
 --
 -- Indexes for dumped tables
@@ -338,18 +348,6 @@ ALTER TABLE `think_config`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `think_flink`
---
-ALTER TABLE `think_flink`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `think_gather`
---
-ALTER TABLE `think_gather`
-  ADD PRIMARY KEY (`id`);
-
---
 -- Indexes for table `think_member`
 --
 ALTER TABLE `think_member`
@@ -368,6 +366,12 @@ ALTER TABLE `think_model`
   ADD PRIMARY KEY (`id`),
   ADD KEY `sort` (`sort`),
   ADD KEY `status` (`status`);
+
+--
+-- Indexes for table `think_my_product`
+--
+ALTER TABLE `think_my_product`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `think_order`
@@ -394,22 +398,12 @@ ALTER TABLE `think_admin`
 -- AUTO_INCREMENT for table `think_authentication`
 --
 ALTER TABLE `think_authentication`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键，自增长',AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键，自增长',AUTO_INCREMENT=8;
 --
 -- AUTO_INCREMENT for table `think_config`
 --
 ALTER TABLE `think_config`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键，自增长',AUTO_INCREMENT=3;
---
--- AUTO_INCREMENT for table `think_flink`
---
-ALTER TABLE `think_flink`
-  MODIFY `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '规则id,自增主键',AUTO_INCREMENT=6;
---
--- AUTO_INCREMENT for table `think_gather`
---
-ALTER TABLE `think_gather`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键自增',AUTO_INCREMENT=11;
 --
 -- AUTO_INCREMENT for table `think_member`
 --
@@ -419,22 +413,27 @@ ALTER TABLE `think_member`
 -- AUTO_INCREMENT for table `think_message`
 --
 ALTER TABLE `think_message`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键，自增长';
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键，自增长',AUTO_INCREMENT=7;
 --
 -- AUTO_INCREMENT for table `think_model`
 --
 ALTER TABLE `think_model`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键，自增长',AUTO_INCREMENT=39;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键，自增长',AUTO_INCREMENT=46;
+--
+-- AUTO_INCREMENT for table `think_my_product`
+--
+ALTER TABLE `think_my_product`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键，自增长',AUTO_INCREMENT=10;
 --
 -- AUTO_INCREMENT for table `think_order`
 --
 ALTER TABLE `think_order`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=613;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=9;
 --
 -- AUTO_INCREMENT for table `think_product`
 --
 ALTER TABLE `think_product`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键，自增长',AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键，自增长',AUTO_INCREMENT=10;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
