@@ -22,7 +22,7 @@ class Order extends Base{
         $search = $this->_search();
         $where = array_merge($where,$search);
 
-        $list = db('order')->where($where)->order('ordtime desc')->paginate(15,false,[
+        $list = db('order')->where($where)->order('ordtime desc')->paginate(5,false,[
             'query'=>[
                 's_keywords'=>input('s_keywords'),
                 "s_date"=>input('s_date'),

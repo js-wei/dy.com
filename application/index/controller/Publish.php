@@ -65,7 +65,7 @@ class Publish extends Base{
             ->setInc('click');
 
 
-        $tpl = is_weixin()?'wechat_default':'';
+        $tpl = is_weixin()?'wechat_default':'detail1';
         $this->assign('product',$product);
         $this->assign('code',$code);
         $this->assign('pid',$id);
