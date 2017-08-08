@@ -74,16 +74,24 @@ class Publish extends Base{
 
     /**
      * @param string $name
+     * @param string $tel
+     * @param string $city
      * @param string $address
      * @param string $price
      * @param int $number
      * @param int $pid
      * @param int $code
-     * @return \think\response\Json
+     * @return \think\response\Json|\think\response\View
      */
-    public function add_order($name='',$address='',$price='',$number=1,$pid=0,$code=0){
+    public function add_order($name='',$tel='',$city='',$address='',$price='',$number=1,$pid=0,$code=0){
         if(empty($name)){
             return json(['status'=>0,'msg'=>'请输入您的姓名']);
+        }
+        if(empty($tel)){
+            return json(['status'=>0,'msg'=>'请输入您的手机号']);
+        }
+        if(empty($city)){
+            return json(['status'=>0,'msg'=>'请输入您所在城市']);
         }
         if(empty($address)){
             return json(['status'=>0,'msg'=>'请输入您的地址']);
@@ -99,8 +107,9 @@ class Publish extends Base{
         }
         $product = db('product')->field('id,title,price')->find($pid);
         $product['total'] = $number * $product['price'];
-        $product['address'] = $address;
+        $product['address'] = $city .' '.$address;
         $product['name'] = $name;
+        $product['tel'] = $tel;
 
         $data = [
             'mid'=> $code-10000,
