@@ -103,7 +103,7 @@
                         </select>
                         <input type="text" id="this_name"  class="form-control" style="width:200px;height:33px;display:none;" placeholder="指定用户名称">
                         <div class="clearfix"></div>
-                        <button type="button" class="btn btn-sky export">导出数据</button>
+                        <button type="button" class="btn btn-sky export mt10">导出数据</button>
                     </div>
                 </div>
                 <table class="table table-striped table-bordered table-hover pt10" id="simpledatatable">
@@ -202,7 +202,11 @@
            var time = $('#times').text(),
                 user = $('#this_name').val();
            $.post('__URL__/export',{time:time,user:user},function (result) {
-
+               if(result.status==1){
+                   window.location.href=result.redirect;
+               }else {
+                   layer.alert(result.msg,{icon:5});
+               }
            });
         });
 

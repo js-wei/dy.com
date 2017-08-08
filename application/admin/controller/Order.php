@@ -131,14 +131,36 @@ class Order extends Base{
             $member = db('member')->field('id')->where('phone','eq',$user)->find();
             $where['mid']=$member['id'];
         }
-        $title = $time."|".$user;
+
+        $title = $user?$time."|".$user:$time;
         $list = db('order')->field('ordid,ordtitle,ordbuynum,ordprice,ordfee,ordtime,finishtime,ordstatus')->where($where)->select();
+
+        if(request()->isPost()){
+            if(!empty($list)){
+                return array('status'=>1,'msg'=>'有导出数据','redirect'=>Url('export')."?time={$time}&user={$user}");
+            }else{
+                return array('status'=>0,'msg'=>'导出数据');
+            }
+        }
+
         foreach ($list as $k=>$v){
             $list[$k]['ordtime']=date('Y-m-d H:i:s',$v['ordtime']);
             $list[$k]['finishtime']=$v['finishtime']?date('Y-m-d H:i:s',$v['finishtime']):'/';
             $list[$k]['ordstatus']=$v['ordstatus']?'已支付':'未支付';
         }
-        $this->exportExcel($title,["订单号","产品名称","购买数量","产品单价","支付金额",'下单时间','支付时间','是否付款'],$list);
+        $xlsCell  = array(
+            array('ordid','订单号'),
+            array('ordtitle','产品名称'),
+            array('ordbuynum','购买数量'),
+            array('ordprice','产品单价/元'),
+            array('ordfee','支付金额/元'),
+            array('ordtime','下单时间'),
+            array('finishtime','支付时间'),
+            array('ordstatus','是否付款'),
+        );
+
+        $this->exportExcel($title,$xlsCell,$list,"{$title}账单信息   生成日期:".date('Y-m-d',time()));
+        return '';
     }
 
     /**
