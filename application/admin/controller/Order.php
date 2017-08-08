@@ -29,11 +29,61 @@ class Order extends Base{
                 "s_status"=>input('s_status')
             ]
         ]);
+        $member =input('s_username');
+
+        $totals = db('order')->where($where)->sum('ordfee');
+        $free_totals = db('order')->where($where)->where('ordstatus','eq',1)->sum('ordfee');
+        $counts = db('order')->where($where)->count();
+        $free_counts = db('order')->where($where)->where('ordstatus','eq',1)->count('ordfee');
+        if($counts>0){
+            $percent = $free_counts/$counts*100;
+        }else{
+            $percent = 0;
+        }
+
+        $day = $this->get_current_day_durun();
+        $where['ordtime']=['between',[$day['start'],$day['end']]];
+
+        $_totals = db('order')->where($where)->where($where)->sum('ordfee');
+        $_free_totals = db('order')->where($where)->where($where)->where('ordstatus','eq',1)->sum('ordfee');
+        $_counts = db('order')->where($where)->where($where)->count();
+        $_free_counts = db('order')->where($where)->where($where)->where('ordstatus','eq',1)->count('ordfee');
+        if($_counts>0){
+            $_percent = $_free_counts/$_counts*100;
+        }else{
+            $_percent = 0;
+        }
         // 查询状态为1的用户数据 并且每页显示10条数据
         $count = db('order')->count('*');
+
+
+
+        $this->assign('member',$member);
+        $this->assign('totals',$totals);
+        $this->assign('free_totals',$free_totals);
+        $this->assign('counts',$counts);
+        $this->assign('free_counts',$free_counts);
+        $this->assign('percent',$percent);
+        $this->assign('_totals',$_totals);
+        $this->assign('_free_totals',$_free_totals);
+        $this->assign('_counts',$_counts);
+        $this->assign('_free_counts',$_free_counts);
+        $this->assign('_percent',$_percent);
+
         $this->assign('count',$count);
         $this->assign('list',$list);
         return view();
+    }
+
+    /**
+     * 今日0-24点时间戳
+     * @return array
+     */
+    protected function get_current_day_durun(){
+        $d = date('Y-m-d',time());
+        $start = strtotime("{$d} 00:00");
+        $end = strtotime("{$d} 24:00");
+        return ['start'=>$start,'end'=>$end];
     }
 
     /**
@@ -71,6 +121,26 @@ class Order extends Base{
         }
     }
 
+    public function export($time='',$user=''){
+        $where=[];
+        if($time){
+            $time1 = explode('-',$time);
+            $where['ordtime']=['between',[strtotime($time1[0]),strtotime($time1[1])]];
+        }
+        if($user){
+            $member = db('member')->field('id')->where('phone','eq',$user)->find();
+            $where['mid']=$member['id'];
+        }
+        $title = $time."|".$user;
+        $list = db('order')->field('ordid,ordtitle,ordbuynum,ordprice,ordfee,ordtime,finishtime,ordstatus')->where($where)->select();
+        foreach ($list as $k=>$v){
+            $list[$k]['ordtime']=date('Y-m-d H:i:s',$v['ordtime']);
+            $list[$k]['finishtime']=$v['finishtime']?date('Y-m-d H:i:s',$v['finishtime']):'/';
+            $list[$k]['ordstatus']=$v['ordstatus']?'已支付':'未支付';
+        }
+        $this->exportExcel($title,["订单号","产品名称","购买数量","产品单价","支付金额",'下单时间','支付时间','是否付款'],$list);
+    }
+
     /**
      * 搜索
      * @param array $param
@@ -84,9 +154,25 @@ class Order extends Base{
         if(!empty($param['s_keywords'])){
             $where['ordid|ordtitle']=['like',"%".$param['s_keywords']."%"];
         }
-        if(!empty($param['s_status'])){
-            $where['status']=$param['s_status']>-1?$param['s_status']:'';
+        if(!empty($param['s_username'])){
+            $where1['phone']=['like',"%".$param['s_username']."%"];
+            $member = db('member')->field('id')->where($where1)->select();
+            $_id = [];
+            foreach ($member as $k=>$v){
+                $_id[]=$v['id'];
+            }
+            $where['mid']=['in',$_id];
         }
+
+        if(isset($param['s_status'])){
+            if($param['s_status']==1){
+                $where['ordstatus']=['eq',1];
+                }
+            if($param['s_status']==0){
+                $where['ordstatus']=['eq',0];
+            }
+        }
+
         if(!empty($param['s_date'])){
             $date = explode('-',$param['s_date']);
             $date[1] = "$date[1] 24:00";
@@ -95,8 +181,9 @@ class Order extends Base{
 
         $this->assign('search',[
             's_keywords'=>!empty($param['s_keywords'])?$param['s_keywords']:'',
+            's_username'=>!empty($param['s_username'])?$param['s_username']:'',
             's_date'=>!empty($param['s_date'])?$param['s_date']:'',
-            's_status'=>!empty($param['s_status'])?$param['s_status']:-1
+            's_status'=>!empty($param['s_status'])?$param['s_status']:''
         ]);
         return $where;
     }

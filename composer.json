@@ -24,7 +24,8 @@
         "phpmailer/phpmailer": "^5.2",
         "sinergi/browser-detector": "^6.1",
         "ikimea/browser": "dev-master",
-        "riverslei/payment": "~4.0"
+        "riverslei/payment": "~4.0",
+        "phpoffice/phpexcel": "^1.8"
     },
     "extra": {
         "think-path": "thinkphp"

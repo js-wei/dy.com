@@ -215,6 +215,10 @@
                 console.log(result[0].url_short);
             });
         });
+
+        $(document).on('click','.cancelBtn',function (e) {
+            $('#reservation').val('');
+        });
     });
 </script>
 </body>
