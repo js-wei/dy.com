@@ -10,6 +10,18 @@
 // +----------------------------------------------------------------------
 
 // [ 应用入口文件 ]
+define('WEB_HOST', "http://t.jswei.top/");
+define('PXOXY_WEB_HOST', "http://pinkan.cn/");
+define('WX_APPID', "wxf02790fbcadf974a");
+define('WX_MCHID', "1382132602");
+define('WX_KEY', "214ADK1238123K312FDAS94313232113");
+define('WX_APPSECRET', "d5f062346b24ca499e6997fc2f38d4db");
+
+define('WX_JS_API_CALL_URL', '');
+define('WX_SSLCERT_PATH', '');
+define('WX_SSLKEY_PATH', '');
+define('WX_NOTIFY_URL',WEB_HOST.'Notify/WeChatPay');
+define('WX_CURL_TIMEOUT', 30);
 
 // 定义应用目录
 define('APP_PATH', __DIR__ . '/../application/');

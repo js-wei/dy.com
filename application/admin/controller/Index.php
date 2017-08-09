@@ -12,9 +12,33 @@ class Index extends Base {
 
 	public function index(){
 		$os = $this->_sys();
+		$this->_get_details();
 		$this->assign('os',$os);
 		return view();
 	}
+
+	protected function _get_details(){
+        $totals = db('order')->where('ordstatus','eq',0)->sum('ordfee');
+	    $totals1 = db('order')->where('ordstatus','eq',1)->sum('ordfee');
+        $auth = db('authentication')->where('status','eq',0)->count();
+        $sum = db('member')->count();
+        $sum1 = db('member')->where('last_login_time','eq',0)->count();
+
+        $order = db('order')->count();
+        $order1 = db('order')->where('ordstatus','eq',1)->count();
+
+
+	    $this->assign('totals',$totals);
+        $this->assign('totals1',$totals1);
+
+        $this->assign('auth',$auth);
+
+        $this->assign('sum',$sum);
+        $this->assign('sum1',$sum1);
+
+        $this->assign('order',$order);
+        $this->assign('order1',$order1);
+    }
 	/**
      * @return array 获取当前系统信息
      */

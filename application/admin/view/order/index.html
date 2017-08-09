@@ -201,7 +201,11 @@
         $(document).on('click','.export',function (e) {
            var time = $('#times').text(),
                 user = $('#this_name').val();
+            var index = layer.load(2, {
+                shard: [0.6, "#000"]
+            });
            $.post('__URL__/export',{time:time,user:user},function (result) {
+               layer.close(index);
                if(result.status==1){
                    window.location.href=result.redirect;
                }else {

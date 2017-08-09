@@ -5,12 +5,14 @@
             <div class="databox radius-bordered databox-shadowed databox-graded">
                 <div class="databox-left bg-themesecondary">
                     <div class="databox-piechart">
-                        <div data-toggle="easypiechart" class="easyPieChart" data-barcolor="#fff" data-linecap="butt" data-percent="50" data-animate="500" data-linewidth="3" data-size="47" data-trackcolor="rgba(255,255,255,0.1)" style="width: 47px; height: 47px; line-height: 47px;"><i class="stat-icon icon-lg fa fa-tasks"></i><canvas width="47" height="47"></canvas></div>
+                        <div data-toggle="easypiechart" class="easyPieChart" data-barcolor="#fff" data-linecap="butt" data-percent="50" data-animate="500" data-linewidth="3" data-size="47" data-trackcolor="rgba(255,255,255,0.1)" style="width: 47px; height: 47px; line-height: 47px;">
+							<i class="stat-icon icon-lg fa fa-cny"></i><canvas width="47" height="47"></canvas>
+						</div>
                     </div>
                 </div>
                 <div class="databox-right">
-                    <span class="databox-number themesecondary">14</span>
-                    <div class="databox-text darkgray"><a href="{:Url('column/index')}">栏目</a></div>
+                    <span class="databox-number themesecondary">{$totals}/{$totals1}</span>
+                    <div class="databox-text darkgray"><a href="{:Url('order/index')}">订单总金额/实际支付金额</a></div>
                 </div>
             </div>
         </div>
@@ -18,12 +20,13 @@
             <div class="databox radius-bordered databox-shadowed databox-graded">
                 <div class="databox-left bg-themethirdcolor">
                     <div class="databox-piechart">
-                        <div data-toggle="easypiechart" class="easyPieChart" data-barcolor="#fff" data-linecap="butt" data-percent="15" data-animate="500" data-linewidth="3" data-size="47" data-trackcolor="rgba(255,255,255,0.2)" style="width: 47px; height: 47px; line-height: 47px;"><i class="stat-icon  icon-lg fa fa-comments"></i><canvas width="47" height="47"></canvas></div>
+                        <div data-toggle="easypiechart" class="easyPieChart" data-barcolor="#fff" data-linecap="butt" data-percent="15" data-animate="500" data-linewidth="3" data-size="47" data-trackcolor="rgba(255,255,255,0.2)" style="width: 47px; height: 47px; line-height: 47px;">
+							<i class="stat-icon  icon-lg fa fa-eye"></i><canvas width="47" height="47"></canvas></div>
                     </div>
                 </div>
                 <div class="databox-right">
-                    <span class="databox-number themethirdcolor">1</span>
-                    <div class="databox-text darkgray"><a href="{:Url('comment/index')}">新评论</a></div>
+                    <span class="databox-number themethirdcolor">{$auth}</span>
+                    <div class="databox-text darkgray"><a href="{:Url('member/auth')}">新的认证</a></div>
                 </div>
             </div>
         </div>
@@ -31,12 +34,14 @@
             <div class="databox radius-bordered databox-shadowed databox-graded">
                 <div class="databox-left bg-themeprimary">
                     <div class="databox-piechart">
-                        <div id="users-pie" data-toggle="easypiechart" class="easyPieChart" data-barcolor="#fff" data-linecap="butt" data-percent="76" data-animate="500" data-linewidth="3" data-size="47" data-trackcolor="rgba(255,255,255,0.1)" style="width: 47px; height: 47px; line-height: 47px;"> <i class="fa fa-users"></i><canvas width="47" height="47"></canvas></div>
+                        <div id="users-pie" data-toggle="easypiechart" class="easyPieChart" data-barcolor="#fff" data-linecap="butt" data-percent="76" data-animate="500" data-linewidth="3" data-size="47" data-trackcolor="rgba(255,255,255,0.1)" style="width: 47px; height: 47px; line-height: 47px;">
+							<i class="fa fa-users"></i><canvas width="47" height="47"></canvas>
+						</div>
                     </div>
                 </div>
                 <div class="databox-right">
-                    <span class="databox-number themeprimary">98</span>
-                    <div class="databox-text darkgray"><a href="{:Url('user/index')}">新用户</a></div>
+                    <span class="databox-number themeprimary">{$sum}/{$sum1}</span>
+                    <div class="databox-text darkgray"><a href="{:Url('member/index')}">用户总数量/未登录数量</a></div>
                 </div>
             </div>
         </div>
@@ -44,12 +49,14 @@
             <div class="databox radius-bordered databox-shadowed databox-graded">
                 <div class="databox-left bg-themesecondary">
                     <div class="databox-piechart">
-                        <div id="users-pie" data-toggle="easypiechart" class="easyPieChart" data-barcolor="#fff" data-linecap="butt" data-percent="76" data-animate="500" data-linewidth="3" data-size="47" data-trackcolor="rgba(255,255,255,0.1)" style="width: 47px; height: 47px; line-height: 47px;"> <i class="fa fa-shopping-cart"></i><canvas width="47" height="47"></canvas></div>
+                        <div id="users-pie1" data-toggle="easypiechart" class="easyPieChart" data-barcolor="#fff" data-linecap="butt" data-percent="76" data-animate="500" data-linewidth="3" data-size="47" data-trackcolor="rgba(255,255,255,0.1)" style="width: 47px; height: 47px; line-height: 47px;">
+							<i class="fa fa-gift"></i><canvas width="47" height="47"></canvas>
+						</div>
                     </div>
                 </div>
                 <div class="databox-right">
-                    <span class="databox-number themesecondary">98</span>
-                    <div class="databox-text darkgray"><a href="{:Url('order/index')}">订单</a></div>
+                    <span class="databox-number themesecondary">{$order}/{$order1}</span>
+                    <div class="databox-text darkgray"><a href="{:Url('order/index')}">订单总数/支付数量</a></div>
                 </div>
             </div>
         </div>
@@ -246,38 +253,38 @@
 	                            {$site.description|mb_substr=0,150}<if condition="strlen($site['description']) gt 150">...</if>
 	                        </td>
 	                    </tr>
-	                    <tr>
-	                        <td>
-	                            轮播图
-	                        </td>
-	                        <td>
-	                            <eq name="site.carousel" value="1"><label class="label label-success">已开启</label><else /><label class="label label-danger">未开启</label></eq>
-	                        </td>
-	                    </tr>
-	                    <tr>
-	                        <td>
-	                            轮播图调用数
-	                        </td>
-	                        <td>
-	                            {$site.sum}
-	                        </td>
-	                    </tr>
-	                    <tr>
-	                        <td>
-	                            友情链接
-	                        </td>
-	                        <td>
-	                           <eq name="site.flink" value="1"><label class="label label-success">已开启</label><else /><label class="label label-danger">未开启</label></eq>
-	                        </td>
-	                    </tr>
-	                    <tr>
-	                        <td>
-	                            分享
-	                        </td>
-	                        <td>
-	                            <eq name="site.is_shard" value="1"><label class="label label-success">已开启</label><else /><label class="label label-danger">未开启</label></eq>
-	                        </td>
-	                    </tr>
+	                    <!--<tr>-->
+	                        <!--<td>-->
+	                            <!--轮播图-->
+	                        <!--</td>-->
+	                        <!--<td>-->
+	                            <!--<eq name="site.carousel" value="1"><label class="label label-success">已开启</label><else /><label class="label label-danger">未开启</label></eq>-->
+	                        <!--</td>-->
+	                    <!--</tr>-->
+	                    <!--<tr>-->
+	                        <!--<td>-->
+	                            <!--轮播图调用数-->
+	                        <!--</td>-->
+	                        <!--<td>-->
+	                            <!--{$site.sum}-->
+	                        <!--</td>-->
+	                    <!--</tr>-->
+	                    <!--<tr>-->
+	                        <!--<td>-->
+	                            <!--友情链接-->
+	                        <!--</td>-->
+	                        <!--<td>-->
+	                           <!--<eq name="site.flink" value="1"><label class="label label-success">已开启</label><else /><label class="label label-danger">未开启</label></eq>-->
+	                        <!--</td>-->
+	                    <!--</tr>-->
+	                    <!--<tr>-->
+	                        <!--<td>-->
+	                            <!--分享-->
+	                        <!--</td>-->
+	                        <!--<td>-->
+	                            <!--<eq name="site.is_shard" value="1"><label class="label label-success">已开启</label><else /><label class="label label-danger">未开启</label></eq>-->
+	                        <!--</td>-->
+	                    <!--</tr>-->
 	                    <tr>
 	                        <td>
 	                            联系方式

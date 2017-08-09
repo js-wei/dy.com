@@ -217,7 +217,7 @@ class Order extends Base{
      */
     public function status($id,$type){
         $type = ($type=="delete-all")?"delete":$type;
-        $_result = $this->_status($id,'order',$type,'head');
+        $_result = $this->_status($id,'order',$type,'');
         return $_result;
     }
 }

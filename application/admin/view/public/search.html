@@ -32,6 +32,10 @@
 <script src="__JS__/datetime/daterangepicker.js"></script>
 <script type="text/javascript">
   $(function(){
+      $('.onSearch').on('click',(e)=>{
+          $('#search').submit();
+      });
+
       //区域日期选择
       if($('#reservation').length){
 	      $('#reservation').daterangepicker({

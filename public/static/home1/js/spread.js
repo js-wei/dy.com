@@ -28,7 +28,6 @@ var status = 0;
     var objTouchY;
     var objTouchMY;
     button.onclick=function(){
-    	console.log(botton1)
     	botton1.style.display='block';
     };
     if(shopp==0){
@@ -109,7 +108,7 @@ var status = 0;
 
             }
         }
-    };
+    }
 
     function anima(x, y, z) {
         // x===节点
@@ -127,7 +126,7 @@ var status = 0;
         else if(z==2){
         	y[0].classList.add(y[1]);
         }
-    };
+    }
     setTimeout(function() {
         anima([document.getElementsByClassName("C1Img")[0], "C1Img1"], [], 1);
         anima([document.getElementsByClassName("C1Span")[0], "C1Span1"], [], 1);

@@ -36,6 +36,9 @@
                                 <span class="line"></span>产品分成
                             </th>
                             <th class="col-md-3">
+                                <span class="line"></span>二维码
+                            </th>
+                            <th class="col-md-3">
                                 <span class="line"></span>分享地址
                             </th>
                         </tr>
@@ -56,6 +59,9 @@
                                 </td>
                                 <td>
                                     {$vo.divides*100}%
+                                </td>
+                                <td class="qrcode" data-id="{$vo.id}" data-role="{$vo.short_url}">
+                                    <div class="qrcode{$vo.id}"></div>
                                 </td>
                                 <td>
                                     <p>
@@ -95,8 +101,42 @@
     </div>
 </div>
 <script src="https://cdn.bootcss.com/clipboard.js/1.7.1/clipboard.min.js"></script>
+<script src="__PLUG__/jquery.qrcode.min.js"></script>
 <script>
     $(function () {
+        $('.qrcode').each(function (i) {
+           var url = $(this).attr('data-role');
+           var id = $(this).attr('data-id');
+            $(".qrcode"+id).qrcode({
+                width: 120, //宽度
+                height:120, //高度
+                text: utf16to8(url), //内容
+                typeNumber:-1,//计算模式
+                correctLevel:2,//二维码纠错级别
+                background:"#ffffff",//背景颜色
+                foreground:"#000000"  //二维码颜色
+
+            });
+        });
+        function utf16to8(str) {
+            var out, i, len, c;
+            out = "";
+            len = str.length;
+            for (i = 0; i < len; i++) {
+                c = str.charCodeAt(i);
+                if ((c >= 0x0001) && (c <= 0x007F)) {
+                    out += str.charAt(i);
+                } else if (c > 0x07FF) {
+                    out += String.fromCharCode(0xE0 | ((c >> 12) & 0x0F));
+                    out += String.fromCharCode(0x80 | ((c >> 6) & 0x3F));
+                    out += String.fromCharCode(0x80 | ((c >> 0) & 0x3F));
+                } else {
+                    out += String.fromCharCode(0xC0 | ((c >> 6) & 0x1F));
+                    out += String.fromCharCode(0x80 | ((c >> 0) & 0x3F));
+                }
+            }
+            return out;
+        }
         var clipboard = new Clipboard('.copy');
         $(document).on('click','.delete',function (e) {
             e.preventDefault();

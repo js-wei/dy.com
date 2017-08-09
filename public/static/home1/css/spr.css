@@ -1,7 +1,7 @@
 html{
 	width: 100%;
 	height: 100%;
-	font-size: 10px;
+	font-size:62.5%;
 }
 body{
 	width: 100%;
@@ -336,8 +336,8 @@ left: -20rem;
 	background:#ffffff;
 }
 .content52 .name,.content52 .tel,.content52 .numB,.content52 .address .content-block{
-padding:6% 0; 
-/*height: 15%;*/
+	padding:4% 0;
+	/*height: 15%;*/
 }
 .content52 .address{
 	padding:6% 0; 
@@ -376,7 +376,7 @@ padding:6% 0;
 }
 .button {
 	text-align: center;
-	padding:3rem 0 0 0;
+	padding:1rem 0 0 0;
 }
 .button button{
 	background:#ff8d00;
@@ -408,7 +408,7 @@ padding:6% 0;
 	display: inline;
 
 }
-/*填写地址*/
+
 .content6{
 	display: none;
 	width: 100%;
@@ -475,4 +475,37 @@ padding:6% 0;
 	background: #ff8d00;
 	border: 1px solid #ff8d00;
 }
-/*订单信息页面*/
+
+@media only screen and (max-width:320px){
+	html {
+		font-size: 22% !important;
+	}
+	.content1 .C1Span{
+		bottom: 3rem;
+	}
+	.norms{
+		bottom: -17rem;
+	}
+	.content52 span{
+		width:28%;
+	}
+	.content52 .address{
+		padding:0 0;
+	}
+	.content52 .address .xiangxi {
+		padding: 2% 0;
+		height: 50%;
+		line-height: 1.6rem;
+	}
+}
+
+@media only screen and (min-width: 750px) and (min-width: 410px){
+	html {
+		font-size: 150% !important;
+	}
+}
+@media only screen and (min-width:1242px){
+	html {
+		font-size: 187.5% !important;
+	}
+}

@@ -59,7 +59,7 @@ class User extends Base{
         if(!db('my_product')->insert($data)){
             return json(['status'=>0,'msg'=>'获取产品失败,请稍后再试']);
         }
-        return json(['status'=>1,'msg'=>'获取产品失败,现在就去分享赚钱!']);
+        return json(['status'=>1,'msg'=>'获取产品失败,现在就去分享赚钱!','redirect'=>Url('/account/has')]);
     }
 
     /**

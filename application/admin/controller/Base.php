@@ -31,6 +31,7 @@ class Base extends Controller{
             }
         }
 		//$nav = array_merge($nav,$col);
+        $this->_msg();
 		//输出导航
 		$this->assign('site',$this->site);
 		$this->assign('nav',$nav);
@@ -38,6 +39,14 @@ class Base extends Controller{
 		$this->assign('controller',strtolower($this->controller));
 		$this->assign('module',strtolower($this->module));
 	}
+
+	protected  function _msg(){
+	    $_count = db('authentication')->where('status','eq',0)->count();
+        $_msg = db('authentication')->where('status','eq',0)->limit(4)->select();
+        $this->assign('_msg_count',$_count);
+        $this->assign('_msg_list',$_msg);
+    }
+
 	/**
 	 * [column_list 获取栏目数据]
 	 * @return [type] [description]

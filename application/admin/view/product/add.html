@@ -40,6 +40,12 @@
                     </div>
                 </div>
                 <div class="form-group">
+                    <label class="col-lg-2 control-label">内容</label>
+                    <div class="col-lg-6">
+                        <textarea name="content" id="content" class="form-control" rows="5" placeholder="内容"><notempty name="info">{$info.content}</notempty></textarea>
+                    </div>
+                </div>
+                <div class="form-group">
                     <label class="col-lg-2 control-label">价格<sup class="text-danger">*</sup></label>
                     <div class="col-lg-3">
                         <input name="price" value="<notempty name='info'>{$info.price}</notempty>" class="form-control" placeholder="价格"/>
@@ -94,8 +100,34 @@
 <js file="__JS__/validation/bootstrapValidator.js"/>
 <link rel="stylesheet" href="__PLUG__/Uploadify/uploadify.css" />
 <script type="text/javascript" src="__PLUG__/Uploadify/jquery.uploadify.min.js"></script>
+<link rel="stylesheet" href="__PLUG__/kindeditor/plugins/code/prettify.css" />
+<script charset="utf-8" src="__PLUG__/kindeditor/kindeditor.js"></script>
+<script charset="utf-8" src="__PLUG__/kindeditor/lang/zh_CN.js"></script>
+<script charset="utf-8" src="__PLUG__/kindeditor/plugins/code/prettify.js"></script>
 <script type="text/javascript">
     $(function(){
+        KindEditor.ready(function(K) {
+            var option = {
+                cssPath : '__PLUG__/kindeditor/plugins/code/prettify.css',
+                uploadJson : "{:Url('Uploadify/KindEditorUpload')}",
+                height:350,
+                width:750,
+                newlineTag:"p",
+                filterMode : false,
+                allowFlashUpload : false,
+                allowMediaUpload : false,
+                allowFileManager : false,
+                extraFileUploadParams:{     //配置多图上传水印.
+                    'water':-1,      //不填:默认无水印,-1/无水印,0:网址水印,1:LOGO水印,2:文字水印
+                    'font':'{$site.title|default='魏巍是个大帅锅'}',      //与2:文字水印配合使用
+                },
+                afterBlur: function(){this.sync();}
+            };
+            editor1 = K.create('textarea[name="content"]',option);
+            prettyPrint();
+        });
+
+
         $('#togglingForm').bootstrapValidator({
             message: '验证没有通过',
             feedbackicons: {
