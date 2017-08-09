@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "curl/curl",
-            "version": "1.7.0",
+            "version": "1.7.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-mod/curl.git",
-                "reference": "17dfffae32d9132f3af30e66cb261e9b80204811"
+                "reference": "19d39f6c101bf9ed76feea86b446361f53c8d368"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://files.phpcomposer.com/files/php-mod/curl/17dfffae32d9132f3af30e66cb261e9b80204811.zip",
-                "reference": "17dfffae32d9132f3af30e66cb261e9b80204811",
+                "url": "https://files.phpcomposer.com/files/php-mod/curl/19d39f6c101bf9ed76feea86b446361f53c8d368.zip",
+                "reference": "19d39f6c101bf9ed76feea86b446361f53c8d368",
                 "shasum": ""
             },
             "require": {
@@ -59,7 +59,7 @@
                 "curl",
                 "dot"
             ],
-            "time": "2017-07-28T13:15:05+00:00"
+            "time": "2017-08-09T09:46:25+00:00"
         },
         {
             "name": "ikimea/browser",
