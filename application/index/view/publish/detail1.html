@@ -35,6 +35,7 @@
                         <span>收货人姓名</span>
                         <input type="text" name='name' placeholder="请输入您的姓名" required="required" />
                         <input type="hidden" name="pid" id="pid" value="{$pid}" >
+                        <input type="hidden" name="openid" id="openid" value="{$openid}" >
                         <input type="hidden" name="code" id="code" value="{$code}" >
                         <input type="hidden" name="price" id="price" value="{$vo.price}" >
                     </div>
@@ -120,6 +121,7 @@
             var city= $('input[name="city"]').val();
             var address= $('input[name="address"]').val();
             var number= $('input[name="number"]').val();
+
             if(name==''){
                 layer.open({
                     content: "收货人姓名不能为空"
@@ -178,21 +180,21 @@
                 return false;
             }
             $.post('{:Url("/account/add_order")}',$('form').serialize(),function (result) {
-                console.log(result);
-                if(result.status==1){
-                    //$('.content6').toggle();
-                }else{
-                    layer.open({
-                        content: result.msg
-                        ,skin: 'msg'
-                        ,time: 3
-                    });
-                }
+                alert(JSON.stringify(result));
+//                if(result.status==1){
+//                    $('.content6').toggle();
+//                }else{
+//                    layer.open({
+//                        content: result.msg
+//                        ,skin: 'msg'
+//                        ,time: 3
+//                    });
+//                }
             });
         });
-        $(document).on('click','#return,#cancel',function (e) {
+        $(document).on('click','#cancel',function (e) {
             e.preventDefault();
-            $('.content6').toggle();
+            $('.content6').hide();
         });
 
         $(document).on('click','#pay',function (e) {

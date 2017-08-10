@@ -145,8 +145,9 @@ color:#009fff;
 .content3 h2{
 	 font-size: 35px;
 	color: #3cbfce;
-	padding-left: 0;
-	transition: padding-left 1s;
+	position: relative;
+	left: 0rem;
+	transition: left 1s;
 	text-align: center;
 }
 .content3 .C1Span{
@@ -156,7 +157,7 @@ color:#009fff;
 }
 .content3 .C1Span span{
 display: block;
-position: relative;
+position: absolute;
 width: auto;
 height: 3.2rem;
 line-height: 3.2rem;
@@ -169,19 +170,19 @@ top: 0;
 left: 16%;
 }
 .content3 .C1Span span:nth-child(2){
-/*top: 6.4rem;*/
-right: -55%;
+top: 3.2rem;
+right: 16%;
 }
 .content3 .C1Span span:nth-child(3){
-/*top: 3.2rem;*/
+top: 6.4rem;
 left: 16%;
 }
 .content3 .C1Span span:nth-child(4){
-/*top: 9.6rem;*/
-right: -55%;
+top: 9.6rem;
+right: 16%;
 }
 .content3 .C1Span span:nth-child(5){
-/*top: 12.8rem;*/
+top: 12.8rem;
 left: 16%;
 }
 .shopPrice{
@@ -196,15 +197,15 @@ left: 16%;
 	top: 3rem;
 }
 .speradPrice{
-	width: 100%;
+	width: 32%;
 	transform: rotateZ(0deg);
 	position: absolute;
 	transition: all 1s;
-	right: -11.5rem;
+	right: 7.5rem;
 	bottom: -10.5rem;
 }
 .speradPrice>img{
-width: 70%;
+width: 100%;
 }
 .norms{
 	position: absolute;
@@ -265,7 +266,7 @@ text-align: left;
 /*第二页*/
 
 #obj .content .content3 .h3{
-	padding-left: 22.5rem;
+	left: 20rem;
 }
 #obj .content .content3 .C1Span2 span:nth-child(2n-1){
 	text-align: right;
@@ -324,9 +325,10 @@ left: -20rem;
 }
 .content52{
 	width: 75%;
-	height: 75%;
+	height: 40rem;
 	left: 8.5%;
-	top: 10%; 
+	top: 50%;
+	margin-top: -20rem; 
 	padding: 0 5%;
 	font-size: 1.7rem;
 	/*margin-left: -8%;*/
@@ -376,12 +378,16 @@ left: -20rem;
 }
 .button {
 	text-align: center;
-	padding:1rem 0 0 0;
+	position: absolute;
+	bottom: 1rem;
+	width: 100%;
+	right: 0;
+	/*padding:1rem 0 0 0;*/
 }
 .button button{
 	background:#ff8d00;
 	color: #ffffff;
-	width: 45%;
+	width: 36%;
 	text-align: center;
 	height: 3rem;
 	border: 1px solid #ff8d00;
@@ -478,8 +484,24 @@ left: -20rem;
 
 @media only screen and (max-width:320px){
 	html {
-		font-size: 22% !important;
+		font-size: 45% !important;
 	}
+	.content52{
+	width: 75%;
+	height: 32rem;
+	left: 8.5%;
+	top: 50%;
+	margin-top: -16rem; 
+	padding: 0 5%;
+	font-size: 1.7rem;
+	/*margin-left: -8%;*/
+		z-index: 12;
+	border-radius: 1.8rem;
+	position: absolute;
+	background:#ffffff;
+}
+
+
 	.content1 .C1Span{
 		bottom: 3rem;
 	}
@@ -499,7 +521,7 @@ left: -20rem;
 	}
 }
 
-@media only screen and (min-width: 750px) and (min-width: 410px){
+/*@media only screen and (min-width: 750px) and (min-width: 410px){
 	html {
 		font-size: 150% !important;
 	}
@@ -508,4 +530,4 @@ left: -20rem;
 	html {
 		font-size: 187.5% !important;
 	}
-}
+}*/
