@@ -36,7 +36,7 @@ Route::rule('user/zip_code','index/user/zip_code');
 Route::rule('account/message','index/user/message');
 Route::rule('account/income','index/income/index');
 Route::rule('account/add_product','index/user/add_product');
-
+//Route::rule('notify/callback_wechat','index/publish/callback_wechat');
 
 
 // 给Account控制器设置快捷路由

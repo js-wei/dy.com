@@ -64,8 +64,6 @@ class Publish extends Base{
                 ->where('mid','eq',$code-10000)
                 ->setInc('click');
 
-
-            //$tpl = is_weixin()?'wechat_default':'detail1';
             $this->assign('vo',$product);
             $this->assign('code',$code);
             $this->assign('openid',$openid);
@@ -122,6 +120,7 @@ class Publish extends Base{
         $product['address'] = $city .' '.$address;
         $product['name'] = $name;
         $product['tel'] = $tel;
+        $product['number'] = $number;
 
         $data = [
             'mid'=> $code-10000,
@@ -132,7 +131,7 @@ class Publish extends Base{
             'ordtitle'=>$product['title'],
             'ordbuynum'=>$number,
             'ordprice'=>$product['price'],
-            'ordfee'=>$product['total'],
+            'ordfee'=>$product['total']
         ];
         if(!db('order')->insert($data)){
             return json([
@@ -146,7 +145,7 @@ class Publish extends Base{
         if(!$order){
             return json(['status'=>0,'msg'=>'错误的订单编号']);
         }
-        $total_fee = $t?100:$order['ordfee'];
+        $total_fee = $t?1:$order['ordfee']*100;
         //引入WxPayPubHelper
         vendor("WxPayPub.WxPayJsApiPay");
         $tools = new \JsApiPay();
@@ -160,13 +159,13 @@ class Publish extends Base{
         $input->SetTime_start(date("YmdHis"));
         $input->SetTime_expire(date("YmdHis", time() + 600));
         $input->SetGoods_tag("");
-        $input->SetNotify_url($this->site['url']."/notify/callback_wechat");
+        $input->SetNotify_url("http://t.jswei.top/index/publish/callback_wechat");
         $input->SetTrade_type("JSAPI");
         $input->SetOpenid($openid);                    //'onP74wOKIE0qSq54D1Qqr_0gypyY'
         $order = \WxPayApi::unifiedOrder($input);
         $jsApiParameters = $tools->GetJsApiParameters($order);
 
-        return ['status'=>1,'jsApiParameters'=>$jsApiParameters];
+        return ['status'=>1,'jsApiParameters'=>$jsApiParameters,'orderid'=>$data['ordid'],'product'=>$product];
 
 
 
@@ -179,6 +178,50 @@ class Publish extends Base{
 //        $this->assign('content',$content);
 //        return view('pay');
     }
+
+
+    public function callback_wechat(){
+        $path = ROOT_PATH . 'public' . DS;
+
+        $xml = file_get_contents("php://input");
+        libxml_disable_entity_loader(true);
+        $data = json_decode(json_encode(simplexml_load_string($xml, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
+
+        if($data['result_code']=='SUCCESS' && $data['return_code']=='SUCCESS'){
+            $out_trade_no = $data['out_trade_no'];
+            $o  = db('order')->where('ordid','eq',$out_trade_no)->find();
+            file_put_contents($path.'data/wechat_sql.txt',db('order')->getLastSql());
+            if($o && $o['ordstatus']==0){
+                db('order')->update([
+                    'id'=>$o['id'],
+                    'finishtime'=>time(),
+                    'ordstatus'=>1
+                ]);
+            }
+        }
+
+        ksort($data);
+        $buff = '';
+        foreach ($data as $k => $v){
+            if($k != 'sign'){
+                $buff .= $k . '=' . $v . '&';
+            }
+        }
+        $stringSignTemp = $buff . 'key='.WX_KEY;
+        $sign = strtoupper(md5($stringSignTemp));
+
+        if($sign == $data['sign']){
+            file_put_contents($path.'data/wechat_pay.txt',"OK");
+            //处理完成之后，告诉微信成功结果
+            echo '<xml>
+              <return_code><![CDATA[SUCCESS]]></return_code>
+              <return_msg><![CDATA[OK]]></return_msg>
+          </xml>';
+           exit();
+        }
+        echo '';
+    }
+
 
     /**
      * 获取openid

@@ -8,6 +8,7 @@
     <title>台湾原产燕窝隐形面膜</title>
     <link rel="stylesheet" href="__PLUG__/larea/css/LArea.css">
     <link rel="stylesheet" href="__CSS__/spr.css">
+    <script src="//res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
     <style>
         form{
             margin-top:2.9rem;
@@ -73,19 +74,19 @@
             <div class="content61">
                 <h2>订单详情</h2>
                 <div class="PurInfor">
-                    <span>购买人信息:</span><span>王传奇</span>
+                    <span>购买人信息:</span><span id="name">王传奇</span>
                 </div>
                 <div class="PurAdd">
-                    <span>收货地址:</span><span>江苏省苏州市虎丘区东创科技园B3-50002</span>
+                    <span>收货地址:</span><span id="address">江苏省苏州市虎丘区东创科技园B3-50002</span>
                 </div>
                 <div class="PurShopp">
-                    <span>订单信息:</span><span>3盒</span>
+                    <span>订单信息:</span><span id="number">3盒</span>
                 </div>
                 <div class="kuaidi">
                     <span>快递:</span><span>国内大陆包邮</span>
                 </div>
                 <div class="money">
-                    <span>订单金额：</span><span style="color:#ff0000;">￥99元</span>
+                    <span>订单金额：</span><span style="color:#ff0000;" id="totals"></span>
                 </div>
             </div>
             <div class="operate">
@@ -101,6 +102,7 @@
 <script src="__PLUG__/larea/js/LAreaData2.js"></script>
 <script src="__PLUG__/larea/js/LArea.js"></script>
 <script>
+    var jsApi =null;
     $(function () {
         var area1 = new LArea();
         area1.init({
@@ -179,17 +181,26 @@
                 });
                 return false;
             }
+            layer.open({type:2});
             $.post('{:Url("/account/add_order")}',$('form').serialize(),function (result) {
-                alert(JSON.stringify(result));
-//                if(result.status==1){
-//                    $('.content6').toggle();
-//                }else{
-//                    layer.open({
-//                        content: result.msg
-//                        ,skin: 'msg'
-//                        ,time: 3
-//                    });
-//                }
+                layer.closeAll();
+                if(result.status==1){
+                    jsApi = $.parseJSON(result.jsApiParameters);
+                    var pro = result.product;
+                    $('#name').text(pro.name);
+                    $('#address').text(pro.address);
+                    $('#number').text(pro.number+'盒');
+                    $('#totals').text('￥'+pro.total+'元');
+                    $('#name').text(pro.name);
+
+                    $('.content6').toggle();
+                }else{
+                    layer.open({
+                        content: result.msg
+                        ,skin: 'msg'
+                        ,time: 3
+                    });
+                }
             });
         });
         $(document).on('click','#cancel',function (e) {
@@ -199,9 +210,48 @@
 
         $(document).on('click','#pay',function (e) {
             e.preventDefault();
-
+            callpay();
         });
     });
+    //调用微信JS api 支付
+    function jsApiCall(){
+        WeixinJSBridge.invoke(
+            'getBrandWCPayRequest'
+            ,jsApi, function(res){
+            if(res.err_msg == 'get_brand_wcpay_request:cancel') {
+                alert("您已取消了此次支付");
+                return;
+            }else if(res.err_msg == 'get_brand_wcpay_request:fail') {
+                alert("支付失败");
+                return;
+            } else if(res.err_msg == 'get_brand_wcpay_request:ok') {
+                layer.open({
+                    content: '恭喜您购买成功'
+                    ,btn: ['刷新页面', '关闭页面']
+                    ,yes: function(index){
+                        location.reload();
+                        layer.close(index);
+                    }
+                    ,no:function (index) {
+                        wx.closeWindow();
+                    }
+                });
+            }}
+        );
+    }
+
+    function callpay(){
+        if (typeof WeixinJSBridge == "undefined"){
+            if( document.addEventListener ){
+                document.addEventListener('WeixinJSBridgeReady', jsApiCall, false);
+            }else if (document.attachEvent){
+                document.attachEvent('WeixinJSBridgeReady', jsApiCall);
+                document.attachEvent('onWeixinJSBridgeReady', jsApiCall);
+            }
+        }else{
+            jsApiCall();
+        }
+    }
 </script>
 <script src="__PLUG__/layer/mobile/layer.js"></script>
 <script type="text/javascript" src='__JS__/spread.js'></script>

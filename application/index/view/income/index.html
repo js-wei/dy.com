@@ -1,60 +1,212 @@
-<include file="public:header" title="基本信息" this="__CSS__/compiled/gallery.css"/>
+<include file="public:header" title="我的消息" this="__CSS__/compiled/tables.css"/>
 <include file="public:navbar"/>
 <include file="public:sidebar"/>
-<style>
-    .icon i{
-        color:white;
-        font-size:22px;
-    }
-</style>
-<!-- main container -->
 <div class="content">
-    <div id="pad-wrapper" class="gallery">
-        <div class="row header">
-            <div class="col-md-12">
-                <h3>产品收益</h3>
+    <div id="pad-wrapper">
+        <div class="table-wrapper products-table section">
+            <div class="row head">
+                <div class="col-md-12">
+                    <h4>我的产品</h4>
+                </div>
             </div>
-            <div class="clearfix"></div>
+            <div class="bs-mt-10"></div>
+            <div class="row filter-block">
+                <div class="col-lg-12">
+                    <label class="label label-default">订单数:{$c}单</label>
+                    <label class="label label-default">支付单:{$c1}单</label>
+                    <label class="label label-default">分成金:{$sum}元</label>
+                    <hr>
+                    <div>
+                        <div id="reportrange" class="pull-left" style="background:#fff;line-height:21px;cursor:pointer;padding:5px 10px;border: 1px solid #ccc;width:310px;">
+                            <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;
+                            <span id="times"></span> <b class="caret"></b>
+                        </div>
+                        <select name="user" id="user" class="pull-left">
+                            <option value="">所有用户</option>
+                            <option value="1">指定用户</option>
+                        </select>
+                        <input type="text" id="this_name"  class="form-control" style="width:200px;height:33px;display:none;" placeholder="指定用户名称">
+                        <div class="clearfix"></div>
+                        <button type="button" class="btn btn-sky export mt10">导出数据</button>
+                    </div>
+                </div>
+
+            </div>
+            <div class="row">
+                <div class="col-lg-1 pull-right bs-mb-10">
+                    <a class="btn-flat success new-product delete-all">选中删除</a>
+                </div>
+                <notempty name="list">
+                    <table class="table table-hover">
+                        <thead>
+                        <tr>
+                            <th>
+                                <input type="checkbox">
+                                产品名称
+                            </th>
+                            <th>
+                                <span class="line"></span>产品价格
+                            </th>
+                            <th>
+                                <span class="line"></span>产品单价
+                            </th>
+                            <th>
+                                <span class="line"></span>购买数量
+                            </th>
+                            <th>
+                                <span class="line"></span>支付金额
+                            </th>
+                            <th>
+                                <span class="line"></span>产品分成
+                            </th>
+                            <th >
+                                <span class="line"></span>分成金额
+                            </th>
+                            <th >
+                                <span class="line"></span>下单时间
+                            </th>
+                            <th >
+                                <span class="line"></span>支付时间
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <!-- row -->
+                        <volist name="list" id="vo">
+                            <tr class="first">
+                                <td>
+                                    <input type="checkbox" value="{$vo.id}" class="message">
+                                    <a href="javascript:;" class="name">{$vo.ordtitle}</a>
+                                </td>
+                                <td class="">
+                                    {$vo.ordprice}
+                                </td>
+                                <td>
+                                    {$vo.ordbuynum}
+                                </td>
+                                <td class="description">
+                                    {$vo.ordfee}
+                                </td>
+                                <td>
+                                    {$vo.divides*100}%
+                                </td>
+                                <td>
+                                    <eq name="vo.ordstatus" value="1">
+                                        <span class="text-success">{$vo['divides']*$vo['ordfee']}</span>
+                                        <else />
+                                        <span class="text-danger">未支付不能获得</span>
+                                    </eq>
+                                </td>
+                                <td>
+                                    {$vo.ordtime|date='Y-d-d H:i:s',###}
+                                </td>
+                                <td >
+                                    <notempty name="vo.finishtime">
+                                        {$vo.finishtime|date='Y-d-d H:i:s',###}
+                                        <else />
+                                        <span class="text-danger">未完成支付</span>
+                                    </notempty>
+                                    <ul class="actions">
+                                        <li class="last"><a href="__URL__/delete?id={$vo.id}" class="delete">删除</a></li>
+                                    </ul>
+                                </td>
+                            </tr>
+                        </volist>
+                        </tbody>
+                    </table>
+                    <else />
+                    <div class="text-center">
+                        <h3>暂无消息</h3>
+                    </div>
+                </notempty>
+            </div>
             <hr>
-        </div>
-        <!-- gallery wrapper -->
-        <div class="gallery-wrapper">
-            <div class="row gallery-row">
-                <!-- single image -->
-                <div class="col-md-3 img-container">
-                    <div class="img-box">
-                        <span class="icon edit">
-                             <i class="icon-trash"  title="删除产品"></i>
-                        </span>
-                        <span class="icon trash">
-                            <i class="icon-eye-open" title="查看收益"></i>
-                        </span>
-                        <img src="__IMAGES__/gallery3.jpg" class="img-responsive" />
-                        <p class="title">
-                            Beach pic title
-                        </p>
-                        <p>价格 <span class="text-danger">119.00</span></p>
-                        <p>分成 <span class="text-danger">8%</span></p>
-                    </div>
-                </div>
-                <div class="col-md-3 img-container">
-                    <div class="img-box">
-                        <span class="icon edit">
-                            <i class="icon-trash" title="删除产品"></i>
-                        </span>
-                        <span class="icon trash">
-                            <i class="icon-eye-open" title="查看收益"></i>
-                        </span>
-                        <img src="__IMAGES__/gallery3.jpg" class="img-responsive" />
-                        <p class="title">Beach pic title </p>
-                        <p>价格 <span class="text-danger">199.00</span></p>
-                        <p>分成 <span class="text-danger">10%</span></p>
-                    </div>
-                </div>
+            <div>
+                {$list->render()}
             </div>
-            <!-- end gallery wrapper -->
-            <!-- end blank state -->
         </div>
+        <!-- end products table -->
     </div>
 </div>
+<script src="/static/admin/js/datetime/bootstrap-datepicker.js"></script>
+<script src="/static/admin/js/datetime/moment.js"></script>
+<script src="/static/admin/js/datetime/daterangepicker.js"></script>
+<script>
+    var start = moment().subtract(29, 'days');
+    var end = moment();
+
+    function cb(start, end) {
+        $('#reportrange span').html(start.format('YYYY/MM/DD HH:mm:ss') + '- ' + end.format('YYYY/MM/DD HH:mm:ss'));
+    }
+    $('#reportrange').daterangepicker({
+        startDate: start,
+        endDate: end,
+        maxDate : moment(), //最大时间
+        dateLimit : {
+            days : 30
+        }, //起止时间的最大间隔
+        showDropdowns : true,
+        showWeekNumbers : false, //是否显示第几周
+        timePicker : true, //是否显示小时和分钟
+        timePickerIncrement : 60, //时间的增量，单位为分钟
+        timePicker12Hour : false, //是否使用12小时制来显示时间
+        ranges : {
+            '最近1小时': [moment().subtract('hours',1), moment()],
+            '今日': [moment().startOf('day'), moment()],
+            '昨日': [moment().subtract('days', 1).startOf('day'), moment().subtract('days', 1).endOf('day')],
+            '最近7日': [moment().subtract('days', 6), moment()],
+            '最近30日': [moment().subtract('days', 29), moment()]
+        },
+        locale:{
+            applyLabel:'应用',
+            cancelLabel:'取消',
+            fromLabel:'开始',
+            toLabel:'结束',
+            customRangeLabel : '自定义',
+            daysOfWeek : [ '日', '一', '二', '三', '四', '五', '六' ],
+            monthNames : [ '一月', '二月', '三月', '四月', '五月', '六月',
+                '七月', '八月', '九月', '十月', '十一月', '十二月' ]
+        }
+    }, cb);
+    cb(start, end);
+
+    $(function () {
+        $(document).on('click','.delete',function (e) {
+            e.preventDefault();
+            var url = $(this).attr('href');
+            $.post(url,{},function (result) {
+                if(result.status==0){
+                    layer.alert(result.msg,{icon:5});
+                }else{
+                    layer.alert(result.msg,{icon:6,end:function () {
+                        window.location.reload();
+                    }});
+                }
+            });
+        });
+        $('select').change(function () {
+            var status = $(this).val();
+            window.location.href = '{:Url("/account/message")}?status='+status;
+        });
+        $(document).on('click','.delete-all',function (e) {
+            e.preventDefault();
+            var del = '';
+            $('input[type="checkbox"].message:checked').each(function () {
+                del +=  "," + $(this).val();
+            });
+            if(del){
+                del = del.substring(1);
+                $.post('__URL__/delete_all',{id:del},function (result) {
+                    if(result.status==0){
+                        layer.alert(result.msg,{icon:5});
+                    }else{
+                        layer.alert(result.msg,{icon:6,end:function () {
+                            window.location.reload();
+                        }});
+                    }
+                });
+            }
+        })
+    })
+</script>
 <include file="public:footer"/>
