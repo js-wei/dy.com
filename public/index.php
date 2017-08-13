@@ -20,8 +20,7 @@ define('WX_APPSECRET', "d5f062346b24ca499e6997fc2f38d4db");
 define('WX_JS_API_CALL_URL', '');
 define('WX_SSLCERT_PATH', '');
 define('WX_SSLKEY_PATH', '');
-define('WX_NOTIFY_URL',WEB_HOST.'Notify/WeChatPay');
-define('WX_CURL_TIMEOUT', 30);
+define('WX_CURL_TIMEOUT', 60);
 
 // 定义应用目录
 define('APP_PATH', __DIR__ . '/../application/');

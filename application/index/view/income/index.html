@@ -1,6 +1,155 @@
 <include file="public:header" title="我的消息" this="__CSS__/compiled/tables.css"/>
 <include file="public:navbar"/>
 <include file="public:sidebar"/>
+<style>
+    .daterangepicker.opensright .ranges, .daterangepicker.opensright .calendar {
+        float: right;
+        margin: 4px;
+    }
+    .daterangepicker .calendar {
+        display: none;
+        max-width: 270px;
+    }
+    .daterangepicker .ranges li {
+        font-size: 13px;
+        background: #f5f5f5;
+        border: 1px solid #f5f5f5;
+        color: #2dc3e8;
+        padding: 3px 12px;
+        margin-bottom: 8px;
+        cursor: pointer;
+    }
+    .daterangepicker.opensright .ranges, .daterangepicker.opensright .calendar {
+        float: right;
+        margin: 4px;
+    }
+    .daterangepicker .ranges ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+    .daterangepicker .ranges .input-mini {
+        background-color: #eee;
+        border: 1px solid #ccc;
+        color: #555;
+        display: block;
+        font-size: 11px;
+        height: 30px;
+        line-height: 30px;
+        vertical-align: middle;
+        margin: 0 0 10px 0;
+        padding: 0 6px;
+        width: 74px;
+    }
+    .daterangepicker .ranges {
+        width: 160px;
+        text-align: left;
+    }
+    .daterangepicker td.in-range {
+        background: #d0e7fc;
+        -webkit-border-radius: 0;
+        -webkit-background-clip: padding-box;
+        -moz-border-radius: 0;
+        -moz-background-clip: padding;
+        border-radius: 0;
+        background-clip: padding-box;
+    }
+    .daterangepicker .calendar th, .daterangepicker .calendar td {
+        white-space: nowrap;
+        text-align: center;
+        min-width: 32px;
+    }
+    .daterangepicker td.in-range {
+        background: #d0e7fc;
+        -webkit-border-radius: 0;
+        -webkit-background-clip: padding-box;
+        -moz-border-radius: 0;
+        -moz-background-clip: padding;
+        border-radius: 0;
+        background-clip: padding-box;
+    }
+    .daterangepicker .calendar th, .daterangepicker .calendar td {
+        white-space: nowrap;
+        text-align: center;
+        min-width: 32px;
+    }
+    .daterangepicker .calendar th, .daterangepicker .calendar td {
+        white-space: nowrap;
+        text-align: center;
+        min-width: 32px;
+    }
+    .daterangepicker select.yearselect {
+        width: 40%;
+    }
+    .daterangepicker select.monthselect, .daterangepicker select.yearselect {
+        font-size: 12px;
+        padding: 1px;
+        height: auto;
+        margin: 0;
+        cursor: default;
+    }
+    .form-control, select {
+        font-size: 13px;
+        color: #858585;
+        background-color: #fbfbfb;
+        border: 1px solid #d5d5d5;
+        padding: 6px 12px;
+    }
+    select {
+        margin: 0;
+        height: 24px;
+        border-color: #d0dde9;
+        border-radius: 2px;
+        font-size: 13px;
+    }
+    input, button, select, textarea {
+        font-family: "Open Sans", Arial;
+    }
+    input, button, select, textarea {
+        font-family: inherit;
+        font-size: inherit;
+        line-height: inherit;
+    }
+    button, select {
+        text-transform: none;
+    }
+    .table-condensed thead > tr > th, .table-condensed tbody > tr > th, .table-condensed tfoot > tr > th, .table-condensed thead > tr > td, .table-condensed tbody > tr > td, .table-condensed tfoot > tr > td {
+        padding: 5px;
+    }
+    .daterangepicker td, .daterangepicker th {
+        text-align: center;
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+        white-space: nowrap;
+    }
+    .daterangepicker .ranges li.active, .daterangepicker .ranges li:hover {
+        background: #2dc3e8;
+        border: 1px solid #2dc3e8;
+        color: #fff;
+    }
+    .daterangepicker .ranges .range_inputs>div {
+        float: left;
+    }
+    .daterangepicker .ranges label {
+        color: #333;
+        display: block;
+        font-size: 11px;
+        font-weight: normal;
+        height: 20px;
+        line-height: 20px;
+        margin-bottom: 2px;
+        text-transform: uppercase;
+        width: 74px;
+    }
+    .calendar-time select {
+        margin: 10px 0 0 0;
+        height: 32px;
+        border-color: #d0dde9;
+        border-radius: 2px;
+        font-size: 13px;
+    }
+</style>
 <div class="content">
     <div id="pad-wrapper">
         <div class="table-wrapper products-table section">
@@ -17,23 +166,19 @@
                     <label class="label label-default">分成金:{$sum}元</label>
                     <hr>
                     <div>
-                        <div id="reportrange" class="pull-left" style="background:#fff;line-height:21px;cursor:pointer;padding:5px 10px;border: 1px solid #ccc;width:310px;">
-                            <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;
-                            <span id="times"></span> <b class="caret"></b>
-                        </div>
-                        <select name="user" id="user" class="pull-left">
-                            <option value="">所有用户</option>
-                            <option value="1">指定用户</option>
-                        </select>
-                        <input type="text" id="this_name"  class="form-control" style="width:200px;height:33px;display:none;" placeholder="指定用户名称">
-                        <div class="clearfix"></div>
-                        <button type="button" class="btn btn-sky export mt10">导出数据</button>
+                        <form action="__SEL__" method="get">
+                            <div id="reportrange" class="pull-left form-control" style="background:#fff;line-height:21px;cursor:pointer;padding:5px 10px;border: 1px solid #ccc;width:310px;">
+                                <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;
+                                <span id="times"></span> <b class="caret"></b>
+                            </div>
+                            <div class="clearfix"></div>
+                            <button type="button" class="btn btn-flat primary export" style="margin-top:10px;">导出数据</button>
+                        </form>
                     </div>
                 </div>
-
             </div>
             <div class="row">
-                <div class="col-lg-1 pull-right bs-mb-10">
+                <div class="col-lg-2 pull-right bs-mb-10">
                     <a class="btn-flat success new-product delete-all">选中删除</a>
                 </div>
                 <notempty name="list">
@@ -115,8 +260,9 @@
                         </tbody>
                     </table>
                     <else />
+                    <div class="clearfix"></div>
                     <div class="text-center">
-                        <h3>暂无消息</h3>
+                        <h4>:)暂无任何订单</h4>
                     </div>
                 </notempty>
             </div>
@@ -132,6 +278,24 @@
 <script src="/static/admin/js/datetime/moment.js"></script>
 <script src="/static/admin/js/datetime/daterangepicker.js"></script>
 <script>
+
+    $(document).on('click','.export',function(e){
+        e.preventDefault();
+        var time = $('#times').text(),
+            user = $('#this_name').val();
+        var index = layer.load(2, {
+            shard: [0.6, "#000"]
+        });
+        $.post('__URL__/export',{time:time,user:user},function (result) {
+            layer.close(index);
+            if(result.status==1){
+                window.location.href=result.redirect;
+            }else {
+                layer.alert(result.msg,{icon:5});
+            }
+        });
+    });
+
     var start = moment().subtract(29, 'days');
     var end = moment();
 

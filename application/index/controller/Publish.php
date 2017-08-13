@@ -55,7 +55,26 @@ class Publish extends Base{
         if(empty($id) || empty($code)){
             exit('关键参数错误');
         }
-        if($openid){
+        if(is_weixin()){
+            if($openid){
+                $code = base64_decode($code);     //个人代码
+                $product = db('product')->field('dates',true)->find($id);
+                //点击
+                db('my_product')
+                    ->where('pid','eq',$id)
+                    ->where('mid','eq',$code-10000)
+                    ->setInc('click');
+
+                $this->assign('vo',$product);
+                $this->assign('code',$code);
+                $this->assign('openid',$openid);
+                $this->assign('pid',$id);
+                return view('detail1');
+            }else{
+                $url =  'http://pinkan.cn/wap/oder/get_openid?callback=t.jswei.top/product/detail&_id='.$id.'&_c='.$code;
+                header('Location:'.$url);
+            }
+        }else{
             $code = base64_decode($code);     //个人代码
             $product = db('product')->field('dates',true)->find($id);
             //点击
@@ -66,12 +85,9 @@ class Publish extends Base{
 
             $this->assign('vo',$product);
             $this->assign('code',$code);
-            $this->assign('openid',$openid);
+            $this->assign('openid','onP74wOKIE0qSq54D1Qqr_0gypyY');
             $this->assign('pid',$id);
             return view('detail1');
-        }else{
-            $url =  'http://pinkan.cn/wap/oder/get_openid?callback=t.jswei.top/product/detail&_id='.$id.'&_c='.$code;
-            header('Location:'.$url);
         }
     }
 
@@ -113,7 +129,7 @@ class Publish extends Base{
             return json(['status'=>0,'msg'=>'您的手机号不正确']);
         }
         if(empty($openid)){
-            return json(['status'=>0,'msg'=>'缺少必要的条件']);
+            return json(['status'=>0,'msg'=>'缺少必要的条件openid']);
         }
         $product = db('product')->field('id,title,price')->find($pid);
         $product['total'] = $number * $product['price'];
@@ -146,15 +162,18 @@ class Publish extends Base{
             return json(['status'=>0,'msg'=>'错误的订单编号']);
         }
         $total_fee = $t?1:$order['ordfee']*100;
-        //引入WxPayPubHelper
+        $out_trade_no = $order['ordid'];
+        $body = $order['ordtitle'];
+
+
         vendor("WxPayPub.WxPayJsApiPay");
         $tools = new \JsApiPay();
         //file_put_contents('./data/openid.txt',$openid);
         //②、统一下单
         $input = new \WxPayUnifiedOrder();
-        $input->SetBody($order['ordtitle']);
+        $input->SetBody($body);
         $input->SetAttach(json_encode(['ordid'=>$order['ordid']]));
-        $input->SetOut_trade_no($order['ordid']);
+        $input->SetOut_trade_no($out_trade_no);
         $input->SetTotal_fee($total_fee);//$total_fee
         $input->SetTime_start(date("YmdHis"));
         $input->SetTime_expire(date("YmdHis", time() + 600));
@@ -166,6 +185,7 @@ class Publish extends Base{
         $jsApiParameters = $tools->GetJsApiParameters($order);
 
         return ['status'=>1,'jsApiParameters'=>$jsApiParameters,'orderid'=>$data['ordid'],'product'=>$product];
+
 
 
 
