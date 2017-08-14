@@ -185,7 +185,6 @@
                 layer.closeAll();
                 if(result.status==1){
                     jsApi = $.parseJSON(result.jsApiParameters);
-                    alert(JSON.stringify(jsApi));
                     var pro = result.product;
                     $('#name').text(pro.name);
                     $('#address').text(pro.address);

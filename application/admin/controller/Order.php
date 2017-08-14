@@ -22,7 +22,12 @@ class Order extends Base{
         $search = $this->_search();
         $where = array_merge($where,$search);
 
-        $list = db('order')->where($where)->order('ordtime desc')->paginate(5,false,[
+        $list = db('order')
+            ->alias('a')
+            ->join('think_product b','b.id=a.proid')
+            ->field('a.id,a.ordid,a.ordtitle,a.ordprice,a.payment_buyer_email,a.ordfee,a.ordstatus,a.ordbuynum,a.ordtime,a.finishtime,b.divides')
+            ->order('ordtime desc')
+            ->paginate(5,false,[
             'query'=>[
                 's_keywords'=>input('s_keywords'),
                 "s_date"=>input('s_date'),
@@ -133,7 +138,14 @@ class Order extends Base{
         }
 
         $title = $user?$time."|".$user:$time;
-        $list = db('order')->field('ordid,ordtitle,ordbuynum,ordprice,ordfee,ordtime,finishtime,ordstatus')->where($where)->select();
+        $divides=0;
+        $list = db('order')
+            ->alias('a')
+            ->join('think_product b','b.id=a.proid')
+            ->where($where)
+            ->field('a.ordid,a.ordtitle,a.ordprice,a.ordfee,a.ordstatus,a.ordbuynum,a.ordtime,a.finishtime,b.divides')
+            ->order('ordtime desc')
+            ->select();
 
         if(request()->isPost()){
             if(!empty($list)){
@@ -147,6 +159,7 @@ class Order extends Base{
             $list[$k]['ordtime']=date('Y-m-d H:i:s',$v['ordtime']);
             $list[$k]['finishtime']=$v['finishtime']?date('Y-m-d H:i:s',$v['finishtime']):'/';
             $list[$k]['ordstatus']=$v['ordstatus']?'已支付':'未支付';
+            $divides += $list[$k]['divides']=$v['ordstatus']?($v['divides']*$v['ordfee']):0;
         }
         $xlsCell  = array(
             array('ordid','订单号'),
@@ -157,6 +170,7 @@ class Order extends Base{
             array('ordtime','下单时间'),
             array('finishtime','支付时间'),
             array('ordstatus','是否付款'),
+            array('divides','分成金额'),
         );
 
         $this->exportExcel($title,$xlsCell,$list,"{$title}账单信息   生成日期:".date('Y-m-d',time()));
