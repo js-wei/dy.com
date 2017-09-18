@@ -126,9 +126,15 @@
                         <th class="hidden-xs">支付金额</th>
                         <th class="hidden-xs">下单时间</th>
                         <th class="hidden-xs">支付时间</th>
+<<<<<<< HEAD
                         <th class="hidden-xs">分成</th>
                         <th style="width:80px;">订单状态</th>
                         <th style="width:80px;">发货状态</th>
+=======
+                        <th class="hidden-xs">支付账号</th>
+                        <th class="hidden-xs">分成</th>
+                        <th style="width:80px;">状态</th>
+>>>>>>> b7b7ce70e46143263b0990a44b58872ca586abc9
                         <th style="width:120px;">操作</th>
                     </tr>
                     </thead>
@@ -175,6 +181,16 @@
                                     0
                                 </eq>
                             </td>
+<<<<<<< HEAD
+=======
+                            <td class="hidden-xs">
+                                <eq name="vo.ordstatus" value="1">
+                                    {$vo['divides']*$vo['ordfee']}
+                                    <else />
+                                    0
+                                </eq>
+                            </td>
+>>>>>>> b7b7ce70e46143263b0990a44b58872ca586abc9
                             <td>
                                 <eq name="vo.ordstatus" value="0"><span class="text-danger">未支付</span></eq>
                                 <eq name="vo.ordstatus" value="1"><span class="text-success">已付款</span></eq>

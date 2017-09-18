@@ -21,6 +21,7 @@ class Order extends Base{
         $where=[];
         $search = $this->_search(1);
         $where = array_merge($where,$search);
+<<<<<<< HEAD
 		
         $list = db('order')
             ->alias('a')
@@ -29,6 +30,14 @@ class Order extends Base{
             ->field('a.id,a.ordid,a.is_send,a.ordtitle,a.ordprice,a.payment_buyer_email,a.ordfee,a.ordstatus,a.ordbuynum,a.ordtime,a.finishtime,b.divides,c.phone')
             ->order('a.ordtime desc')
             ->where($where)
+=======
+
+        $list = db('order')
+            ->alias('a')
+            ->join('think_product b','b.id=a.proid')
+            ->field('a.id,a.ordid,a.ordtitle,a.ordprice,a.payment_buyer_email,a.ordfee,a.ordstatus,a.ordbuynum,a.ordtime,a.finishtime,b.divides')
+            ->order('ordtime desc')
+>>>>>>> b7b7ce70e46143263b0990a44b58872ca586abc9
             ->paginate(5,false,[
             'query'=>[
                 's_keywords'=>input('s_keywords'),
