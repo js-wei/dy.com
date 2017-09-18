@@ -47,8 +47,10 @@
                             <div class="col-xs-12 col-md-3 col-lg-2 mt10" style="padding:0">
                                 <select name="s_status" style="padding-right:0">
                                     <option value="-1">--全部--</option>
-                                    <option value="0" <eq name="search.s_status" value="0">selected</eq><eq name="search.s_status" value="">selected</eq>>启用</option>
-                                    <option value="1" <eq name="search.s_status" value="1">selected</eq>>禁用</option>
+                                    <option value="0" <eq name="search.s_status" value="0">selected</eq><eq name="search.s_status" value="">selected</eq>>未付款</option>
+                                    <option value="1" <eq name="search.s_status" value="1">selected</eq>>已付款</option>
+                                    <option value="2" <eq name="search.s_status" value="2">selected</eq>>未发货</option>
+                                    <option value="3" <eq name="search.s_status" value="3">selected</eq>>已发货</option>
                                 </select>
                             </div>
                             <button type="submit" class="btn btn-primary onSearch mt10">搜素</button>
@@ -98,10 +100,10 @@
                             <span id="times"></span> <b class="caret"></b>
                         </div>
                         <select name="user" id="user" class="pull-left">
-                            <option value="">所有用户</option>
-                            <option value="1">指定用户</option>
+                            <option value="">所有推广人</option>
+                            <option value="1">指定推广人</option>
                         </select>
-                        <input type="text" id="this_name"  class="form-control" style="width:200px;height:33px;display:none;" placeholder="指定用户名称">
+                        <input type="text" id="this_name"  class="form-control" style="width:200px;height:33px;display:none;" placeholder="指定推广人">
                         <div class="clearfix"></div>
                         <button type="button" class="btn btn-sky export mt10">导出数据</button>
                     </div>
@@ -119,13 +121,14 @@
                         </th>
                         <th>订单编号</th>
                         <th class="hidden-xs">订单标题</th>
+                        <th class="hidden-xs">推广人</th>
                         <th class="hidden-xs">产品单价</th>
                         <th class="hidden-xs">支付金额</th>
                         <th class="hidden-xs">下单时间</th>
                         <th class="hidden-xs">支付时间</th>
-                        <th class="hidden-xs">支付账号</th>
-                        <!--<th class="hidden-xs">支付类型</th>-->
-                        <th style="width:80px;">状态</th>
+                        <th class="hidden-xs">分成</th>
+                        <th style="width:80px;">订单状态</th>
+                        <th style="width:80px;">发货状态</th>
                         <th style="width:120px;">操作</th>
                     </tr>
                     </thead>
@@ -147,6 +150,9 @@
                                 {$vo.ordtitle}
                             </td>
                             <td class="hidden-xs">
+                                {$vo.phone}
+                            </td>
+                            <td class="hidden-xs">
                                {$vo.ordprice}
                             </td>
                             <td class="hidden-xs">
@@ -163,17 +169,25 @@
                                </notempty>
                             </td>
                             <td class="hidden-xs">
-                                {$vo.payment_buyer_email}
+                                <eq name="vo.ordstatus" value="1">
+                                    {$vo['divides']*$vo['ordfee']}
+                                    <else />
+                                    0
+                                </eq>
                             </td>
-                            <!--<td class="hidden-xs">-->
-                                <!--{$vo.payment_type}-->
-                            <!--</td>-->
                             <td>
                                 <eq name="vo.ordstatus" value="0"><span class="text-danger">未支付</span></eq>
                                 <eq name="vo.ordstatus" value="1"><span class="text-success">已付款</span></eq>
                             </td>
                             <td>
+                                <eq name="vo.is_send" value="0"><span class="text-danger">未发货</span></eq>
+                                <eq name="vo.is_send" value="1"><span class="text-success">已发货</span></eq>
+                            </td>
+                            <td>
                                 <a href="__URL__/add?id={$vo['id']}&aid={:input('aid')}">查看</a>
+                                <eq name="vo.is_send" value="0">
+                                    <a href="__URL__/send?id={$vo['id']}&aid={:input('aid')}">设置发货</a>
+                                </eq>
                                 <a href="__URL__/status" data-role="delete"  data-id="{$vo.id}" class="status">删除</a>
                             </td>
                         </tr>
@@ -194,6 +208,7 @@
            if(val==1){
                $('#this_name').show();
            }else{
+			   $('##this_name').val('');
                $('#this_name').hide();
            }
         });
@@ -275,6 +290,7 @@
             "aoColumns": [
                 { "bSortable": false },
                 { "bSortable": true },
+                { "bSortable": false },
                 { "bSortable": false },
                 { "bSortable": false },
                 { "bSortable": false },

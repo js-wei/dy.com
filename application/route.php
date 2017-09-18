@@ -42,6 +42,8 @@ Route::rule('account/add_product','index/user/add_product');
 // 给Account控制器设置快捷路由
 Route::rule('account/product','index/product/index');
 Route::rule('account/has','index/product/has');
+Route::rule('account/delete','index/product/delete');
+Route::rule('account/delete_all','index/product/delete_all');
 Route::rule('product/detail','index/publish/detail');
 Route::rule('account/add_order','index/publish/add_order');
 //给Callback控制器设置快捷路由

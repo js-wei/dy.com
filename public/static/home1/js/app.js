@@ -19,7 +19,7 @@ $(function () {
             title: '更新信息操作',
             skin: 'layui-layer-demo',
             closeBtn: 1,
-            area: ['880px', '580px'],
+            area: ['650px', '450px'],
             anim: 2,
             shadeClose: true,
             content: '/account/alter?t=' + t

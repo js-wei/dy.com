@@ -58,6 +58,7 @@
                     layer.close(index);
                     if (result.status==1) {
                         layer.confirm(result.msg, {
+							icon:6,
                             btn: ['好的现在就去转发','不没我要看其他产品']
                         },function () {
                             window.location.href=result.redirect;

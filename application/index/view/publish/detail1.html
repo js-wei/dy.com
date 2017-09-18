@@ -16,6 +16,9 @@
     </style>
 </head>
 <body>
+<!-- <div id="wx_pic" style="margin: 0 auto;display: none;">
+	<img src="./pic300.jpg" alt="">
+</div> -->
 <div class="container" id="obj">
     <div class="music">
          <!--<audio id='mu' autoplay="autoplay" loop="loop" src="/data/music.mp3"></audio>-->
@@ -72,6 +75,9 @@
         <div class="content6">
             <div class="content61">
                 <h2>订单详情</h2>
+				<div class="PurInfor">
+                    <span>订单号:</span><span id="no"></span>
+                </div>
                 <div class="PurInfor">
                     <span>购买人信息:</span><span id="name">王传奇</span>
                 </div>
@@ -122,7 +128,15 @@
             var city= $('input[name="city"]').val();
             var address= $('input[name="address"]').val();
             var number= $('input[name="number"]').val();
-
+			var openid= $('#openid').val();
+			if(openid==''){
+                layer.open({
+                    content: "缺少必要参数"
+                    ,skin: 'msg'
+                    ,time: 3
+                });
+                return false;
+            }
             if(name==''){
                 layer.open({
                     content: "收货人姓名不能为空"
@@ -185,13 +199,13 @@
                 layer.closeAll();
                 if(result.status==1){
                     jsApi = $.parseJSON(result.jsApiParameters);
-                    alert(JSON.stringify(jsApi));
                     var pro = result.product;
                     $('#name').text(pro.name);
                     $('#address').text(pro.address);
                     $('#number').text(pro.number+'盒');
                     $('#totals').text('￥'+pro.total+'元');
                     $('#name').text(pro.name);
+					$('#no').text(pro.ordid);
                     $('.content6').toggle();
                 }else{
                     layer.open({

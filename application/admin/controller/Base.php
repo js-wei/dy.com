@@ -245,7 +245,7 @@ class Base extends Controller{
 
         $cellNum = count($expCellName);
         $dataNum = count($expTableData);
-        vendor("PHPExcel.PHPExcel");
+        //vendor("PHPExcel.PHPExcel");
 
         $objPHPExcel = new \PHPExcel();
 
@@ -269,7 +269,7 @@ class Base extends Controller{
         header("Content-Disposition:attachment;filename=$fileName.xls");//attachment新窗口打印inline本窗口打印
         $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
         $objWriter->save('php://output');
-        exit;
+        return '';
     }
 
     /**

@@ -28,13 +28,13 @@ class User extends Base{
      */
 	public function add_product($id=0){
         $mid = session('_mid');
-        if(!$mid){
+        if(empty($mid)){
             return json(['status'=>0,'msg'=>'没有登录']);
         }
         if(empty($id)){
             return json(['status'=>0,'msg'=>'参数错误']);
         }
-        $count = db('my_product')->where('pid','eq',$id)->count();
+        $count = db('my_product')->where('pid','eq',$id)->where('mid','eq',$mid)->count();
 
         $member = db('member')->field('id,status,is_check')->find($mid);
 
@@ -56,10 +56,11 @@ class User extends Base{
             'short_url'=>$short_url[0]['url_short'],
             'date'=>time()
         ];
+
         if(!db('my_product')->insert($data)){
             return json(['status'=>0,'msg'=>'获取产品失败,请稍后再试']);
         }
-        return json(['status'=>1,'msg'=>'获取产品失败,现在就去分享赚钱!','redirect'=>Url('/account/has')]);
+        return json(['status'=>1,'msg'=>'获取产品成功,现在就去分享赚钱!','redirect'=>Url('/account/has')]);
     }
 
     /**

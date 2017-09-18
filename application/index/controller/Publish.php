@@ -85,7 +85,7 @@ class Publish extends Base{
 
             $this->assign('vo',$product);
             $this->assign('code',$code);
-            $this->assign('openid','onP74wOKIE0qSq54D1Qqr_0gypyY');
+            $this->assign('openid','');
             $this->assign('pid',$id);
             return view('detail1');
         }
@@ -149,6 +149,7 @@ class Publish extends Base{
             'ordprice'=>$product['price'],
             'ordfee'=>$product['total']
         ];
+		$product['ordid'] = $data['ordid'];
         if(!db('order')->insert($data)){
             return json([
                'status'=>0,
@@ -424,6 +425,34 @@ class Publish extends Base{
         unset($admin['status']);
         return json(['status'=>1,'msg'=>'登录成功','data'=>$admin,'redirect'=>Url('/account/information')]);
     }
+
+    public function find_password($phone='',$password='',$confirm_password=''){
+        if(empty($phone)){
+            return json(['status'=>0,'msg'=>'参数错误']);
+        }
+        if(empty($password)){
+            return json(['status'=>0,'msg'=>'请输入密码']);
+        }
+        if(empty($confirm_password)){
+            return json(['status'=>0,'msg'=>'请输入确认密码']);
+        }
+        if($confirm_password!=$password){
+            return json(['status'=>0,'msg'=>'两次密码不一致']);
+        }
+        $member = db('member')->field('date',true)->where('phone','eq',$phone)->find();
+        if(empty($member)){
+            return json(['status'=>0,'msg'=>'用户名不存在,请填写正确的用户名']);
+        }
+        if(!db('member')->update([
+            'id'=>$member['id'],
+            'password'=>substr(md5($password),10,15),
+            'dates'=>time()
+        ])){
+            return json(['status'=>0,'msg'=>'修改失败请重试']);
+        }
+        return json(['status'=>1,'msg'=>'修改成功,请登录','redirect'=>Url('/')]);
+    }
+
     /**
      * [logout 用户退出]
      * @return [type] [description]

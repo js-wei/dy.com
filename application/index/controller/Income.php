@@ -61,14 +61,9 @@ class Income extends Base{
             ->field('a.ordid,a.ordtitle,a.ordprice,a.ordfee,a.ordstatus,a.ordbuynum,a.ordtime,a.finishtime,b.divides')
             ->order('ordtime desc')
             ->select();
-
-        if(request()->isPost()){
-            if(!empty($list)){
-                return array('status'=>1,'msg'=>'有导出数据','redirect'=>Url('export')."?time={$time}&user={$user}");
-            }else{
-                return array('status'=>0,'msg'=>'导出数据');
-            }
-        }
+		if(empty($list)){
+			 return array('status'=>0,'msg'=>'没有需要导出的数据');
+		}
         $divides=0;
         foreach ($list as $k=>$v){
             $list[$k]['ordtime']=date('Y-m-d H:i:s',$v['ordtime']);
@@ -88,8 +83,16 @@ class Income extends Base{
             array('divides','分成金额'),
         );
 
-        $this->exportExcel($title,$xlsCell,$list,"{$title}账单信息   生成日期:".date('Y-m-d',time()));
-        return '';
+        if(request()->isPost()){
+            if(!empty($list)){
+                return array('status'=>1,'msg'=>'有导出数据','redirect'=>Url('export')."?time={$time}&user={$user}");
+            }else{
+                return array('status'=>0,'msg'=>'没有需要导出的数据');
+            }
+        }else{
+
+            $this->exportExcel($title,$xlsCell,$list,"{$title}账单信息   生成日期:".date('Y-m-d',time()));
+        }
     }
     /**
      * 导出Excel
@@ -124,13 +127,12 @@ class Income extends Base{
                 $objPHPExcel->getActiveSheet(0)->setCellValue($cellName[$j].($i+3), $expTableData[$i][$expCellName[$j][0]]);
             }
         }
-
         header('pragma:public');
         header('Content-type:application/vnd.ms-excel;charset=utf-8;name="'.$xlsTitle.'.xls"');
         header("Content-Disposition:attachment;filename=$fileName.xls");//attachment新窗口打印inline本窗口打印
         $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
         $objWriter->save('php://output');
-        exit;
+        return '';
     }
     public function get_details($id){
         $c = db('order')->where('mid','eq',$id)->count();
@@ -151,4 +153,25 @@ class Income extends Base{
         $this->assign('c1',$c1?$c1:0);
         $this->assign('sum',$sum);
     }
+
+	
+	public function delete($id=''){
+		if(empty($id)){
+			return json(['status'=>0,'msg'=>'参数错误']);
+		}
+		if(!db('order')->delete($id)){
+			return json(['status'=>0,'msg'=>'删除失败']);
+		}
+		return json(['status'=>1,'msg'=>'删除成功']);
+	}
+
+	public function delete_all($id=''){
+		if(empty($id)){
+			return json(['status'=>0,'msg'=>'参数错误']);
+		}
+		if(!db('order')->where('id','in',$id)->delete()){
+			return json(['status'=>0,'msg'=>'删除失败']);
+		}
+		return json(['status'=>1,'msg'=>'删除成功']);
+	}
 }

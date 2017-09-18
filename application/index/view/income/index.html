@@ -190,9 +190,6 @@
                                 产品名称
                             </th>
                             <th>
-                                <span class="line"></span>产品价格
-                            </th>
-                            <th>
                                 <span class="line"></span>产品单价
                             </th>
                             <th>
@@ -360,12 +357,14 @@
             });
             if(del){
                 del = del.substring(1);
+				var index = layer.load({type:2});
                 $.post('__URL__/delete_all',{id:del},function (result) {
+					layer.closeAll();
                     if(result.status==0){
                         layer.alert(result.msg,{icon:5});
                     }else{
                         layer.alert(result.msg,{icon:6,end:function () {
-                            window.location.reload();
+                           window.location.reload();
                         }});
                     }
                 });

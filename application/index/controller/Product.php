@@ -26,10 +26,12 @@ class Product extends Base{
         $where['mid']=$id;
         $list = db('my_product')
             ->alias('a')
+			->field('a.id,a.mid,a.pid,a.click,a.url,a.short_url,a.date,b.title,b.image,b.price,b.divides,b.status')
             ->join('think_product b','b.id=a.pid')
+			->where($where)
             ->paginate(4);
         $this->assign('list',$list);
-        return view('has1');
+        return view();
     }
 
 
@@ -41,7 +43,7 @@ class Product extends Base{
      */
     public function delete($id=0){
         if(!db('my_product')->delete($id)){
-            return json(['status'=>0,'msg'=>'删除失败']);
+            return json(['status'=>0,'msg'=>'删除失败',db('my_product')->getlastsql()]);
         }
         return json(['status'=>1,'msg'=>'删除成功']);
     }

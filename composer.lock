@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "curl/curl",
-            "version": "1.7.1",
+            "version": "1.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-mod/curl.git",
-                "reference": "19d39f6c101bf9ed76feea86b446361f53c8d368"
+                "reference": "16e8489b048ef57ffbf74591a201f7808155b2db"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://files.phpcomposer.com/files/php-mod/curl/19d39f6c101bf9ed76feea86b446361f53c8d368.zip",
-                "reference": "19d39f6c101bf9ed76feea86b446361f53c8d368",
+                "url": "https://files.phpcomposer.com/files/php-mod/curl/16e8489b048ef57ffbf74591a201f7808155b2db.zip",
+                "reference": "16e8489b048ef57ffbf74591a201f7808155b2db",
                 "shasum": ""
             },
             "require": {
@@ -59,7 +59,7 @@
                 "curl",
                 "dot"
             ],
-            "time": "2017-08-09T09:46:25+00:00"
+            "time": "2017-08-12T11:44:08+00:00"
         },
         {
             "name": "ikimea/browser",
@@ -111,16 +111,16 @@
         },
         {
             "name": "phpmailer/phpmailer",
-            "version": "v5.2.24",
+            "version": "v5.2.25",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPMailer/PHPMailer.git",
-                "reference": "22d04c6a58145a244696f3f254c1875aa653b26a"
+                "reference": "2baf20b01690fba8cf720c1ebcf9b988eda50915"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://files.phpcomposer.com/files/PHPMailer/PHPMailer/22d04c6a58145a244696f3f254c1875aa653b26a.zip",
-                "reference": "22d04c6a58145a244696f3f254c1875aa653b26a",
+                "url": "https://files.phpcomposer.com/files/PHPMailer/PHPMailer/2baf20b01690fba8cf720c1ebcf9b988eda50915.zip",
+                "reference": "2baf20b01690fba8cf720c1ebcf9b988eda50915",
                 "shasum": ""
             },
             "require": {
@@ -184,7 +184,7 @@
                 }
             ],
             "description": "PHPMailer is a full-featured email creation and transfer class for PHP",
-            "time": "2017-07-26T21:00:20+00:00"
+            "time": "2017-08-28T11:12:07+00:00"
         },
         {
             "name": "phpoffice/phpexcel",
