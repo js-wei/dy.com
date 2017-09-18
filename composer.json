@@ -25,7 +25,8 @@
         "sinergi/browser-detector": "^6.1",
         "ikimea/browser": "dev-master",
         "riverslei/payment": "~4.0",
-        "phpoffice/phpexcel": "^1.8"
+        "phpoffice/phpexcel": "^1.8",
+        "phpoffice/phpword": "^0.13.0"
     },
     "extra": {
         "think-path": "thinkphp"
