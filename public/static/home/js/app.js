@@ -19,7 +19,11 @@ $(function () {
             title: '更新信息操作',
             skin: 'layui-layer-demo',
             closeBtn: 1,
+<<<<<<< HEAD:public/static/home/js/app.js
             area: ['680px', '480px'],
+=======
+            area: ['650px', '450px'],
+>>>>>>> 9040bfc163dd1d8eb6cb9190074ba0adade850b6:public/static/home1/js/app.js
             anim: 2,
             shadeClose: true,
             content: '/account/alter?t=' + t

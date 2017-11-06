@@ -4,7 +4,11 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
+<<<<<<< HEAD
     "content-hash": "9409f3ec2b23d300f5b7698047924052",
+=======
+    "content-hash": "f87b2d08bf463e163ab5783202402b12",
+>>>>>>> 9040bfc163dd1d8eb6cb9190074ba0adade850b6
     "packages": [
         {
             "name": "curl/curl",
@@ -60,6 +64,7 @@
                 "dot"
             ],
             "time": "2017-08-12T11:44:08+00:00"
+<<<<<<< HEAD
         },
         {
             "name": "guzzlehttp/guzzle",
@@ -321,6 +326,8 @@
                 "wkhtmltopdf"
             ],
             "time": "2016-02-02T19:38:57+00:00"
+=======
+>>>>>>> 9040bfc163dd1d8eb6cb9190074ba0adade850b6
         },
         {
             "name": "ikimea/browser",
@@ -371,6 +378,7 @@
             "time": "2017-06-09T09:14:21+00:00"
         },
         {
+<<<<<<< HEAD
             "name": "michelf/php-markdown",
             "version": "1.7.0",
             "source": {
@@ -422,6 +430,8 @@
             "time": "2016-10-29T18:58:20+00:00"
         },
         {
+=======
+>>>>>>> 9040bfc163dd1d8eb6cb9190074ba0adade850b6
             "name": "pclzip/pclzip",
             "version": "2.8.2",
             "source": {
@@ -459,6 +469,7 @@
             "time": "2014-06-05T11:42:24+00:00"
         },
         {
+<<<<<<< HEAD
             "name": "pdfapi/php-sdk",
             "version": "v1.0.0",
             "source": {
@@ -555,6 +566,8 @@
             "time": "2016-09-21T17:29:57+00:00"
         },
         {
+=======
+>>>>>>> 9040bfc163dd1d8eb6cb9190074ba0adade850b6
             "name": "phpmailer/phpmailer",
             "version": "v5.2.25",
             "source": {
@@ -892,6 +905,106 @@
                 "response"
             ],
             "time": "2016-08-06T14:39:51+00:00"
+        },
+        {
+            "name": "phpoffice/phpword",
+            "version": "v0.13.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/PHPOffice/PHPWord.git",
+                "reference": "0a3f873972defb304de4fa2f5f53156558c11a7a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://files.phpcomposer.com/files/PHPOffice/PHPWord/0a3f873972defb304de4fa2f5f53156558c11a7a.zip",
+                "reference": "0a3f873972defb304de4fa2f5f53156558c11a7a",
+                "shasum": ""
+            },
+            "require": {
+                "ext-xml": "*",
+                "php": ">=5.3.3",
+                "phpoffice/common": "0.2.*",
+                "zendframework/zend-escaper": "2.4.*",
+                "zendframework/zend-stdlib": "2.4.*",
+                "zendframework/zend-validator": "2.4.*"
+            },
+            "require-dev": {
+                "dompdf/dompdf": "0.6.*",
+                "mpdf/mpdf": "5.*",
+                "phpdocumentor/phpdocumentor": "2.*",
+                "phploc/phploc": "2.*",
+                "phpmd/phpmd": "2.*",
+                "phpunit/phpunit": "3.7.*",
+                "squizlabs/php_codesniffer": "1.*",
+                "tecnickcom/tcpdf": "6.*"
+            },
+            "suggest": {
+                "dompdf/dompdf": "Allows writing PDF",
+                "ext-gd2": "Allows adding images",
+                "ext-xmlwriter": "Allows writing OOXML and ODF",
+                "ext-xsl": "Allows applying XSL style sheet to headers, to main document part, and to footers of an OOXML template",
+                "ext-zip": "Allows writing OOXML and ODF"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "PhpOffice\\PhpWord\\": "src/PhpWord"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-3.0"
+            ],
+            "authors": [
+                {
+                    "name": "Mark Baker"
+                },
+                {
+                    "name": "Franck Lefevre",
+                    "homepage": "http://blog.rootslabs.net"
+                },
+                {
+                    "name": "Gabriel Bull",
+                    "email": "me@gabrielbull.com",
+                    "homepage": "http://gabrielbull.com/"
+                },
+                {
+                    "name": "Ivan Lanin",
+                    "homepage": "http://ivan.lanin.org"
+                },
+                {
+                    "name": "Roman Syroeshko",
+                    "homepage": "http://ru.linkedin.com/pub/roman-syroeshko/34/a53/994/"
+                }
+            ],
+            "description": "PHPWord - A pure PHP library for reading and writing word processing documents (OOXML, ODF, RTF, HTML, PDF)",
+            "homepage": "http://phpoffice.github.io",
+            "keywords": [
+                "ISO IEC 29500",
+                "OOXML",
+                "Office Open XML",
+                "OpenDocument",
+                "OpenXML",
+                "PhpOffice",
+                "PhpWord",
+                "Rich Text Format",
+                "WordprocessingML",
+                "doc",
+                "docx",
+                "html",
+                "odf",
+                "odt",
+                "office",
+                "pdf",
+                "php",
+                "reader",
+                "rtf",
+                "template",
+                "template processor",
+                "word",
+                "writer"
+            ],
+            "time": "2016-07-31T08:53:39+00:00"
         },
         {
             "name": "riverslei/payment",
@@ -1350,6 +1463,7 @@
             "time": "2017-05-27T06:58:09+00:00"
         },
         {
+<<<<<<< HEAD
             "name": "wrseward/pdf-parser",
             "version": "0.1.0",
             "source": {
@@ -1398,6 +1512,8 @@
             "time": "2015-09-01T00:54:02+00:00"
         },
         {
+=======
+>>>>>>> 9040bfc163dd1d8eb6cb9190074ba0adade850b6
             "name": "zendframework/zend-escaper",
             "version": "2.4.13",
             "source": {

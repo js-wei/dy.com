@@ -102,6 +102,7 @@
 <script src="__PLUG__/jquery.qrcode.min.js"></script>
 <script>
     $(function () {
+<<<<<<< HEAD
         $('.qrcode').each(function (i) {
             var url = $(this).attr('data-role');
             var id = $(this).attr('data-id');
@@ -163,6 +164,26 @@
                 del = del.substring(1);
                 $.post("{:Url('/account/delete_all')}",{id:del},function (result) {
                     if(result.status==0){
+=======
+        $(document).on('click','.icon-plus',function () {
+            var id =$(this).attr('data-role');
+            layer.confirm('您确定要获取此外产品吗?', {
+                btn: ['是的确定','不没想好']
+            }, function(){
+                var index = layer.load(2, {
+                    shard: [0.6, "#000"]
+                });
+                $.post('{:Url("/account/add_product")}',{id:id},function(result){
+                    layer.close(index);
+                    if (result.status==1) {
+                        layer.confirm(result.msg, {
+							icon:6,
+                            btn: ['好的现在就去转发','不没我要看其他产品']
+                        },function () {
+                            window.location.href=result.redirect;
+                        });
+                    }else{
+>>>>>>> 9040bfc163dd1d8eb6cb9190074ba0adade850b6
                         layer.alert(result.msg,{icon:5});
                     }else{
                         layer.alert(result.msg,{icon:6,end:function () {

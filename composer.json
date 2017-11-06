@@ -26,11 +26,14 @@
         "ikimea/browser": "dev-master",
         "riverslei/payment": "~4.0",
         "phpoffice/phpexcel": "^1.8",
+<<<<<<< HEAD
         "pdfmake/pdfmake": "^0.1.31",
         "pdfapi/php-sdk": "^1.0",
         "wrseward/pdf-parser": "^0.1.0",
         "spiritix/html-to-pdf": "^2.0",
         "tomk79/php-excel2html": "^0.0.7",
+=======
+>>>>>>> 9040bfc163dd1d8eb6cb9190074ba0adade850b6
         "phpoffice/phpword": "^0.13.0"
     },
     "extra": {

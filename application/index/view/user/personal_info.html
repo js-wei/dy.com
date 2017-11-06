@@ -68,9 +68,11 @@
                             <div class="form-group">
                                 <label class="col-sm-2 control-label">银行卡</label>
                                 <div class="col-sm-5">
-                                    <input type="email" value="" class="form-control" disabled="disabled" placeholder="开户银行">
+                                    <input type="text" value="{$info.bank_name|default=''}" class="form-control" disabled="disabled" placeholder="开户银行">
                                     <div class="bs-mt-10"></div>
-                                    <input type="email" value="" class="form-control" disabled="disabled" placeholder="银行卡">
+                                    <input type="text" value="{$info.bank_people|default=''}" class="form-control" disabled="disabled" placeholder="开户银行">
+                                    <div class="bs-mt-10"></div>
+                                    <input type="text" value="{$info.bank_no|default=''}" class="form-control" disabled="disabled" placeholder="银行卡">
                                 </div>
                                 <div class="col-sm-5">
                                     <a href="javascript:void(0);" class="link" data-role="bank">修改</a>

@@ -21,6 +21,7 @@ class Order extends Base{
         $where=[];
         $search = $this->_search(1);
         $where = array_merge($where,$search);
+<<<<<<< HEAD
         $list = db('orderlist')
             ->alias('a')
             ->join('think_product b','b.id=a.proid')
@@ -28,13 +29,34 @@ class Order extends Base{
             ->field('a.id,a.ordid,a.is_send,a.ordtitle,a.ordprice,a.payment_buyer_email,a.ordfee,a.ordstatus,a.ordbuynum,a.ordtime,a.finishtime,b.divides,c.phone')
             ->order('a.ordtime desc')
             ->where($where)
+=======
+<<<<<<< HEAD
+		
+        $list = db('order')
+            ->alias('a')
+            ->join('think_product b','b.id=a.proid')
+            ->join('think_member c','c.id=a.mid')
+            ->field('a.id,a.ordid,a.is_send,a.ordtitle,a.ordprice,a.payment_buyer_email,a.ordfee,a.ordstatus,a.ordbuynum,a.ordtime,a.finishtime,b.divides,c.phone')
+            ->order('a.ordtime desc')
+            ->where($where)
+=======
+
+        $list = db('order')
+            ->alias('a')
+            ->join('think_product b','b.id=a.proid')
+            ->field('a.id,a.ordid,a.ordtitle,a.ordprice,a.payment_buyer_email,a.ordfee,a.ordstatus,a.ordbuynum,a.ordtime,a.finishtime,b.divides')
+            ->order('ordtime desc')
+>>>>>>> b7b7ce70e46143263b0990a44b58872ca586abc9
+>>>>>>> 9040bfc163dd1d8eb6cb9190074ba0adade850b6
             ->paginate(5,false,[
             'query'=>[
                 's_keywords'=>input('s_keywords'),
                 "s_date"=>input('s_date'),
+				's_username'=>input('s_username'),
                 "s_status"=>input('s_status')
             ]
         ]);
+<<<<<<< HEAD
 
         $member =input('s_username');
         $search = $this->_search();
@@ -44,28 +66,52 @@ class Order extends Base{
         $free_totals = db('orderlist')->where($where)->where('ordstatus','eq',1)->sum('ordfee');
         $counts = db('orderlist')->where($where)->count();
         $free_counts = db('orderlist')->where($where)->where('ordstatus','eq',1)->count('ordfee');
+=======
+		
+		
+		$member =input('s_username');
+        $search = $this->_search();
+		$search1 = $this->_search();
+		$search1['ordstatus']=1;
+
+        $totals = db('order')->where($search)->sum('ordfee');
+        $free_totals = db('order')->where($search1)->sum('ordfee');
+        $counts = db('order')->where($search)->count();
+        $free_counts = db('order')->where($search1)->count('ordfee');
+>>>>>>> 9040bfc163dd1d8eb6cb9190074ba0adade850b6
 
         if($counts>0){
-            $percent = $free_counts/$counts*100;
+            $percent = round($free_counts/$counts*100);
         }else{
             $percent = 0;
         }
 
         $day = $this->get_current_day_durun();
-        $where['ordtime']=['between',[$day['start'],$day['end']]];
+        $search['ordtime']=['between',[$day['start'],$day['end']]];
+		$search1['ordtime']=['between',[$day['start'],$day['end']]];
 
+<<<<<<< HEAD
         $_totals = db('orderlist')->where($where)->sum('ordfee');
         $_free_totals = db('orderlist')->where($where)->where('ordstatus','eq',1)->sum('ordfee');
         $_counts = db('orderlist')->where($where)->count();
         $_free_counts = db('orderlist')->where($where)->where('ordstatus','eq',1)->count('ordfee');
+=======
+        $_totals = db('order')->where($search)->sum('ordfee');
+        $_free_totals = db('order')->where($search1)->sum('ordfee');
+        $_counts = db('order')->where($search)->count();
+        $_free_counts = db('order')->where($search1)->count('ordfee');
+>>>>>>> 9040bfc163dd1d8eb6cb9190074ba0adade850b6
         if($_counts>0){
-            $_percent = $_free_counts/$_counts*100;
+            $_percent = round($_free_counts/$_counts*100,2);
         }else{
             $_percent = 0;
         }
+<<<<<<< HEAD
         // 查询状态为1的用户数据 并且每页显示10条数据
         $count = db('orderlist')->count('*');
 
+=======
+>>>>>>> 9040bfc163dd1d8eb6cb9190074ba0adade850b6
         $this->assign('member',$member);
         $this->assign('totals',$totals);
         $this->assign('free_totals',$free_totals);
@@ -77,8 +123,13 @@ class Order extends Base{
         $this->assign('_counts',$_counts);
         $this->assign('_free_counts',$_free_counts);
         $this->assign('_percent',$_percent);
+		/**/
 
+
+		// 查询状态为1的用户数据 并且每页显示10条数据
+        $count = db('order')->count('*');
         $this->assign('count',$count);
+
         $this->assign('list',$list);
         return view();
     }
@@ -102,6 +153,7 @@ class Order extends Base{
     public function add($id=0){
         $model = [
             'name'=>'订单详情'
+<<<<<<< HEAD
         ];
         if($id){
             $vo = db('orderlist')->field('dates',true)->find($id);
@@ -120,6 +172,26 @@ class Order extends Base{
         ];
         if($id){
             $vo = db('orderlist')->field('dates',true)->find($id);
+=======
+        ];
+        if($id){
+            $vo = db('order')->field('dates',true)->find($id);
+            $m = db('member')->field('dates',true)->find($id);
+            $vo['product'] = json_decode($vo['product'],true);
+            $this->assign('info',$vo);
+            $this->assign('m',$m);
+        }
+        $this->assign('model',$model);
+        return view();
+    }
+
+    public function send($id=0){
+        $model = [
+            'name'=>'设置发货'
+        ];
+        if($id){
+            $vo = db('order')->field('dates',true)->find($id);
+>>>>>>> 9040bfc163dd1d8eb6cb9190074ba0adade850b6
             $this->assign('info',$vo);
         }
         $this->assign('model',$model);
@@ -147,7 +219,11 @@ class Order extends Base{
         $param = request()->param();
         $param['dates']=time();
         $param['is_send']=1;
+<<<<<<< HEAD
         if(!db('orderlist')->update($param)){
+=======
+        if(!db('order')->update($param)){
+>>>>>>> 9040bfc163dd1d8eb6cb9190074ba0adade850b6
             return ['status'=>0,'msg'=>'发货失败'];
         }
         return ['status'=>1,'msg'=>'发货成功','redirect'=>Url('index')];
