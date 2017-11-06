@@ -52,7 +52,10 @@ return [
         //标签库标签开始标签 
         'taglib_begin'  =>  '<',
         //标签库标签结束标记
-        'taglib_end'    =>  '>',     
+        'taglib_end'    =>  '>',
+        // 预先加载的标签库
+        //'taglib_pre_load'     => 'app\common\taglib\Article',
+        'taglib_build_in'    =>    'cx,app\common\taglib\Article',
     ],
 	'THINK_EMAIL'=>[       //邮件发送
         'SMTP_HOST'=>'smtp.163.com',
@@ -66,9 +69,9 @@ return [
 	],
     //云之讯短信接口
     'Ucpaas'=>[
-        'accountSid'=>'ef4229d8fec0ae20745fd85910fe6dcc',
-        'authToken'=>'0dee9248eebd1e63d1d0fa88f050bbfe',
-        'appId'=>'5ce06e3147f444fdb994294fe55d5243',
+        'accountSid'=>'a38579870f0d55815df79e8cb013d43a',
+        'authToken'=>'781dafd8ebfa81bd36356ade09ddd01f',
+        'appId'=>'5c7b9debd600450d9f630efd387b2eb9',
     ],
 	'UPLOADE'=>[
 		'path'=>ROOT_PATH . 'public' . DS.'uploads',

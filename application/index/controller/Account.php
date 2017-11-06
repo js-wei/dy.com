@@ -15,6 +15,7 @@ class Account extends Base{
         }
     }
     public function information(){
+        $this->assign('demo_time',$this->request->time());
         return view();
     }
 }

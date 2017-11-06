@@ -1,5 +1,4 @@
-<include file="public:header" title="注册-{$site.title}"/>
-<link rel="stylesheet" href="__CSS__/compiled/signup.css" type="text/css" media="screen" />
+<include file="public:header" title="注册-{$site.title}" this="__CSS__/compiled/signup.css"/>
 <style>
     .login-wrapper .box .content-wrap{
         text-align:left;
@@ -12,9 +11,9 @@
     }
 </style>
 <div class="container-fluid">
-    <div class="header">
+    <div class="header" style="height:auto;padding:10px;overflow:hidden;">
         <a href="index.html">
-            <img src="{$site.logo}" class="logo" />
+            <img class="logo" src="__IMAGES__/logo(120x120).png">
         </a>
     </div>
     <div class="login-wrapper">

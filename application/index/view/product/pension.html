@@ -1,0 +1,177 @@
+<include file="public:header" title="我的消息" this="__CSS__/compiled/tables.css"/>
+<include file="public:navbar"/>
+<include file="public:sidebar"/>
+<div class="content">
+    <div id="pad-wrapper">
+        <!-- products table-->
+        <!-- the script for the toggle all checkboxes from header is located in js/theme.js -->
+        <div class="table-wrapper products-table section">
+            <div class="row head">
+                <div class="col-md-12">
+                    <h4>我的房型</h4>
+                </div>
+            </div>
+            <div class="row filter-block">
+                <div class="pull-right">
+                    <a href="{:Url('/product/add_pension')}" class="btn-flat success new-product">添加</a>
+                    <a class="btn-flat success new-product delete-all">选中删除</a>
+                </div>
+            </div>
+            <div class="row">
+                <notempty name="list">
+                    <table class="table table-hover">
+                        <thead>
+                        <tr>
+                            <th class="col-md-3">
+                                <input type="checkbox">
+                                名称
+                            </th>
+                            <th class="col-md-3">
+                                <span class="line"></span>图片
+                            </th>
+                            <th class="col-md-3">
+                                <span class="line"></span>价格
+                            </th>
+                            <th class="col-md-3">
+                                <span class="line"></span>优惠
+                            </th>
+                            <th class="col-md-3">
+                                <span class="line"></span>优惠时间
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <!-- row -->
+                        <volist name="list" id="vo">
+                            <tr class="first">
+                                <td>
+                                    <input type="checkbox" value="{$vo.id}" class="message">
+                                    <a href="__SELF__?id={$vo.id}" class="name">{$vo.title}</a>
+                                </td>
+                                <td class="">
+                                    <img src="{$vo.image}" alt="{$vo.title}" height="145">
+                                </td>
+                                <td class="description">
+                                    {$vo.price}
+                                </td>
+                                <td>
+                                    12
+                                </td>
+                                <td class="qrcode" data-id="{$vo.id}" data-role="12">
+                                    <div class="qrcode{$vo.id}"></div>
+                                </td>
+                                <td>
+                                    <p>
+                                        短地址: <code class="code{$vo.id}">33</code>
+                                        <a href="javascript:;" class="copy" data-clipboard-action="copy" data-clipboard-target="code.code{$vo.id}">
+                                            复制地址
+                                        </a>
+                                    </p>
+                                    <p>
+                                        长地址: <code class="url{$vo.id}">22</code>
+                                        <a href="javascript:;"  class="copy" data-clipboard-action="copy" data-clipboard-target="code.url{$vo.id}">
+                                            复制地址
+                                        </a>
+                                    </p>
+                                    <br>
+                                    <ul class="actions">
+                                        <!--<li><a href="__SELF__?id={$vo.id}">查看</a></li>-->
+                                        <li class="last"><a href="{:Url('/account/delete')}?id={$vo.id}" class="delete">删除</a></li>
+                                    </ul>
+                                </td>
+                            </tr>
+                        </volist>
+                        </tbody>
+                    </table>
+                    <else />
+                    <div class="text-center">
+                        <h3>暂无信息</h3>
+                    </div>
+                </notempty>
+            </div>
+            <hr>
+            <div>
+                {$list->render()}
+            </div>
+        </div>
+        <!-- end products table -->
+    </div>
+</div>
+<script src="https://cdn.bootcss.com/clipboard.js/1.7.1/clipboard.min.js"></script>
+<script src="__PLUG__/jquery.qrcode.min.js"></script>
+<script>
+    $(function () {
+        $('.qrcode').each(function (i) {
+            var url = $(this).attr('data-role');
+            var id = $(this).attr('data-id');
+            $(".qrcode"+id).qrcode({
+                width: 120, //宽度
+                height:120, //高度
+                text: utf16to8(url), //内容
+                typeNumber:-1,//计算模式
+                correctLevel:2,//二维码纠错级别
+                background:"#ffffff",//背景颜色
+                foreground:"#000000"  //二维码颜色
+
+            });
+        });
+        function utf16to8(str) {
+            var out, i, len, c;
+            out = "";
+            len = str.length;
+            for (i = 0; i < len; i++) {
+                c = str.charCodeAt(i);
+                if ((c >= 0x0001) && (c <= 0x007F)) {
+                    out += str.charAt(i);
+                } else if (c > 0x07FF) {
+                    out += String.fromCharCode(0xE0 | ((c >> 12) & 0x0F));
+                    out += String.fromCharCode(0x80 | ((c >> 6) & 0x3F));
+                    out += String.fromCharCode(0x80 | ((c >> 0) & 0x3F));
+                } else {
+                    out += String.fromCharCode(0xC0 | ((c >> 6) & 0x1F));
+                    out += String.fromCharCode(0x80 | ((c >> 0) & 0x3F));
+                }
+            }
+            return out;
+        }
+        var clipboard = new Clipboard('.copy');
+        $(document).on('click','.delete',function (e) {
+            e.preventDefault();
+            var url = $(this).attr('href');
+            $.post(url,{},function (result) {
+                if(result.status==0){
+                    layer.alert(result.msg,{icon:5});
+                }else{
+                    layer.alert(result.msg,{icon:6,end:function () {
+                        window.location.reload();
+                    }});
+                }
+            });
+        });
+        $('select').change(function () {
+            var status = $(this).val();
+            window.location.href = '{:Url("/account/message")}?status='+status;
+        });
+        $(document).on('click','.delete-all',function (e) {
+            e.preventDefault();
+            var del = '';
+            $('input[type="checkbox"].message:checked').each(function () {
+                del +=  "," + $(this).val();
+            });
+            if(del){
+                del = del.substring(1);
+                $.post("{:Url('/account/delete_all')}",{id:del},function (result) {
+                    if(result.status==0){
+                        layer.alert(result.msg,{icon:5});
+                    }else{
+                        layer.alert(result.msg,{icon:6,end:function () {
+                            window.location.reload();
+                        }});
+                    }
+                });
+            }
+
+        })
+    })
+</script>
+<include file="public:footer"/>

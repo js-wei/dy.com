@@ -19,14 +19,15 @@ class Order extends Base{
      */
     public function index(){
         $where=[];
-        $search = $this->_search();
+        $search = $this->_search(1);
         $where = array_merge($where,$search);
-
-        $list = db('order')
+        $list = db('orderlist')
             ->alias('a')
             ->join('think_product b','b.id=a.proid')
-            ->field('a.id,a.ordid,a.ordtitle,a.ordprice,a.payment_buyer_email,a.ordfee,a.ordstatus,a.ordbuynum,a.ordtime,a.finishtime,b.divides')
-            ->order('ordtime desc')
+            ->join('think_member c','c.id=a.mid')
+            ->field('a.id,a.ordid,a.is_send,a.ordtitle,a.ordprice,a.payment_buyer_email,a.ordfee,a.ordstatus,a.ordbuynum,a.ordtime,a.finishtime,b.divides,c.phone')
+            ->order('a.ordtime desc')
+            ->where($where)
             ->paginate(5,false,[
             'query'=>[
                 's_keywords'=>input('s_keywords'),
@@ -34,12 +35,16 @@ class Order extends Base{
                 "s_status"=>input('s_status')
             ]
         ]);
-        $member =input('s_username');
 
-        $totals = db('order')->where($where)->sum('ordfee');
-        $free_totals = db('order')->where($where)->where('ordstatus','eq',1)->sum('ordfee');
-        $counts = db('order')->where($where)->count();
-        $free_counts = db('order')->where($where)->where('ordstatus','eq',1)->count('ordfee');
+        $member =input('s_username');
+        $search = $this->_search();
+        $where = $search;
+
+        $totals = db('orderlist')->where($where)->sum('ordfee');
+        $free_totals = db('orderlist')->where($where)->where('ordstatus','eq',1)->sum('ordfee');
+        $counts = db('orderlist')->where($where)->count();
+        $free_counts = db('orderlist')->where($where)->where('ordstatus','eq',1)->count('ordfee');
+
         if($counts>0){
             $percent = $free_counts/$counts*100;
         }else{
@@ -49,19 +54,17 @@ class Order extends Base{
         $day = $this->get_current_day_durun();
         $where['ordtime']=['between',[$day['start'],$day['end']]];
 
-        $_totals = db('order')->where($where)->where($where)->sum('ordfee');
-        $_free_totals = db('order')->where($where)->where($where)->where('ordstatus','eq',1)->sum('ordfee');
-        $_counts = db('order')->where($where)->where($where)->count();
-        $_free_counts = db('order')->where($where)->where($where)->where('ordstatus','eq',1)->count('ordfee');
+        $_totals = db('orderlist')->where($where)->sum('ordfee');
+        $_free_totals = db('orderlist')->where($where)->where('ordstatus','eq',1)->sum('ordfee');
+        $_counts = db('orderlist')->where($where)->count();
+        $_free_counts = db('orderlist')->where($where)->where('ordstatus','eq',1)->count('ordfee');
         if($_counts>0){
             $_percent = $_free_counts/$_counts*100;
         }else{
             $_percent = 0;
         }
         // 查询状态为1的用户数据 并且每页显示10条数据
-        $count = db('order')->count('*');
-
-
+        $count = db('orderlist')->count('*');
 
         $this->assign('member',$member);
         $this->assign('totals',$totals);
@@ -98,11 +101,25 @@ class Order extends Base{
      */
     public function add($id=0){
         $model = [
-            'name'=>'添加产品'
+            'name'=>'订单详情'
         ];
         if($id){
-            $vo = db('order')->field('dates',true)->find($id);
-            //p($vo);die;
+            $vo = db('orderlist')->field('dates',true)->find($id);
+            $m = db('member')->field('dates',true)->find($id);
+            $vo['product'] = json_decode($vo['product'],true);
+            $this->assign('info',$vo);
+            $this->assign('m',$m);
+        }
+        $this->assign('model',$model);
+        return view();
+    }
+
+    public function send($id=0){
+        $model = [
+            'name'=>'设置发货'
+        ];
+        if($id){
+            $vo = db('orderlist')->field('dates',true)->find($id);
             $this->assign('info',$vo);
         }
         $this->assign('model',$model);
@@ -119,11 +136,21 @@ class Order extends Base{
             return ['status'=>1,'msg'=>'修改成功','redirect'=>Url('index')];
         }else{
             $param['date']=time();
-            if(!db('order')->insert($param)){
+            if(!db('orderlist')->insert($param)){
                 return ['status'=>0,'msg'=>'添加失败请重试'];
             }
             return ['status'=>1,'msg'=>'添加成功','redirect'=>Url('index')];
         }
+    }
+
+    public function add_send($id=0){
+        $param = request()->param();
+        $param['dates']=time();
+        $param['is_send']=1;
+        if(!db('orderlist')->update($param)){
+            return ['status'=>0,'msg'=>'发货失败'];
+        }
+        return ['status'=>1,'msg'=>'发货成功','redirect'=>Url('index')];
     }
 
     public function export($time='',$user=''){
@@ -139,7 +166,7 @@ class Order extends Base{
 
         $title = $user?$time."|".$user:$time;
         $divides=0;
-        $list = db('order')
+        $list = db('orderlist')
             ->alias('a')
             ->join('think_product b','b.id=a.proid')
             ->where($where)
@@ -182,14 +209,10 @@ class Order extends Base{
      * @param array $param
      * @return array
      */
-    protected function _search($param=[]){
+    protected function _search($t=0){
         $where=[];
-        if(empty($param)){
-            $param = request()->param();
-        }
-        if(!empty($param['s_keywords'])){
-            $where['ordid|ordtitle']=['like',"%".$param['s_keywords']."%"];
-        }
+        $param = request()->param();
+
         if(!empty($param['s_username'])){
             $where1['phone']=['like',"%".$param['s_username']."%"];
             $member = db('member')->field('id')->where($where1)->select();
@@ -197,22 +220,30 @@ class Order extends Base{
             foreach ($member as $k=>$v){
                 $_id[]=$v['id'];
             }
-            $where['mid']=['in',$_id];
+            $where[$t?'a.mid':'mid']=['in',$_id];
+        }
+
+        if(!empty($param['s_keywords'])){
+            $where[$t?'a.ordid':'ordid']=['like',"%".$param['s_keywords']."%"];
         }
 
         if(isset($param['s_status'])){
-            if($param['s_status']==1){
-                $where['ordstatus']=['eq',1];
-                }
+
             if($param['s_status']==0){
-                $where['ordstatus']=['eq',0];
+                $where[$t?'a.ordstatus':'ordstatus']=0;
+            }else if($param['s_status']==1){
+                $where[$t?'a.ordstatus':'ordstatus']=1;
+            }else if($param['s_status']==2){
+                $where[$t?'a.is_send':'is_send']=0;
+            }else if($param['s_status']==3){
+                $where[$t?'a.is_send':'is_send']=1;
             }
         }
 
         if(!empty($param['s_date'])){
             $date = explode('-',$param['s_date']);
             $date[1] = "$date[1] 24:00";
-            $where['ordtime']=['between',[strtotime($date[0]),strtotime($date[1])]];
+            $where[$t?'a.ordtime':'ordtime']=['between',[strtotime($date[0]),strtotime($date[1])]];
         }
 
         $this->assign('search',[

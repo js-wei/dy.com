@@ -73,20 +73,20 @@ class Category{
 		return $arr;
 	}
 	
-	public static function getparents($cate,$curent){
+	public static function getParents($cate,$curent){
 		$arr=array();
 		if(is_array($curent)){
 			foreach ($cate as $v) {
 				if($v['id']==$curent['fid']){
 					$arr[]=$v;
-					$arr=array_merge($arr,self::getparents($cate,$v));
+					$arr=array_merge($arr,self::getParents($cate,$v));
 				}
 			}
 		}else{
 			foreach ($cate as $v) {
 				if($v['id']==$curent){
 					$arr[]=$v;
-					$arr=array_merge($arr,self::getparents($cate,$v));
+					$arr=array_merge($arr,self::getParents($cate,$v));
 				}
 			}
 		}
@@ -139,11 +139,33 @@ class Category{
 				$arr=array_merge($arr,self::getChildrenById($cate,$v['id']));
 			}
 		}
-		
 		return $arr;
 	}
 
-	public static function getchildrens($cate,$fid){
+    /**
+     * 获取父亲栏目
+     * @param $cate
+     * @param $fid
+     * @return array
+     */
+    public static function getParentsById($cate,$fid){
+        $arr=array();
+        foreach ($cate as $v) {
+            if($v['id']==$fid){
+                $arr[]=$v['id'];
+                $arr=array_merge($arr,self::getParentsById($cate,$v['fid']));
+            }
+        }
+        return $arr;
+    }
+
+    /**
+     * 获取子栏目
+     * @param $cate
+     * @param $id
+     * @return array
+     */
+    public static function get_children($cate,$id){
 		$arr=array();
 		foreach ($cate as $v) {
 			if($v['fid']==$id){

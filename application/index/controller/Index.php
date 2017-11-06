@@ -1,14 +1,20 @@
 <?php
 namespace app\index\controller;
-use QL\QueryList;
-use GuzzleHttp;
+use PhpOffice\PhpWord\Settings;
 
 class Index extends Base{
-    public function index(){
-	    return view();
+    public function index($tpl=''){
+        $tpl=$tpl?$tpl:'';
+	    return view($tpl);
     }
     public function login(){
         return view();
+    }
+    public function word2html(){
+        $path = ROOT_PATH .'public'.DS .'data'. DS  ;
+        $phpWord = \PhpOffice\PhpWord\IOFactory::load($path .'我的测试文档.docx');
+        $f = $path.'mydoc.html';
+        $phpWord->save($f,'HTML',false);
     }
 
     /**
@@ -61,6 +67,7 @@ class Index extends Base{
         }
         $param = request()->param();
         $param['date']=time();
+        $param['type']=1;
         unset($param['confirm_password']);
         unset($param['verify']);
         $param['password'] = substr(md5($password),10,15);

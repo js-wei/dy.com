@@ -28,13 +28,13 @@ class User extends Base{
      */
 	public function add_product($id=0){
         $mid = session('_mid');
-        if(!$mid){
+        if(empty($mid)){
             return json(['status'=>0,'msg'=>'没有登录']);
         }
         if(empty($id)){
             return json(['status'=>0,'msg'=>'参数错误']);
         }
-        $count = db('my_product')->where('pid','eq',$id)->count();
+        $count = db('my_product')->where('pid','eq',$id)->where('mid','eq',$mid)->count();
 
         $member = db('member')->field('id,status,is_check')->find($mid);
 
@@ -56,6 +56,7 @@ class User extends Base{
             'short_url'=>$short_url[0]['url_short'],
             'date'=>time()
         ];
+
         if(!db('my_product')->insert($data)){
             return json(['status'=>0,'msg'=>'获取产品失败,请稍后再试']);
         }
@@ -86,7 +87,7 @@ class User extends Base{
      * @param string $image
      * @return \think\response\Json
      */
-    public function auth($real_name='',$idcard_type='',$card='',$image=''){
+    public function auth($real_name='',$idcard_type='',$card='',$image='',$company_owner='',$company_name='',$company_number='',$company_image=''){
         $id = session('_mid');
         if(!$id){
             return json(['status'=>0,'msg'=>'没有登录']);
@@ -103,12 +104,27 @@ class User extends Base{
         if(empty($image)){
             return json(['status'=>0,'msg'=>'请输入证件照']);
         }
+        if(empty($company_owner)){
+            return json(['status'=>0,'msg'=>'请输入公司法人']);
+        }
+        if(empty($company_name)){
+            return json(['status'=>0,'msg'=>'请输入公司名称']);
+        }
+        if(empty($company_number)){
+            return json(['status'=>0,'msg'=>'请输入公司营业执照编号']);
+        }
+        if(empty($company_image)){
+            return json(['status'=>0,'msg'=>'请输入公司营业执照']);
+        }
 
         $data = request()->param();
         if(!empty($data['_id'])){
             $auth = db('authentication')->find($data['_id']);
             if(!unlink('.'.$auth['image'])){
                 return json(['status'=>0,'msg'=>'删除原证件照失败,请稍后再试']);
+            }
+            if(!unlink('.'.$auth['company_image'])){
+                return json(['status'=>0,'msg'=>'请输入公司营业执照,请稍后再试']);
             }
         }
         unset($data['_id']);
@@ -665,4 +681,23 @@ class User extends Base{
 		}
 		return jsonp(['status'=>1,'msg'=>'邮件发送成功']);
 	}
+
+	public function setting(){
+	    $uid = session('_mid');
+	    if(request()->isGet()){
+            $u = db('member')->field('dates',true)->find($uid);
+            $this->assign('u',$u);
+            return view();
+        }
+        if(!$uid){
+            return json(['status'=>0,'msg'=>'没有登录']);
+        }
+	    $data = request()->param();
+	    $data['id'] = $uid;
+        $data['dates']=time();
+	    if(!db('member')->update($data)){
+            return json(['status'=>0,'msg'=>'设置失败']);
+        }
+        return json(['status'=>1,'msg'=>'设置成功']);
+    }
 }

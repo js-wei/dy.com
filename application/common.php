@@ -10,6 +10,15 @@
 // +----------------------------------------------------------------------
 
 // 应用公共文件
+function word2html($wfilepath)
+{
+    $word=new COM("Word.Application") or die("无法打开 MS Word");
+    $word->visible = 1 ;
+    $word->Documents->Open($wfilepath)or die("无法打开这个文件");
+    $htmlpath=substr($wfilepath,0,-4);
+    $word->ActiveDocument->SaveAs($htmlpath,8);
+    $word->quit(0);
+}
 
 /**
  * 微信浏览器

@@ -1,0 +1,182 @@
+<include file="public:header" title="认真信息" this="__CSS__/compiled/user-profile.css"/>
+<link href="__PLUG__/webuploader/dist//webuploader.css" rel="stylesheet">
+<script src="__PLUG__/webuploader/dist/webuploader.min.js"></script>
+<link rel="stylesheet" href="__PLUG__/city/city.css">
+<script src="__PLUG__/city/Popt.js"></script>
+<script src="__PLUG__/city/cityJson.js"></script>
+<script src="__PLUG__/city/citySet.js"></script>
+<include file="public:navbar"/>
+<include file="public:sidebar"/>
+<div class="content">
+    <div id="pad-wrapper" class="user-profile">
+        <div class="row profile">
+            <!-- bio, new note & orders column -->
+            <div class="col-md-12 bio">
+                <div class="profile-box margin-none padding-none" style="border:none;">
+                    <div class="col-md-11 section">
+                        <h6 style="margin-left:8%;">添加民宿信息<small></small></h6>
+                        <hr>
+                        <div class="bs-mt-15"></div>
+                        <form class="form-horizontal" autocomplete="off">
+                            <div class="form-group">
+                                <label  class="col-sm-2 control-label">名称</label>
+                                <div class="col-sm-3">
+                                    <input type="text" class="form-control" name="title" placeholder="名称">
+                                    <input type="hidden" name="uid" value="{$Think.session._mid}">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">城市</label>
+                                <div class="col-lg-3">
+                                    <input type="text" class="form-control" id="city" name="city" value="江苏省-苏州市-姑苏区" readonly>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">详细地址</label>
+                                <div class="col-lg-3">
+                                    <input type="text" class="form-control" name="address" placeholder="详细地址">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label  class="col-sm-2 control-label">开业时间</label>
+                                <div class="col-sm-3">
+                                    <input type="text" class="form-control" name="start" placeholder="开业时间">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label  class="col-sm-2 control-label">联系电话</label>
+                                <div class="col-sm-3">
+                                    <input type="text" class="form-control" name="tel" placeholder="联系电话">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label  class="col-sm-2 control-label">入住时间</label>
+                                <div class="col-sm-3">
+                                    <input type="text" class="form-control" name="goin" placeholder="入住时间">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label  class="col-sm-2 control-label">离店时间</label>
+                                <div class="col-sm-3">
+                                    <input type="text" class="form-control" name="leave" placeholder="离店时间">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label  class="col-sm-2 control-label">配套设施</label>
+                                <div class="col-sm-6">
+                                    <volist name="list" id="vo">
+                                        <div class="checkbox checkbox-inline col-sm-3" style="padding:0;margin:0;">
+                                            <label>
+                                                <input type="checkbox" name="facilities[]" value="{$vo.id}">
+                                                {$vo.title}
+                                            </label>
+                                        </div>
+                                    </volist>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-3 col-lg-offset-2">
+                                    <button type="submit" class="btn btn-warning">提交</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(function(){
+        $("#city").click(function (e) {
+            SelCity(this,e);
+        });
+        $('form').submit(function(e){
+            e.preventDefault();
+            var title = $('input[name="title"]').val(),
+                start = $('input[name="start"]').val(),
+                address = $('input[name="address"]').val(),
+                tel = $('input[name="tel"]').val(),
+                goin = $('input[name="goin"]').val(),
+                leave = $('input[name="leave"]').val(),
+                facilities = $("input[type='checkbox']:checked").length;
+            console.log(facilities);
+            if(title==''){
+                layer.msg("请输入民宿名称", {
+                    offset: 'm',
+                    anim: 3
+                });
+                return false;
+            }
+            if(address==''){
+                layer.msg("请输入民宿地址", {
+                    offset: 'm',
+                    anim: 3
+                });
+                return false;
+            }
+            if(tel==''){
+                layer.msg("请输入联系手机", {
+                    offset: 'm',
+                    anim: 3
+                });
+            }
+            if(!/^1(3|4|5|7|8)\d{9}$/.test(tel)){
+                layer.msg("请输入正确的手机号", {
+                    offset: 'm',
+                    anim: 3
+                });
+                return false;
+            }
+            if(start==''){
+                layer.msg("请输入开业时间", {
+                    offset: 'm',
+                    anim: 3
+                });
+                return false;
+            }
+            if(goin==''){
+                layer.msg("请输入入住时间", {
+                    offset: 'm',
+                    anim: 3
+                });
+                return false;
+            }
+            if(leave==''){
+                layer.msg("请输入离开时间", {
+                    offset: 'm',
+                    anim: 3
+                });
+                return false;
+            }
+            if(facilities<5){
+                layer.msg("至少选择5项配套设施", {
+                    offset: 'm',
+                    anim: 3
+                });
+                return false;
+            }
+            var index = layer.load(2, {
+                shard: [0.6, "#000"]
+            });
+            $.post('__SELF__',$('form').serialize(),function (result) {
+                layer.close(index);
+                if(result.status==0){
+                    layer.msg(result.msg, {
+                        offset: 'm',
+                        anim: 3
+                    });
+                }else{
+                    layer.alert(result.msg, {
+                        icon:6,
+                        end:function () {
+                            layer.closeAll();
+                            window.location.href=result.redirect;
+                        }
+                    });
+                }
+            });
+        });
+    });
+</script>
+<include file="public:footer"/>

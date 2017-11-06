@@ -11,13 +11,13 @@
                 <span>首页</span>
             </a>
         </li>
-        <li <eq name="controller" value="user">class="active"</eq>>
+        <li <if condition="$controller eq 'user' and $action neq 'setting'">class="active"</if>>
             <a class="dropdown-toggle" href="javascript:;">
                 <i class="icon-group"></i>
                 <span>个人资料</span>
                 <i class="icon-chevron-down"></i>
             </a>
-            <ul class="submenu" <eq name="controller" value="user">style="display:block;"</eq>>
+            <ul class="submenu" <if condition="$controller eq 'user' and $action neq 'setting'">style="display:block;"</if>>
                 <li><a href="{:Url('/account/personal_info')}"  <eq name="action" value="personal_info">class="active"</eq>>基本信息</a></li>
                 <li><a href="{:Url('/account/check')}" <eq name="action" value="check">class="active"</eq>>认证信息</a></li>
                 <li><a href="{:Url('/account/message')}" <eq name="action" value="message">class="active"</eq>>我的消息</a></li>
@@ -26,19 +26,26 @@
         <li <eq name="controller" value="product">class="active"</eq>>
             <a class="dropdown-toggle" href="javascript:;">
                 <i class="icon-edit"></i>
-                <span>产品信息</span>
+                <span>我的民宿</span>
                 <i class="icon-chevron-down"></i>
             </a>
             <ul class="submenu" <eq name="controller" value="product">style="display:block;"</eq>>
-                <li><a href="{:Url('/account/product')}" <eq name="action" value="index">class="active"</eq>>可申请产品</a></li>
-                <li><a href="{:Url('/account/has')}"  <eq name="action" value="has">class="active"</eq>>已申请产品</a></li>
+                <li><a href="{:Url('/product/pension')}" <eq name="action" value="pension">class="active"</eq>>民宿信息</a></li>
+                <li><a href="{:Url('/account/product')}" <eq name="action" value="index">class="active"</eq>>添加房型</a></li>
+                <li><a href="{:Url('/account/has')}"  <eq name="action" value="has">class="active"</eq>>添加房间</a></li>
             </ul>
         </li>
         <li  <eq name="action" value="index">class="active"</eq>>
             <a href="{:Url('/account/income')}">
-                <i class="icon-cog"></i>
+                <i class="icon-shopping-cart"></i>
                 <span>我的收益</span>
             </a>
+        </li>
+        <li  <eq name="action" value="setting">class="active"</eq>>
+        <a href="{:Url('/account/setting')}">
+            <i class="icon-cog"></i>
+            <span>系统设置</span>
+        </a>
         </li>
     </ul>
 </div>

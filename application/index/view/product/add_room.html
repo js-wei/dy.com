@@ -1,0 +1,122 @@
+<include file="public:header" title="认真信息" this="__CSS__/compiled/user-profile.css"/>
+<!--<link rel="stylesheet" href="__PLUG__/Uploadify/uploadify.css" />-->
+<!--<script type="text/javascript" src="__PLUG__/Uploadify/jquery.uploadify.min.js"></script>-->
+<link href="__PLUG__/webuploader/dist//webuploader.css" rel="stylesheet">
+<script src="__PLUG__/webuploader/dist/webuploader.min.js"></script>
+<include file="public:navbar"/>
+<include file="public:sidebar"/>
+<div class="content">
+    <div id="pad-wrapper" class="user-profile">
+        <div class="row profile">
+            <!-- bio, new note & orders column -->
+            <div class="col-md-12 bio">
+                <div class="profile-box margin-none padding-none" style="border:none;">
+                    <div class="col-md-11 section">
+                        <h6 style="margin-left:8%;">添加房型<small></small></h6>
+                        <hr>
+                        <div class="bs-mt-15"></div>
+                        <form class="form-horizontal" autocomplete="off">
+                            <div class="form-group">
+                                <label  class="col-sm-2 control-label">名称</label>
+                                <div class="col-sm-3">
+                                    <input type="text" class="form-control" name="real_name" placeholder="名称">
+                                    <input type="hidden" name="mid" value="{$Think.session._mid}">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">证件类型</label>
+                                <div class="col-lg-2" style="width:140px;">
+                                    <select name="idcard_type" class="form-control">
+                                        <option value="身份证">身份证</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label  class="col-sm-2 control-label">证件号</label>
+                                <div class="col-sm-3">
+                                    <input type="text" class="form-control" name="card" placeholder="证件号">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label  class="col-sm-2 control-label">证件照</label>
+                                <div class="col-sm-6">
+                                    <div id="uploader-demo">
+                                        <!--用来存放item-->
+                                        <div id="fileList" class="uploader-list"></div>
+                                        <div id="picker">选择图片</div>
+                                    </div>
+                                    <div class="progress col-sm-5" style="padding:0">
+                                        <div class="progress-bar progress-bar1 progress-bar-danger" role="progressbar"
+                                             aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"
+                                             style="display:none;">
+                                            <span class="" id="progress"></span>
+                                        </div>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                    <div>
+                                        <p>上传的半身照</p>
+                                        <div class="image-preview">
+                                            <img src="" id="images_preview" width="250" height="auto">
+                                        </div>
+                                        <input type="hidden"  name="image" id="reply_img">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-3 col-lg-offset-2">
+                                    <button type="submit" class="btn btn-warning">认证</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(function(){
+        var uploader = WebUploader.create({
+            swf:'__PLUG__/webuploader/dist/Uploader.swf',
+            server: '{:Url("Uploadify/webUploader")}',
+            pick: '#picker',
+            // 只允许选择图片文件。
+            accept: {
+                title: 'Images',
+                extensions: 'gif,jpg,jpeg,bmp,png',
+                mimeTypes: 'image/*'
+            }
+        });
+        var uploader1 = WebUploader.create({
+            swf:'__PLUG__/webuploader/dist/Uploader.swf',
+            server: '{:Url("Uploadify/webUploader")}',
+            pick: '#picker1',
+            // 只允许选择图片文件。
+            accept: {
+                title: 'Images',
+                extensions: 'gif,jpg,jpeg,bmp,png',
+                mimeTypes: 'image/*'
+            }
+        });
+        // 当有文件添加进来的时候
+        uploader.on( 'fileQueued', function( file ) {
+            $('.progress-bar1').css('display','block');
+            uploader.upload();
+        });
+        // 文件上传过程中创建进度条实时显示。
+        uploader.on( 'uploadProgress', function( file, percentage ) {
+            $('.progress-bar1')
+                .css( 'width', percentage * 100 + '%' );
+            $('#progress').text('上传成功');
+        });
+
+        // 文件上传成功，给item添加成功class, 用样式标记上传成功。
+        uploader.on( 'uploadSuccess', function( file,response ) {
+            if(response.result.code==200){
+                $('#images_preview').attr('src',response.result.file);
+                $('#reply_img').val(response.result.file);
+            }
+        });
+    });
+</script>
+<include file="public:footer"/>

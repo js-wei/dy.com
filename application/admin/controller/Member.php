@@ -127,22 +127,29 @@ class Member extends Base {
             $param = request()->param();
         }
         if(!empty($param['s_keywords'])){
-            $where[$a.'username|'.$a.'nickname']=['like',"%".$param['s_keywords']."%"];
+            $where[$a.'.card']=['like',"%".$param['s_keywords']."%"];
         }
-        if(!empty($param['s_status'])){
-            $where[$a.'status']=$param['s_status']>-1?$param['s_status']:'';
-        }
+
+		if(isset($param['s_status'])){
+			 if(!empty($param['s_status']) || $param['s_status']==0){
+				if($param['s_status']>-1){
+					$where[$a.'.status']=$param['s_status'];
+				}
+			}
+		}
+       
         if(!empty($param['s_date'])){
             $date = explode('-',$param['s_date']);
             $date[1] = "$date[1] 24:00";
-            $where[$a.'date']=['between',[strtotime($date[0]),strtotime($date[1])]];
+            $where[$a.'.date']=['between',[strtotime($date[0]),strtotime($date[1])]];
         }
 
         $this->assign('search',[
             's_keywords'=>!empty($param['s_keywords'])?$param['s_keywords']:'',
             's_date'=>!empty($param['s_date'])?$param['s_date']:'',
-            's_status'=>!empty($param['s_status'])?$param['s_status']:-1
+            's_status'=>isset($param['s_status'])?$param['s_status']!=0?$param['s_status']:0:''
         ]);
+		//p($where);die;
         return $where;
     }
 

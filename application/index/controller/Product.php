@@ -14,9 +14,77 @@ class Product extends Base{
             $this->redirect('/');
         }
     }
+    public function pension(){
+        $where['status']=0;
+        $where['type']=1;
+        $where['uid']=session('_mid');
+        $list = db('article')->where($where)->paginate(8,false);
+        $this->assign('list',$list);
+        return view();
+    }
+    /**
+     * 添加房型
+     * @return \think\response\View
+     */
+    public function add_pension(){
+        if(request()->isGet()){
+            $list = db('version')->field('dates',true)->where(['status'=>0])->select();
+            foreach ($list as $k  => $v){
+                $list[$k]['image'] = $this->site['url'].$v['image'];
+            }
+            $this->assign('list',$list);
+            return view();
+        }
+        $uid = session('_mid');
+        if(!$uid){
+            return json([
+                'status'=>0,
+                'msg'=>'您没有登录'
+            ]);
+        }
+        $param = request()->param();
+        if(isset($param['facilities'])){
+            $param['facilities']=implode(',',$param['facilities']);
+        }else{
+            $param['facilities']='';
+        }
+       if(isset($param['city'])){
+            $province = db('provinces')->where('province','like','%'.$param['hcity'].'%')->find();
+            $city = db('cities')->where('city','like','%'.$param['hproper'].'%')
+                ->where('provinceid','eq',$province['provinceid'])
+                ->find();
+            if($province){
+                 $param['provid']=$province['id'];
+            }
+            if($city){
+                 $param['city_id']=$city['id'];
+            }
+           unset($param['city']);
+           unset($param['hcity']);
+           unset($param['hproper']);
+           unset($param['harea']);
+        }
+        $param['column_id']=4;
+        $param['type']=1;
+        $param['uid']=$uid;
+        if(!db('article')->insert($param)){
+            return json([
+                'status'=>0,
+                'msg'=>'添加失败'
+            ]);
+        }
+        return json([
+            'status'=>1,
+            'msg'=>'添加成功',
+            'redirect'=>Url('product/pension')
+        ]);
+    }
+
+
     public function index(){
         $where['status']=0;
-        $list = db('product')->where($where)->paginate(8);
+        $where['type']=1;
+        $list = db('article')->where($where)->paginate(8);
         $this->assign('list',$list);
         return view();
     }
@@ -26,13 +94,17 @@ class Product extends Base{
         $where['mid']=$id;
         $list = db('my_product')
             ->alias('a')
+			->field('a.id,a.mid,a.pid,a.click,a.url,a.short_url,a.date,b.title,b.image,b.price,b.divides,b.status')
             ->join('think_product b','b.id=a.pid')
+			->where($where)
             ->paginate(4);
         $this->assign('list',$list);
-        return view('has1');
+        return view();
     }
 
-
+    public function add_room(){
+        return view();
+    }
 
     /**
      * 删除
@@ -41,7 +113,7 @@ class Product extends Base{
      */
     public function delete($id=0){
         if(!db('my_product')->delete($id)){
-            return json(['status'=>0,'msg'=>'删除失败']);
+            return json(['status'=>0,'msg'=>'删除失败',db('my_product')->getlastsql()]);
         }
         return json(['status'=>1,'msg'=>'删除成功']);
     }

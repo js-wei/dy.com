@@ -18,18 +18,18 @@ class Index extends Base {
 	}
 
 	protected function _get_details(){
-        $totals = db('order')->where('ordstatus','eq',0)->sum('ordfee');
-	    $totals1 = db('order')->where('ordstatus','eq',1)->sum('ordfee');
+        $totals = db('orderlist')->where('ordstatus','eq',0)->sum('ordfee');
+	    $totals1 = db('orderlist')->where('ordstatus','eq',1)->sum('ordfee');
         $auth = db('authentication')->where('status','eq',0)->count();
         $sum = db('member')->count();
         $sum1 = db('member')->where('last_login_time','eq',0)->count();
 
-        $order = db('order')->count();
-        $order1 = db('order')->where('ordstatus','eq',1)->count();
+        $order = db('orderlist')->count();
+        $order1 = db('orderlist')->where('ordstatus','eq',1)->count();
 
 
-	    $this->assign('totals',$totals);
-        $this->assign('totals1',$totals1);
+	    $this->assign('totals',$totals?$totals:0);
+        $this->assign('totals1',$totals1?$totals1:0);
 
         $this->assign('auth',$auth);
 

@@ -60,7 +60,7 @@
                                 <td>
                                     {$vo.divides*100}%
                                 </td>
-                                <td class="qrcode" data-id="{$vo.id}" data-role="{$vo.short_url}">
+                                <td class="qrcode" data-id="{$vo.id}" data-role="{$vo.url}">
                                     <div class="qrcode{$vo.id}"></div>
                                 </td>
                                 <td>
@@ -107,6 +107,7 @@
         $('.qrcode').each(function (i) {
            var url = $(this).attr('data-role');
            var id = $(this).attr('data-id');
+		   alert(url);
             $(".qrcode"+id).qrcode({
                 width: 120, //宽度
                 height:120, //高度

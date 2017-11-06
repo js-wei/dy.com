@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
-    <title>台湾原产燕窝隐形面膜</title>
+    <title>台湾原装进口燕窝隐形面膜</title>
     <link rel="stylesheet" href="__PLUG__/larea/css/LArea.css">
     <link rel="stylesheet" href="__CSS__/spr.css">
     <script src="//res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
@@ -16,6 +16,9 @@
     </style>
 </head>
 <body>
+<!-- <div id="wx_pic" style="margin: 0 auto;display: none;">
+	<img src="./pic300.jpg" alt="">
+</div> --> 
 <div class="container" id="obj">
     <div class="music">
          <!--<audio id='mu' autoplay="autoplay" loop="loop" src="/data/music.mp3"></audio>-->
@@ -72,6 +75,9 @@
         <div class="content6">
             <div class="content61">
                 <h2>订单详情</h2>
+				<div class="PurInfor">
+                    <span>订单号:</span><span id="no"></span>
+                </div>
                 <div class="PurInfor">
                     <span>购买人信息:</span><span id="name">王传奇</span>
                 </div>
@@ -122,7 +128,15 @@
             var city= $('input[name="city"]').val();
             var address= $('input[name="address"]').val();
             var number= $('input[name="number"]').val();
-
+			var openid= $('#openid').val();
+			if(openid==''){
+                layer.open({
+                    content: "缺少必要参数"
+                    ,skin: 'msg'
+                    ,time: 3
+                });
+                return false;
+            }
             if(name==''){
                 layer.open({
                     content: "收货人姓名不能为空"
@@ -191,6 +205,7 @@
                     $('#number').text(pro.number+'盒');
                     $('#totals').text('￥'+pro.total+'元');
                     $('#name').text(pro.name);
+					$('#no').text(pro.ordid);
                     $('.content6').toggle();
                 }else{
                     layer.open({
@@ -216,6 +231,7 @@
         WeixinJSBridge.invoke(
             'getBrandWCPayRequest'
             ,jsApi, function(res){
+            alert(JSON.stringify(res));
             if(res.err_msg == 'get_brand_wcpay_request:cancel') {
                 alert("您已取消了此次支付");
                 return;
@@ -250,6 +266,42 @@
             jsApiCall();
         }
     }
+
+    wx.config({
+        debug: false,
+        appId: '<?php echo $options["appId"];?>',
+        timestamp: '<?php echo $options["timestamp"];?>',
+        nonceStr: '<?php echo $options["nonceStr"];?>',
+        signature: '<?php echo $options["signature"];?>',
+        jsApiList: [
+            // 所有要调用的 API 都要加到这个列表中
+            'checkJsApi',
+            'openLocation',
+            'getLocation',
+            'onMenuShareTimeline',
+            'onMenuShareAppMessage'
+        ]
+    });
+    wx.ready(function(){
+        $(document).on('click','.share',function(){
+            wx.onMenuShareAppMessage({
+                title: '测试分享', // 分享标题
+                desc: '测试分享', // 分享描述
+                link: 'http://baidu.com', // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+                imgUrl: 'https://ss0.bdstatic.com/5aV1bjqh_Q23odCf/static/superman/img/logo/bd_logo1_31bdc765.png', // 分享图标
+                type: '', // 分享类型,music、video或link，不填默认为link
+                dataUrl: '', // 如果type是music或video，则要提供数据链接，默认为空
+                success: function () {
+                    // 用户确认分享后执行的回调函数
+                    alert('分享成功');
+                },
+                cancel: function () {
+                    // 用户取消分享后执行的回调函数
+                    alert('取消分享');
+                }
+            });
+        });
+    });
 </script>
 <script src="__PLUG__/layer/mobile/layer.js"></script>
 <script type="text/javascript" src='__JS__/spread.js'></script>

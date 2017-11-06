@@ -36,16 +36,23 @@ Route::rule('user/zip_code','index/user/zip_code');
 Route::rule('account/message','index/user/message');
 Route::rule('account/income','index/income/index');
 Route::rule('account/add_product','index/user/add_product');
-//Route::rule('notify/callback_wechat','index/publish/callback_wechat');
+
 
 
 // 给Account控制器设置快捷路由
 Route::rule('account/product','index/product/index');
 Route::rule('account/has','index/product/has');
+Route::rule('account/delete','index/product/delete');
+Route::rule('account/delete_all','index/product/delete_all');
 Route::rule('product/detail','index/publish/detail');
+Route::rule('product/pension','index/product/pension');
+Route::rule('product/add_pension','index/product/add_pension');
 Route::rule('account/add_order','index/publish/add_order');
 //给Callback控制器设置快捷路由
 Route::rule('notify/callback_alipay','index/callback/callback_alipay');
+//
+Route::rule('account/setting','index/user/setting');
+
 
 
 

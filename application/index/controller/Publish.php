@@ -71,7 +71,8 @@ class Publish extends Base{
                 $this->assign('pid',$id);
                 return view('detail1');
             }else{
-                $url =  'http://pinkan.cn/wap/oder/get_openid?callback=t.jswei.top/product/detail&_id='.$id.'&_c='.$code;
+                $_url = explode('//', $this->site['url']);
+                $url =  'http://pinkan.cn/wap/oder/get_openid?callback='.$_url[1].'/product/detail&_id='.$id.'&_c='.$code;
                 header('Location:'.$url);
             }
         }else{
@@ -85,7 +86,7 @@ class Publish extends Base{
 
             $this->assign('vo',$product);
             $this->assign('code',$code);
-            $this->assign('openid','onP74wOKIE0qSq54D1Qqr_0gypyY');
+            $this->assign('openid','');
             $this->assign('pid',$id);
             return view('detail1');
         }
@@ -178,7 +179,7 @@ class Publish extends Base{
         $input->SetTime_start(date("YmdHis"));
         $input->SetTime_expire(date("YmdHis", time() + 600));
         $input->SetGoods_tag("");
-        $input->SetNotify_url("http://t.jswei.top/index/publish/callback_wechat");
+        $input->SetNotify_url("http://wuweiguo.com/index/publish/callback_wechat");
         $input->SetTrade_type("JSAPI");
         $input->SetOpenid($openid);                    //'onP74wOKIE0qSq54D1Qqr_0gypyY'
         $order = \WxPayApi::unifiedOrder($input);
@@ -204,6 +205,7 @@ class Publish extends Base{
         $path = ROOT_PATH . 'public' . DS;
 
         $xml = file_get_contents("php://input");
+		file_put_contents($path.'data/wechat_sql.txt',xml);
         libxml_disable_entity_loader(true);
         $data = json_decode(json_encode(simplexml_load_string($xml, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
 
@@ -479,11 +481,11 @@ class Publish extends Base{
             return json(['status'=>0,'msg'=>'请输入正确的手机号']);
         }
         if($type==0){
-            $arr =send_sms($tel,'111599');
+            $arr =send_sms($tel,'107661');
         }else if($type==1){
-            $arr =send_sms($tel,'111597');
+            $arr =send_sms($tel,'107658');
         }else{
-            $arr =send_sms($tel,'111598');
+            $arr =send_sms($tel,'107662');
         }
         if (substr($arr,21,6) == 000000) {
             return json(['status'=>1,'msg'=>'验证发送成功']);

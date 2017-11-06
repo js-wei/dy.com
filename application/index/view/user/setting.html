@@ -1,0 +1,112 @@
+<include file="public:header" title="认真信息" this="__CSS__/compiled/user-profile.css"/>
+<!--<link rel="stylesheet" href="__PLUG__/Uploadify/uploadify.css" />-->
+<!--<script type="text/javascript" src="__PLUG__/Uploadify/jquery.uploadify.min.js"></script>-->
+<link href="__PLUG__/webuploader/dist//webuploader.css" rel="stylesheet">
+<script src="__PLUG__/webuploader/dist/webuploader.min.js"></script>
+<include file="public:navbar"/>
+<include file="public:sidebar"/>
+<div class="content">
+    <div id="pad-wrapper" class="user-profile">
+        <div class="row profile">
+            <!-- bio, new note & orders column -->
+            <div class="col-md-12 bio">
+                <div class="profile-box margin-none padding-none" style="border:none;">
+                    <div class="col-md-11 section">
+                        <h6 style="margin-left:8%;">系统设置<small><code>启用系统功能</code> </small></h6>
+                        <hr>
+                        <div class="bs-mt-15"></div>
+                        <form class="form-horizontal" autocomplete="off">
+                            <div class="form-group">
+                                <label  class="col-sm-2 control-label">系统消息</label>
+                                <div class="col-sm-6">
+                                    <div class="radio radio-inline" style="margin:0;padding-left:0;">
+                                        <label>
+                                            <input type="radio" name="receive" value="1" <eq name="u.receive" value="1">checked="checked"</eq>>
+                                            接收
+                                        </label>
+                                    </div>
+                                    <div class="radio radio-inline">
+                                        <label>
+                                            <input type="radio" name="receive" value="0" <eq name="u.receive" value="0">checked="checked"</eq>>
+                                            不接收
+                                        </label>
+                                    </div>
+                                    <div class="text-danger" style="padding-top:10px;">*关闭后将接收不到任何系统信息</div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label  class="col-sm-2 control-label">活动信息</label>
+                                <div class="col-sm-6">
+                                    <div class="radio radio-inline" style="margin:0;padding-left:0;">
+                                        <label>
+                                            <input type="radio" name="activity" value="1" <eq name="u.activity" value="1">checked="checked"</eq>>
+                                            接收
+                                        </label>
+                                    </div>
+                                    <div class="radio radio-inline">
+                                        <label>
+                                            <input type="radio" name="activity" value="0" <eq name="u.activity" value="0">checked="checked"</eq>>
+                                            不接收
+                                        </label>
+                                    </div>
+                                    <div class="text-danger" style="padding-top:10px;">*关闭后将接收不到活动信息</div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label  class="col-sm-2 control-label">邮件信息</label>
+                                <div class="col-sm-6">
+                                    <div class="radio radio-inline" style="margin:0;padding-left:0;">
+                                        <label>
+                                            <input type="radio" name="receive_email" value="1" <eq name="u.receive_email" value="1">checked="checked"</eq>>
+                                            接收
+                                        </label>
+                                    </div>
+                                    <div class="radio radio-inline">
+                                        <label>
+                                            <input type="radio" name="receive_email" value="0" <eq name="u.receive_email" value="0">checked="checked"</eq>>
+                                            不接收
+                                        </label>
+                                    </div>
+                                    <div class="text-danger" style="padding-top:10px;">*请将邮件接收信息打开,我们会把对账单以邮件形式发送给您</div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-md-3 col-lg-offset-2">
+                                    <button type="submit" class="btn btn-warning">确定</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(function () {
+        $('form').submit(function(e){
+            e.preventDefault();
+            var index = layer.load(2, {
+                shard: [0.6, "#000"]
+            });
+            $.post('__SELF__',$('form').serialize(),function (result) {
+                layer.close(index);
+                if(result.status==0){
+                    layer.msg(result.msg, {
+                        offset: 'm',
+                        anim: 3
+                    });
+                }else{
+                    layer.alert(result.msg, {
+                        icon:6,
+                        end:function () {
+                            layer.closeAll();
+                            window.parent.location.reload();
+                        }
+                    });
+                }
+            });
+        });
+    });
+</script>
+<include file="public:footer"/>

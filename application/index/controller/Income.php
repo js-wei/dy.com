@@ -22,12 +22,11 @@ class Income extends Base{
                 ->where('a.mid','eq',$id)
                 ->field('a.id,a.ordtitle,a.ordprice,a.ordfee,a.ordstatus,a.ordbuynum,a.ordtime,a.finishtime,b.divides')
                 ->order('ordtime desc')
-                ->paginate(5);
+                ->paginate(10);
         $this->assign('list',$list);
         $this->get_details($id);
         return view();
     }
-
     public function has(){
         return view();
     }
@@ -61,7 +60,9 @@ class Income extends Base{
             ->field('a.ordid,a.ordtitle,a.ordprice,a.ordfee,a.ordstatus,a.ordbuynum,a.ordtime,a.finishtime,b.divides')
             ->order('ordtime desc')
             ->select();
-
+		if(empty($list)){
+			 return array('status'=>0,'msg'=>'没有需要导出的数据');
+		}
         $divides=0;
         foreach ($list as $k=>$v){
             $list[$k]['ordtime']=date('Y-m-d H:i:s',$v['ordtime']);
@@ -85,7 +86,7 @@ class Income extends Base{
             if(!empty($list)){
                 return array('status'=>1,'msg'=>'有导出数据','redirect'=>Url('export')."?time={$time}&user={$user}");
             }else{
-                return array('status'=>0,'msg'=>'导出数据');
+                return array('status'=>0,'msg'=>'没有需要导出的数据');
             }
         }else{
 
@@ -151,4 +152,25 @@ class Income extends Base{
         $this->assign('c1',$c1?$c1:0);
         $this->assign('sum',$sum);
     }
+
+	
+	public function delete($id=''){
+		if(empty($id)){
+			return json(['status'=>0,'msg'=>'参数错误']);
+		}
+		if(!db('order')->delete($id)){
+			return json(['status'=>0,'msg'=>'删除失败']);
+		}
+		return json(['status'=>1,'msg'=>'删除成功']);
+	}
+
+	public function delete_all($id=''){
+		if(empty($id)){
+			return json(['status'=>0,'msg'=>'参数错误']);
+		}
+		if(!db('order')->where('id','in',$id)->delete()){
+			return json(['status'=>0,'msg'=>'删除失败']);
+		}
+		return json(['status'=>1,'msg'=>'删除成功']);
+	}
 }

@@ -18,11 +18,28 @@
         </div>
       </div>
       <div class="col-xs-12 col-md-4 col-lg-2 mt10" style="padding:0">
-        <select name="s_status" style="padding-right:0">
+		<php>
+			$s = '[status]';
+		</php>
+		<neq name="$s" value="[status]">
+			<php>
+				$s = explode('|',$s);
+			</php>
+			<select name="s_status" style="padding-right:0">
+				<volist name="$s" id="sl">
+					<php>
+					$sl = explode(',',$sl);
+					</php>
+					<option value="{$sl[0]}" <php>if($search['s_status']==$sl[0]){echo 'selected';}</php>>{$sl[1]}</option>
+				</volist>
+			</select>
+		<else />
+		<select name="s_status" style="padding-right:0">
             <option value="-1">--全部--</option>
             <option value="0" <eq name="search.s_status" value="0">selected</eq><eq name="search.s_status" value="">selected</eq>>启用</option>
             <option value="1" <eq name="search.s_status" value="1">selected</eq>>禁用</option>
         </select>
+		</neq>
       </div>
       <button type="button" class="btn btn-primary onSearch mt10">搜素</button>
   </form>
