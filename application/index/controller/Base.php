@@ -19,9 +19,6 @@ class Base extends Controller{
 		$this->get_massage_new_count();
 		session('site',$this->site);
 		$this->assign('site',$this->site );
-        $tools = new \service\Wechat('wxf02790fbcadf974a','d5f062346b24ca499e6997fc2f38d4db','');
-        $options = $tools->getSignPackage();
-        $this->assign('options',$options);
 
     }
 

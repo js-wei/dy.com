@@ -1,27 +1,21 @@
 <?php
 namespace app\index\controller;
-use PhpOffice\PhpWord\Settings;
 
 class Index extends Base{
     public function index($tpl=''){
         $tpl=$tpl?$tpl:'';
 	    return view($tpl);
     }
+
     public function login(){
         return view();
     }
+
     public function word2html(){
         $path = ROOT_PATH .'public'.DS .'data'. DS  ;
         $phpWord = \PhpOffice\PhpWord\IOFactory::load($path .'我的测试文档.docx');
         $f = $path.'mydoc.html';
         $phpWord->save($f,'HTML',false);
-    }
-
-    public function jsapi(){
-        $tools = new \service\Wechat('wxf02790fbcadf974a','d5f062346b24ca499e6997fc2f38d4db','');
-        $options = $tools->getSignPackage();
-        $this->assign('options',$options);
-        return view();
     }
 
     /**

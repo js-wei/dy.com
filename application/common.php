@@ -9,14 +9,16 @@
 // | Author: 流年 <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-// 应用公共文件
-function word2html($wfilepath)
-{
+/**
+ * Word2html
+ * @param $file_path
+ */
+function word2html($file_path){
     $word=new COM("Word.Application") or die("无法打开 MS Word");
     $word->visible = 1 ;
-    $word->Documents->Open($wfilepath)or die("无法打开这个文件");
-    $htmlpath=substr($wfilepath,0,-4);
-    $word->ActiveDocument->SaveAs($htmlpath,8);
+    $word->Documents->Open($file_path)or die("无法打开这个文件");
+    $html_path=substr($file_path,0,-4);
+    $word->ActiveDocument->SaveAs($html_path,8);
     $word->quit(0);
 }
 
@@ -24,10 +26,13 @@ function word2html($wfilepath)
  * 微信浏览器
  * @return bool
  */
-function is_weixin() {
-    if (strpos(request()->header()['user-agent'], 'MicroMessenger') !== false) {
+function is_wei_xin() {
+    $agent = request()->header()['user-agent'];
+    if (strpos($agent, 'MicroMessenger') !== false) {
         return true;
-    } return false;
+    }else{
+        return false;
+    }
 }
 
 /**
@@ -37,22 +42,30 @@ function is_weixin() {
 function p($array){
 	dump($array,1,'<pre>',0);	
 }
-//去除转义字符 
-function stripslashes_array(&$array) { 
+
+/**
+ * 去除转义字符
+ * @param $array
+ * @return mixed
+ */
+function strips_lashes_array(&$array) {
 	while(list($key,$var) = each($array)) { 
 		if ($key != 'argc' && $key != 'argv' && (strtoupper($key) != $key || ''.intval($key) == "$key")) { 
 			if (is_string($var)) { 
 				$array[$key] = stripslashes($var); 
 			} 
 			if (is_array($var))  { 
-				$array[$key] = stripslashes_array($var); 
+				$array[$key] = strips_lashes_array($var);
 			} 
 		} 
 	} 
 	return $array; 
 }
+
 /**
  * 判断是否存在汉字
+ * @param $str
+ * @return bool
  */
 function has_chiness($str){
 	if(preg_match('/^[\x{4e00}-\x{9fa5}]+$/u', $str)>0){
@@ -64,11 +77,13 @@ function has_chiness($str){
 	}
 	return $flag;
 }
+
 /**
- *日期转成时间戳
- *含特殊的汉字日期
+ * 日期转成时间戳
+ * @param $str
+ * @return false|int
  */
-function strtotime1($str){
+function str2time($str){
 	if(has_chiness($str)){
 		$result = preg_replace('/([\x80-\xff]*)/i','',$str);	//去掉汉字
 		if(strstr($str,'小时前')){
@@ -148,11 +163,12 @@ function check_email($email){
 		return false;
 	}
 }
+
 /**
- * @author 魏巍
- * @description 计算时间差
- * @param int $start 开始时间戳
- * @param int $end 	 结束时间戳
+ * 计算时间差
+ * @param $start
+ * @param $end
+ * @return array
  */
 function time_diff($start,$end){
 	$end = time();
@@ -167,20 +183,82 @@ function time_diff($start,$end){
 		'day'=>$day
 	];
 }
+
 /**
- * 密码加密函数
+ * 加解密
+ * @param $string
+ * @param string $operation
+ * @param string $key
+ * @param int $expiry
+ * @return bool|string
+ * @example:
+ *   $str= '1234';
+ *   $auth =  auth_code($str,'ENCODE'); //加密
+ *   $str = auth_code($auth,'DECODE'); //解密
+ *   p($auth);
  */
-function getEncyptStr($val) {
-	vendor('Encrypt');
-	return EncryptCopy::encryptByKey ($val,config('ENCRYPT_KEY'));
+function auth_code($string, $operation = 'DECODE', $key = '', $expiry = 0,$auth_key='jswei30') {
+    // 动态密匙长度，相同的明文会生成不同密文就是依靠动态密匙
+    $ckey_length = 4;
+
+    // 密匙
+    $key = md5($key ? $key : $auth_key);
+
+    // 密匙a会参与加解密
+    $keya = md5(substr($key, 0, 16));
+    // 密匙b会用来做数据完整性验证
+    $keyb = md5(substr($key, 16, 16));
+    // 密匙c用于变化生成的密文
+    $keyc = $ckey_length ? ($operation == 'DECODE' ? substr($string, 0, $ckey_length):
+        substr(md5(microtime()), -$ckey_length)) : '';
+    // 参与运算的密匙
+    $cryptkey = $keya.md5($keya.$keyc);
+    $key_length = strlen($cryptkey);
+    // 明文，前10位用来保存时间戳，解密时验证数据有效性，10到26位用来保存$keyb(密匙b)，
+//解密时会通过这个密匙验证数据完整性
+    // 如果是解码的话，会从第$ckey_length位开始，因为密文前$ckey_length位保存 动态密匙，以保证解密正确
+    $string = $operation == 'DECODE' ? base64_decode(substr($string, $ckey_length)) :
+        sprintf('%010d', $expiry ? $expiry + time() : 0).substr(md5($string.$keyb), 0, 16).$string;
+    $string_length = strlen($string);
+    $result = '';
+    $box = range(0, 255);
+    $rndkey = array();
+    // 产生密匙簿
+    for($i = 0; $i <= 255; $i++) {
+        $rndkey[$i] = ord($cryptkey[$i % $key_length]);
+    }
+    // 用固定的算法，打乱密匙簿，增加随机性，好像很复杂，实际上对并不会增加密文的强度
+    for($j = $i = 0; $i < 256; $i++) {
+        $j = ($j + $box[$i] + $rndkey[$i]) % 256;
+        $tmp = $box[$i];
+        $box[$i] = $box[$j];
+        $box[$j] = $tmp;
+    }
+    // 核心加解密部分
+    for($a = $j = $i = 0; $i < $string_length; $i++) {
+        $a = ($a + 1) % 256;
+        $j = ($j + $box[$a]) % 256;
+        $tmp = $box[$a];
+        $box[$a] = $box[$j];
+        $box[$j] = $tmp;
+        // 从密匙簿得出密匙进行异或，再转成字符
+        $result .= chr(ord($string[$i]) ^ ($box[($box[$a] + $box[$j]) % 256]));
+    }
+    if($operation == 'DECODE') {
+        // 验证数据有效性，请看未加密明文的格式
+        if((substr($result, 0, 10) == 0 || substr($result, 0, 10) - time() > 0) &&
+            substr($result, 10, 16) == substr(md5(substr($result, 26).$keyb), 0, 16)) {
+            return substr($result, 26);
+        } else {
+            return '';
+        }
+    } else {
+        // 把动态密匙保存在密文里，这也是为什么同样的明文，生产不同密文后能解密的原因
+        // 因为加密后的密文可能是一些特殊字符，复制过程可能会丢失，所以用base64编码
+        return $keyc.str_replace('=', '', base64_encode($result));
+    }
 }
-/**
- * 密码解密函数
- */
-function getDeEncyptStr($val) {
-	vendor('Encrypt');
-	return EncryptCopy::decryptByKey ($val,config('ENCRYPT_KEY'));
-}
+
 /**
  * @author 魏巍
  * @description 获取当前时间的本周的开始结束时间
@@ -204,21 +282,21 @@ function get_first_last_week_day(){
 }
 
 /**
- * [split_content 拆分内容]
- * @param  string $content [内容]
- * @return array           [description]
+ * 拆分内容
+ * @param $content
+ * @param string $separator
+ * @return string
  */
 function split_content($content,$separator="，,。"){
 	$separator = explode(',', $separator);
 	$result =  array();
 	$content = htmlspecialchars_decode($content);
-	$str = tagstr(trim_all($content));
+	$str = tag_str(trim_all($content));
 	$str=str_replace('，',' ',str_replace('。',' ',$str));
 	$result = explode(' ',$str);
-	$start_index =0; 
-
-	for ($i=0; $i < count($result)-1; $i++){ 
-
+	$start_index =0;
+    $_result='';
+	for ($i=0; $i < count($result)-1; $i++){
 		if($start_index%2==0){
 			$_result .= strip_tags($result[$i]).'，';
 			$start_index = 1;
@@ -230,15 +308,16 @@ function split_content($content,$separator="，,。"){
 	}
 	return $_result;
 }
+
 /**
- * csv_get_lines 读取CSV文件中的某几行数据
- * @param $csvfile csv文件路径
- * @param $lines 读取行数
- * @param $offset 起始行数
- * @return array
- * */
-function csv_get_lines($csvfile, $lines, $offset = 0) {
-	if(!$fp = fopen($csvfile, 'r')) {
+ * 读取CSV文件中的某几行数据
+ * @param $csv_file
+ * @param $lines
+ * @param int $offset
+ * @return array|bool
+ */
+function csv_get_lines($csv_file, $lines, $offset = 0) {
+	if(!$fp = fopen($csv_file, 'r')) {
 		return false;
 	}
 	$i = $j = 0;
@@ -257,19 +336,16 @@ function csv_get_lines($csvfile, $lines, $offset = 0) {
 }
 
 /**
- * [get_next_split_content 拆分诗词]
- * @param  [type] $content   [诗词]
- * @param  [type] $query     [查询词]
- * @param  string $separator [分隔符]
- * @return [type]            [description]
+ * 拆分诗词
+ * @param $content
+ * @param $query
+ * @param string $separator
+ * @return string
  */
 function get_next_split_content($content,$query,$separator="，,。"){
-	
 	$separator = explode(',', $separator);
-	//p($separator);die;
-	$result =  array();
 	$content = htmlspecialchars_decode($content);
-	$str = tagstr(trim_all($content));
+	$str = tag_str(trim_all($content));
 	$str=str_replace('，',' ',str_replace('。',' ',$str));
 	$result = explode(' ',$str); 
 	$result = $temp = array_filter($result);
@@ -296,13 +372,13 @@ function get_next_split_content($content,$query,$separator="，,。"){
 		}
 		
 	}
-	
 	return $_result;
 }
+
 /**
- * [filter_mark 去除标点符号]
- * @param  [type] $text [description]
- * @return [type]       [description]
+ * 去除标点符号
+ * @param $text
+ * @return string
  */
 function filter_mark($text){
 	if(trim($text)=='') return '';
@@ -311,56 +387,55 @@ function filter_mark($text){
 	$text=preg_replace("/(%7E|%60|%21|%40|%23|%24|%25|%5E|%26|%27|%2A|%28|%29|%2B|%7C|%5C|%3D|\-|_|%5B|%5D|%7D|%7B|%3B|%22|%3A|%3F|%3E|%3C|%2C|\.|%2F|%A3%BF|%A1%B7|%A1%B6|%A1%A2|%A1%A3|%A3%AC|%7D|%A1%B0|%A3%BA|%A3%BB|%A1%AE|%A1%AF|%A1%B1|%A3%FC|%A3%BD|%A1%AA|%A3%A9|%A3%A8|%A1%AD|%A3%A4|%A1%A4|%A3%A1|%E3%80%82|%EF%BC%81|%EF%BC%8C|%EF%BC%9B|%EF%BC%9F|%EF%BC%9A|%E3%80%81|%E2%80%A6%E2%80%A6|%E2%80%9D|%E2%80%9C|%E2%80%98|%E2%80%99|%EF%BD%9E|%EF%BC%8E|%EF%BC%88)+/",' ',$text);
 	$text=urldecode($text);
 	return trim($text);
-} 
+}
 
 /**
  * 去除空格
- * @param $str          字符串
- * @return string       结果
+ * @param $str
+ * @return mixed
  */
 function trim_all($str){
 	$q=array(" ","　","\t","\n","\r");
 	$h=array("","","","","");
 	return str_replace($q,$h,$str);
 }
+
 /**
- * [getMacAddr 生成MAC]
+ * 生成MAC
+ * @return mixed|string
  */
 function getMacAddr(){
 	$return_array = array();
 	$temp_array = array();
-	$mac_addr = "";
+	$mac_address = "";
 	
 	@exec("arp -a",$return_array);
 	
-	foreach($return_array as $value)
-	{
+	foreach($return_array as $value) {
 		if(strpos($value,$_SERVER["REMOTE_ADDR"]) !== false &&
-		preg_match("/(:?[0-9a-f]{2}[:-]){5}[0-9a-f]{2}/i",$value,$temp_array))
-		{
-			$mac_addr = $temp_array[0];
+		preg_match("/(:?[0-9a-f]{2}[:-]){5}[0-9a-f]{2}/i",$value,$temp_array)) {
+            $mac_address = $temp_array[0];
 			break;
 		}
 	}
 	
-	return ($mac_addr);
+	return ($mac_address);
 }
 
 /**
- * [build_order_no 生成订单号]
- * @return [type] [description]
+ * 生成订单号
+ * @return string
  */
 function build_order_no(){
 	return date('Ymd').substr(implode(NULL, array_map('ord', str_split(substr(uniqid(), 7, 13), 1))), 0, 8);
 }
 
-
 /**
  * 列出目录下的所有文件
- * @param str $path 目录
- * @param str $exts 后缀
- * @param array $list 路径数组
- * @return array 返回路径数组
+ * @param $path
+ * @param string $exts
+ * @param array $list
+ * @return array
  */
 function dir_list($path, $exts = '', $list = array()) {
 	$path = dir_path($path);
@@ -386,11 +461,13 @@ function dir_path($path) {
 	if (substr($path, -1) != '/') $path = $path . '/';
 	return $path;
 }
+
 /**
- * [NoRand 不重复随机数]
- * @param integer $begin [description]
- * @param integer $end   [description]
- * @param integer $limit [description]
+ * 不重复随机数
+ * @param int $begin
+ * @param int $end
+ * @param int $limit
+ * @return string
  */
 function NoRand($begin=0,$end=20,$limit=4){
 	$rand_array=range($begin,$end);
@@ -452,6 +529,7 @@ function unicode_encode ($word){
 	$word = preg_replace_callback('/\\\\u(\w{4})/', create_function('$hex', 'return \'&#\'.hexdec($hex[1]).\';\';'), substr($word, 1, strlen($word)-2));
 	return $word;
 }
+
 function unicode_decode ($uncode){
 	$word = json_decode(preg_replace_callback('/&#(\d{5});/', create_function('$dec', 'return \'\\u\'.dechex($dec[1]);'), '"'.$uncode.'"'));
 	return $word;
@@ -515,6 +593,10 @@ function color_txt($str,$size=20,$bold=false){
 	return $colorTxt;
 }
 
+/**
+ * 获取随机颜色
+ * @return string
+ */
 function rand_color(){
 	return '#'.sprintf("%02X",mt_rand(0,255)).sprintf("%02X",mt_rand(0,255)).sprintf("%02X",mt_rand(0,255));
 }
@@ -526,7 +608,7 @@ function rand_color(){
 function replace_phiz($content){
 	preg_match_all('/\[.*?\]/is', $content, $arr);
 	if($arr[0]){
-		$phiz=F('phiz','','./data/');
+		$phiz=cache('phiz','','./data/');
 		foreach ($arr[0] as $v){
 			foreach ($phiz as $key =>$value){
 				if($v=='['.$value.']'){
@@ -536,7 +618,9 @@ function replace_phiz($content){
 			}
 		}
 		return $content;
-	}
+	}else{
+	    return '';
+    }
 }
 /**
  * 截取字符串
@@ -549,10 +633,10 @@ function replace_phiz($content){
  */
 function sub_str($str,$start=0,$length,$suffix=true,$charset="utf-8"){
 	if(strlen($str)==0){
-		return ;
+		return '';
 	}
 	$l=strlen($str);
-
+    $slice = '';
 	if(function_exists("mb_substr"))
 		return 	!$suffix?mb_substr($str,$start,$length,$charset):mb_substr($str,$start,$length,$charset)."…";
 	else if(function_exists('iconv_substr')){
@@ -565,29 +649,29 @@ function sub_str($str,$start=0,$length,$suffix=true,$charset="utf-8"){
 	preg_match_all($re[$charset],$str,$match);
 	$slice = join("",array_slice($match[0],$start,$length));
 
-	if($suffix){
-		if($l>$length){
-			return $slice."…";
-		}else{
-			return $slice;
-		}
-	} 
+    if($l>$length){
+        return $suffix?$slice."…":$slice;
+    }else{
+        return $slice;
+    }
+
 }
+
 /**
- * [paichu 去掉指定的字符串]
- * @param  [type] $mub [description]
- * @param  [type] $zhi [description]
- * @param  [type] $a   [description]
- * @return [type]      [description]
+ * 去掉指定的字符串
+ * @param $mub
+ * @param $zhi
+ * @param string $a
+ * @return bool|mixed|string
  */
-function paichu($mub,$zhi,$a='l'){
+function pai_chu($mub,$zhi,$a='l'){
 	if(!$mub){
 		return "被替换的字符串不存在";
 	}
 
 	$mub = mb_convert_encoding($mub,'GB2312','UTF-8');
 	$zhi = mb_convert_encoding($zhi,'GB2312','UTF-8');
-	 
+    $last = '';
 	if($a==""){
 		$last = str_replace($mub,"",$zhi);
 	}elseif($a=="r"){
@@ -619,27 +703,29 @@ function reg($str){
 	return  _strip_tags(array("p", "br"),$str); 
 }
 
-/**   
-* PHP去掉特定的html标签
-* @param array $string   
-* @param bool $str  
-* @return string
-*/  
-function _strip_tags($tagsArr,$str) {   
+/**
+ * PHP去掉特定的html标签
+ * @param $tagsArr
+ * @param $str
+ * @return mixed
+ */
+function _strip_tags($tagsArr,$str) {
+    $p=[];
 	foreach ($tagsArr as $tag) {  
 		$p[]="/(<(?:\/".$tag."|".$tag.")[^>]*>)/i";  
 	}  
 	$return_str = preg_replace($p,"",$str);  
 	return $return_str;  
-}  
+}
+
 /**
- * [tag 截取字符串]
- * @param  [type] 资源字符串
- * @param  [type] 开始位置
- * @param  [type] 截取长度
- * @return [type] 结果字符串
+ * 截取字符串
+ * @param $str
+ * @param int $start
+ * @param int $length
+ * @return string
  */
-function tagstr($str,$start=0,$length=250){	
+function tag_str($str,$start=0,$length=250){
 	$str=strip_tags(htmlspecialchars_decode($str));
 	$temp=mb_substr($str,$start,$length,'utf-8');
 	//return (strlen($str)>$length*1.5)?$temp.'...':$temp;
@@ -754,121 +840,53 @@ function send_email($to,$title,$content,$webname="官方网站"){
 }
 
 /**
- * [no_repeat_random 不重复随机数]
- * @param integer $begin [description]
- * @param integer $end   [description]
- * @param integer $limit [description]
+ * 不重复随机数
+ * @param int $begin
+ * @param int $end
+ * @param int $limit
+ * @return string
  */
 function no_repeat_random($begin=0,$end=20,$limit=4){
 	$rand_array=range($begin,$end);
 	shuffle($rand_array);//调用现成的数组随机排列函数
 	return implode('',array_slice($rand_array,0,$limit));//截取前$limit个
 }
+
 /**
- * [zeroize 数字补足]
- * @param  int $num    		[带补足数字]
- * @param  int $length 		[补足长度]
- * @param  string $fill   	[补足字符]
- * @param  int $fill   	  	[补足字符]
- * @return [type]         	[description]
+ * 数字补足
+ * @param $num
+ * @param int $length
+ * @param int $type
+ * @param string $fill
+ * @return string
  */
-function zeroize($num,$length=10,$type=1,$fill='0'){
+function zero_ize($num,$length=10,$type=1,$fill='0'){
 	$type=$type?STR_PAD_LEFT:STR_PAD_RIGHT;
 	return str_pad($num,$length,$fill,$type);
 }
 
-
-//////////////////////////////////////////////////////
-//Orderlist数据表，用于保存用户的购买订单记录；
-/* Orderlist数据表结构；
-CREATE TABLE `tb_orderlist` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `userid` int(11) DEFAULT NULL,购买者userid
-  `username` varchar(255) DEFAULT NULL,购买者姓名
-  `ordid` varchar(255) DEFAULT NULL,订单号
-  `ordtime` int(11) DEFAULT NULL,订单时间
-  `productid` int(11) DEFAULT NULL,产品ID
-  `ordtitle` varchar(255) DEFAULT NULL,订单标题
-  `ordbuynum` int(11) DEFAULT '0',购买数量
-  `ordprice` float(10,2) DEFAULT '0.00',产品单价
-  `ordfee` float(10,2) DEFAULT '0.00',订单总金额
-  `ordstatus` int(11) DEFAULT '0',订单状态
-  `payment_type` varchar(255) DEFAULT NULL,支付类型
-  `payment_trade_no` varchar(255) DEFAULT NULL,支付接口交易号
-  `payment_trade_status` varchar(255) DEFAULT NULL,支付接口返回的交易状态
-  `payment_notify_id` varchar(255) DEFAULT NULL,
-  `payment_notify_time` varchar(255) DEFAULT NULL,
-  `payment_buyer_email` varchar(255) DEFAULT NULL,
-  `ordcode` varchar(255) DEFAULT NULL,      
-  `isused` int(11) DEFAULT '0',
-  `usetime` int(11) DEFAULT NULL,
-  `checkuser` int(11) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
-*/
-//在线交易订单支付处理函数
-//函数功能：根据支付接口传回的数据判断该订单是否已经支付成功；
-//返回值：如果订单已经成功支付，返回true，否则返回false；
-function checkorderstatus($ordid){
-	$ord=M('orderlist');
-	$ordstatus=$ord->where('ordid='.$ordid)->getField('ordstatus');
-	if($ordstatus==1){
-		return true;
-	}else{
-		return false;    
-	}
-}
-//处理订单函数
-//更新订单状态，写入订单支付后返回的数据
-function orderhandle($parameter){
-	$ordid=$parameter['out_trade_no'];
-	$data['payment_trade_no']      =$parameter['trade_no'];
-	$data['payment_trade_status']  =$parameter['trade_status'];
-	$data['payment_notify_id']     =$parameter['notify_id'];
-	$data['payment_notify_time']   =$parameter['notify_time'];
-	$data['payment_buyer_email']   =$parameter['buyer_email'];
-	$data['ordstatus']             =1;
-	$Ord=M('Orderlist');
-	$Ord->where('ordid='.$ordid)->save($data);
-} 
-/*-----------------------------------
-2013.8.13更正
-下面这个函数，其实不需要，大家可以把他删掉，
-具体看我下面的修正补充部分的说明
-------------------------------------*/
-//获取一个随机且唯一的订单号；
-function getordcode(){
-	$ord=M('Orderlist');
-	$numbers = range (10,99);
-	shuffle ($numbers); 
-	$code=array_slice($numbers,0,4); 
-	$ordcode=$code[0].$code[1].$code[2].$code[3];
-	$oldcode=$Ord->where("ordcode='".$ordcode."'")->getField('ordcode');
-	if($oldcode){
-		getordcode();
-	}else{
-		return $ordcode;
-	}
-}
-
 /**
- * [getKey 根据value得到数组key]
- * @param  [type] $arr   [数组]
- * @param  [type] $value [值]
- * @return [type]        [description]
+ * 根据value得到数组key
+ * @param $arr
+ * @param $value
+ * @return bool|int|string
  */
-function getKey($arr,$value) {
-	if(!is_array($arr)) return null;
-		foreach($arr as $k =>$v) {
-		  $return = getKey($v, $value);
-		  if($v == $value){
-			return $k;
-		  }
-		  if(!is_null($return)){
-		   return $return;
-		}
-	}
+function get_Key($arr,$value){
+    if (!is_array($arr)) {
+        return false;
+    } else {
+        foreach ($arr as $k => $v) {
+            $return = get_Key($v, $value);
+            if ($v == $value) {
+                return $k;
+            }
+            if (!is_null($return)) {
+                return $return;
+            }
+        }
+    }
 }
+
 /**
 * Formats a JSON string for pretty printing
 *
