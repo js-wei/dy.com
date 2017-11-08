@@ -6,3 +6,8 @@
 .zindex{z-index:100;overflow:hidden;}
 .base-info{}
 .base-info li{line-height:2em;}
+.image-preview{width:100%; height:auto;padding-bottom:5px;margin-top:10px;  }
+.preview-item{float: left;width:110px;height:auto;margin-right:10px;position:relative;  }
+.preview-item i{position:absolute;right:0; top:-2px;color:mediumvioletred;cursor:pointer;  }
+.preview-item img{width: 100px;height:120px;  }
+#progress{color:#ffffff;}

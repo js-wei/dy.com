@@ -10,6 +10,18 @@
 // +----------------------------------------------------------------------
 
 /**
+ * 实时图片
+ * @param string $image_path
+ * @return string
+ */
+function image_round($image_path=''){
+    if(!$image_path){
+        return '';
+    }
+    return $image_path. '?_id=' .time();
+}
+
+/**
  * Word2html
  * @param $file_path
  */
@@ -739,7 +751,7 @@ function tag_str($str,$start=0,$length=250){
  * @param int $t                            用户检测
  * @return array
  */
-function send_sms($to,$templateId= "107658",$t=0){
+function send_sms($to,$templateId= "72035",$t=0){
     if($t){	//检测用户
         $member = db('member')->where(['username'=>$to])->count();
         if($member){
@@ -756,7 +768,7 @@ function send_sms($to,$templateId= "107658",$t=0){
     if(cookie('?'.$d.'_session_code')){
         cookie($d.'_session_code',null,time()-60*2);
     }
-    cookie($d.'_session_code',$d,60*5);
+    cookie($d.'_session_code',$d,60*3);
     return $arr;
 }
 

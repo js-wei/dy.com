@@ -37,30 +37,34 @@ class Base extends Controller{
         $this->assign('_msg',$msg);
     }
 
-    public function get_location($ip=''){
-        $_result='';
+    /**
+     * 获取登陆地点
+     * @param string $ip
+     * @return bool|mixed|string
+     */
+    protected function get_location($ip=''){
         $ip = $ip?$ip:get_client_ip();
         $curl = new \Curl\Curl();
         $curl->post('http://freeapi.ipip.net', array(
             'ip' => $ip
         ));
         if ($curl->error) {
-            return false;
+            return '';
         }
-        else {
-            $temp = explode('",',$curl->response);
-            $temp[1]=str_replace('"','',$temp[1]);
-            $temp[2] = str_replace('"','',$temp[2]);
-            $_result = $temp[2]?$temp[2]:$temp[1];
-        }
+        $temp = explode('",',$curl->response);
+        $temp[1]=str_replace('"','',$temp[1]);
+        $temp[2] = str_replace('"','',$temp[2]);
+        $_result = $temp[2]?$temp[2]:$temp[1];
         return $_result;
     }
+
     /**
      * 获取短路由
-     * @param string $source
      * @param string $url_long
+     * @param string $source
+     * @return int|string
      */
-    public function get_short_url($url_long='',$source='487035677'){
+    protected function get_short_url($url_long='',$source='487035677'){
         $curl = new \Curl\Curl();
         $curl->post('http://api.t.sina.com.cn/short_url/shorten.json', array(
             'source' => $source,

@@ -60,10 +60,48 @@ class Config extends Base{
 			return ['status'=>1,'msg'=>'添加成功','redirect'=>Url('index')];
 		}
 	}
-	 
+
+    /**
+     * 拦截ip
+     */
+    public function intercept(){
+        $model = [
+            'name' => '放行IP设置'
+        ];
+        $list = db('intercept')->find();
+        // 查询状态为1的用户数据 并且每页显示10条数据
+        $count = db('intercept')->count('*');
+        $this->assign('count', $count);
+        $this->assign('model', $model);
+        $this->assign('info', $list);
+        return view();
+    }
+
+    /**
+     * 拦截ip
+     * @param int $id
+     * @return array
+     */
+    public function addip_handler($id=0){
+        $param = request()->param();
+        if($id){
+            $param['dates']=time();
+            if(!db('intercept')->update($param)){
+                return ['status'=>0,'msg'=>'修改失败请重试'];
+            }
+            return ['status'=>1,'msg'=>'修改成功','redirect'=>Url('intercept')];
+        }else{
+            $param['date']=time();
+            if(!db('intercept')->insert($param)){
+                return ['status'=>0,'msg'=>'添加失败请重试'];
+            }
+            return ['status'=>1,'msg'=>'添加成功','redirect'=>Url('intercept')];
+        }
+    }
 
 
-	/**
+
+    /**
 	 * [status 状态操作]
 	 * @param  [type] $id [修改id]
 	 * @param  [type] $type  [操作类型]

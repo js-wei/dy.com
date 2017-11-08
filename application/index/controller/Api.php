@@ -245,11 +245,11 @@ class Api extends Base{
         }
 
         if($type==0){
-            $arr =send_sms($tel,'107661');
+            $arr =send_sms($tel,'72035');
         }else if($type==1){
-            $arr =send_sms($tel,'107658');
+            $arr =send_sms($tel,'71952');
         }else{
-            $arr =send_sms($tel,'107662');
+            $arr =send_sms($tel,'71952');
         }
         if (substr($arr,21,6) == 000000) {
             return json(['status'=>1,'msg'=>'验证发送成功']);
@@ -305,8 +305,8 @@ class Api extends Base{
      * @param int $t
      * @return bool|string
      */
-    protected function get_password($pwd,$t=0){
-        return substr(md5($pwd),10,10);
+    protected function get_password($pwd){
+        return substr(md5($pwd),10,15);
     }
 
 }

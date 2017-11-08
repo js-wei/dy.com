@@ -38,6 +38,33 @@ class Member extends Base {
         return view();
     }
 
+    /**
+     * 锁定/解锁
+     * @param int $id
+     * @param int $type
+     * @param string $content
+     * @return mixed|\think\response\Json
+     */
+    public function unlock($id=0,$type=0,$content=''){
+        if(!$id){
+            return json(['status'=>0,'msg'=>'参数错误']);
+        }
+        if($type && $content==''){
+            return json(['status'=>0,'msg'=>'敏感操作,填写理由']);
+        }
+        if(!db('member')->update([
+            'id'=>$id,
+            'status'=>$type,
+            'dates'=>time()
+        ])){
+            return json(['status'=>0,'msg'=>'锁定失败']);
+        }
+
+        db('message')->insert(['title'=>'系统消息','content'=>$content,'date'=>time(),'mid'=>$id]);
+
+        return json(['status'=>1,'msg'=>$type?'锁定成功':'解锁成功']);
+    }
+
     public function auth(){
         $where=[];
         $search = $this->_search([],'a');
@@ -153,6 +180,11 @@ class Member extends Base {
         return $where;
     }
 
+    /**
+     * 重置密码
+     * @param int $id
+     * @return \think\response\Json
+     */
     public function set_password($id=0){
         if(!$id){
             return json([
@@ -177,6 +209,7 @@ class Member extends Base {
             'reditect'=>Url('index')
         ]);
     }
+
     /**
      * [status 状态操作]
      * @param  [type] $id [修改id]

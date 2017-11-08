@@ -30,6 +30,11 @@ class Base extends Controller{
                 $this->assign('model',$temp);
             }
         }
+
+		$ctr = db('model')->where(['title'=>$this->controller])->find();
+        $act = db('model')->where(['title'=>$this->action,'fid'=>$ctr['id']])->find();
+        $this->current=$act['name'];
+	
 		//$nav = array_merge($nav,$col);
         $this->_msg();
 		//输出导航
@@ -289,5 +294,51 @@ class Base extends Controller{
         else {
             echo $curl->response;
         }
+    }
+
+	 /**
+     * 删除图片
+     * @param string $url   图片地址
+     * @return \think\response\Json
+     */
+	public function delete_image($url=''){
+        if(strpos($url,'.')!==true){
+            $url = "." . $url;
+        }
+	    if(!$url){
+	        return json(['status'=>0,'msg'=>'图片地址不能为空']);
+        }
+        if(!is_file($url)){
+            return json(['status'=>0,'msg'=>'不是一个文件地址或地址不正确']);
+        }
+        if(!unlink($url)){
+            return json(['status'=>0,'msg'=>'删除失败,请重试']);
+        }
+        return json(['status'=>1,'msg'=>'删除成功']);
+    }
+
+    protected function _search($param=[]){
+        $where=[];
+        if(empty($param)){
+            $param = request()->param();
+        }
+        if(!empty($param['s_keywords'])){
+            $where['title|keywords']=['like',"%".$param['s_keywords']."%"];
+        }
+        if(!empty($param['s_status'])){
+            $where['status']=$param['s_status']>-1?$param['s_status']:'';
+        }
+        if(!empty($param['s_date'])){
+            $date = explode('-',$param['s_date']);
+            $date[1] = "$date[1] 24:00";
+            $where['date']=['between',[strtotime($date[0]),strtotime($date[1])]];
+        }
+
+        $this->assign('search',[
+            's_keywords'=>!empty($param['s_keywords'])?$param['s_keywords']:'',
+            's_date'=>!empty($param['s_date'])?$param['s_date']:'',
+            's_status'=>!empty($param['s_status'])?$param['s_status']:''
+        ]);
+        return $where;
     }
 }

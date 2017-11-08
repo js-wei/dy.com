@@ -71,14 +71,14 @@
                                 <notempty name="vo.last_login_ip">
                                     {$vo.last_login_ip}
                                     <else />
-                                    暂无登陆
+                                    尚未登陆
                                 </notempty>
                             </td>
                             <td class="hidden-xs">
                                 <notempty name="vo.last_login_time">
                                     {$vo.last_login_time|date='Y-m-d H:i:s',###}
                                     <else />
-                                    暂无登陆
+                                    尚未登陆
                                 </notempty>
                             </td>
                             <td class="hidden-xs">
@@ -86,18 +86,13 @@
                             </td>
                             <td>
                                 <eq name="vo.status" value="0"><span class="text-success">正常</span></eq>
-                                <eq name="vo.status" value="1"><span class="text-danger">禁用</span></eq>
+                                <eq name="vo.status" value="1"><span class="text-danger">锁定</span></eq>
                                 <eq name="vo.status" value="2"><span class="text-danger">密码重置</span></eq>
                             </td>
                             <td>
                                 <a href="__URL__/add?id={$vo['id']}&aid={:input('aid')}">详细</a>
-                                <eq name="vo.status" value="0">
-                                    <a href="__URL__/status&aid={:input('aid')}&p={:input('p')}" data-role="forbidden" data-id="{$vo.id}" class="status">禁用</a>
-                                    <else />
-                                    <a href="__URL__/status&aid={:input('aid')}&p={:input('p')}" data-role="enable" data-id="{$vo.id}" class="status">正常</a>
-                                </eq>
                                 <eq name="vo.status" value="2">
-                                <a href="__URL__/set_password?id={$vo['id']}" class="reset-password">初始化密码</a>
+                                    <a href="__URL__/set_password?id={$vo['id']}" class="reset-password">初始化密码</a>
                                 </eq>
                                 <a href="__URL__/status" data-role="delete"  data-id="{$vo.id}" class="status">删除</a>
                             </td>

@@ -4,24 +4,139 @@ use org\Upload;
 use think\File;
 
 class Uploadify extends Base{
+
 	protected function _initialize(){
 		parent::_initialize();
 	}
+
+    /**
+     * webUploader 上传方法
+     * @param string $file      接收名称
+     * @param string $folder    保存目录名
+     * @return \think\response\Json
+     */
+    public function webUploader($file='file',$folder='image'){
+        $file = request()->file($file);
+        $path = DS .'uploads'. DS . $folder;
+        $config=[
+            'size'=>1024*1024*20,
+            'ext'=>'jpg,png,gif'
+        ];
+        $info = $file->validate($config)->move(ROOT_PATH . 'public'.$path);
+        $w = input('w')?input('w/d'):$this->site['w'];
+        $h = input('h')?input('h/d'):$this->site['h'];
+        $o = input('o')?input('o'):0;
+        if($info){
+            $fullPath =  $path.DS.$info->getSaveName();
+            $_path = $this->thumb($fullPath,$w,$h,$o);
+            return json([
+                "jsonrpc" => "2.0",
+                'result'=>[
+                    'code'=>200,
+                    'file'=>$fullPath,
+                    'thumb'=>$_path,
+                    'id'=>'id'
+                ]
+            ]);
+        }else{
+            return json([
+                "jsonrpc" => "2.0",
+                'error'=>[
+                    'code'=>102,
+                    'message'=>"Failed to open output stream.",
+                    'id'=>'id'
+                ]
+            ]);
+        }
+    }
+
 	/**
 	 * [uploadimg 上传单个图片]
 	 * @return [type] [description]
 	 */
 	public function uploadimg($file='image'){
 	    $file = request()->file($file);
-	    $path = DS .'uploads'. DS .'uploadify'. DS . 'image';
-	    $info = $file->validate(config('UPLOADE_IMAGE'))->move(ROOT_PATH . 'public'.$path);
+        $path = ROOT_PATH .'public'.DS .'uploads'. DS .'uploadify'. DS . 'image';
+	    $info = $file->validate(config('UPLOADE_IMAGE'))->move($path);
+		$w = input('w')?input('w/d'):$this->site['w'];
+		$h = input('h')?input('h/d'):$this->site['h'];
 	    if($info){
-	        $fullPath =  $path.DS.$info->getSaveName();
+	        $_path =  DS . 'uploads'. DS .'uploadify'. DS . 'image' . DS . $info->getSaveName();
+            $this->thumb($_path,$w,$h);
+	        return $_path;
+	    }else{
+	        return $file->getError();
+	    }
+	}
+
+    /**
+     * 缩略图
+     * @param string $path          地址
+     * @param int $w                宽
+     * @param int $h                宽
+     * @param bool $o               覆盖
+     * @param string $thumb_path    保存地址
+     * @return string               路径
+     */
+	public function thumb($path='',$w=16,$h=16,$o=false,$thumb_path=''){
+        $path = ROOT_PATH . 'public'.$path;
+        $pathinfo = pathinfo($path);
+        $image = \think\Image::open($path);
+        if($o){
+            $path = $pathinfo['dirname'].DS . $pathinfo['basename'];
+        }else{
+            $path = $thumb_path?$thumb_path:$pathinfo['dirname']. DS . 'm_'. $pathinfo['basename'];
+        }
+		if(!is_file($path)){
+            $image->thumb($w, $h,\think\Image::THUMB_CENTER)->save($path);
+        }
+        return str_replace(ROOT_PATH . 'public','',$path);
+	}
+
+    /**
+     * 水印
+     * @param string $path      地址
+     * @param int $t            类型:1文字,2图片
+     * @param string $param     水印对象
+     */
+	public function water($path='',$t=1,$param=''){
+        $path = ROOT_PATH . 'public'.$path;
+        $image = \think\Image::open($path);
+
+        switch ($t){
+            case 1:
+                $font = ROOT_PATH . 'public'.DS.'data/HYQingKongTiJ.ttf';
+                $image->text($param,$font,20,'#000000')->save($path);
+                break;
+            case 2:
+                $logo_path = ROOT_PATH . 'public'.$param;
+                $temp_path = pathinfo($logo_path);
+
+                $logo_path1 = $temp_path['dirname'].DS."m_{$temp_path['basename']}";
+                if(is_file($logo_path)){
+                    $logo_path = $logo_path1;
+                }
+                $image->water($logo_path,\think\Image::WATER_SOUTHEAST,50)->save($path);
+                break;
+        }
+    }
+
+	/**
+	 * [uploadfile 上传单个文件]
+	 * @return [type] [description]
+	 */
+	public function uploadfile($file='file'){
+	    $file = request()->file($file);
+	    $path = ROOT_PATH . 'public'. DS .'uploads'. DS . 'file';
+	    $info = $file->validate(config('UPLOADE_FILE'))->move($path);
+	    if($info){
+	        $fullPath =  $path.DS.$info->getSaveName().'|'.$info->getinfo()['name'];
 	        return $fullPath;
 	    }else{
 	        return $file->getError();
 	    }
 	}
+	
 	/**
 	 * [uploads 上传多个文件]
 	 * @param  string $file [接收字段]
@@ -43,10 +158,13 @@ class Uploadify extends Base{
 	        }    
 	    }
 	}
-	/**
-	 * [KindEditorUpload KindEditor编辑器上传文件]
-	 */
-	public function KindEditorUpload(){
+
+    /**
+     * KindEditor编辑器上传文件
+     * @param int $size                 logo 尺寸
+     * @return \think\response\Json
+     */
+	public function KindEditorUpload($size=64){
 
 		$file = request()->file('imgFile');
 		//上传路径
@@ -59,10 +177,12 @@ class Uploadify extends Base{
 		}
 		
 		//字体地址
-		$font = ROOT_PATH . 'public' . DS .'static'.DS .'font'. DS .'HYQingKongTiJ.ttf';
-		//
-		$logo = ROOT_PATH . 'public' . DS .'static'.DS .'logo.png';
-		//
+		$font = ROOT_PATH . 'public' . DS .'static'.DS .'fonts'. DS .'HYQingKongTiJ.ttf';
+		//Logo
+        $logo_path = ROOT_PATH . 'public'.$this->site['logo'];
+        $temp_path = pathinfo($logo_path);
+        $logo = $temp_path['dirname'].DS."m{$size}_{$temp_path['basename']}";
+
 		$info = $file->validate(config('UPLOADE_KINDEDITOR'))->move($path);
         if($info){
         	$fullPath =  DS.'uploads'.DS."KindEditor".DS.input('dir').DS.$info->getSaveName();
@@ -76,17 +196,17 @@ class Uploadify extends Base{
 	    			break;
 	    		case '1':	//图片水印
 	    			if(!is_file($logo)){
-						return json(['error'=>1,'message'=>'不存在的LOGO,请在'.ROOT_PATH . 'public' . DS .'static'.',文件夹下放入:logo.png','url'=>'']);
+						return json(['error'=>1,'message'=>'对不起不存在的网站LOGO,请在网站配置中上传','url'=>'']);
 	    			}
 	    			$image = \think\Image::open($path);
 					// 给原图左上角添加透明度为50的水印并保存alpha_image.png
-					$image->water($logo,\think\Image::WATER_NORTHWEST,50)->save($path);
+					$image->water($logo,\think\Image::WATER_SOUTHEAST,50)->save($path);
 					return json(['error'=>0,'url'=>$fullPath]);
 	    			break;
 	    		case '2':	//自定义文字
 	    			$image = \think\Image::open($path);
 					// 给原图左上角添加透明度为50的水印并保存alpha_image.png
-					$image->text(input('font'),$font,15)->save($path);
+					$image->text(input('fonts'),$font,15)->save($path);
 					return json(['error'=>0,'url'=>$fullPath]);
 	    			break;
 	    		case '-1':	//无水印
@@ -140,7 +260,6 @@ class Uploadify extends Base{
 	public function delmgByWhere1($model,$where,$file){
 		$m = $model->where($where)->find();
 		$src = $m[$file];
-		
 		$flag = true ;
 		if(empty($src)){
 			return $flag;
@@ -179,18 +298,16 @@ class Uploadify extends Base{
     public function delArticleImage($model,$where,$field){
         $flag =true;
         $a = $model->where($where)->find();
-		
+
         if(empty($a) || empty($a[$field])){
             return $flag;
         }
 		$content = htmlspecialchars_decode($a[$field]);
-		
         $images = get_images($content);
-		
         foreach ($images[1]  as $k=> $v){
         	if(strpos($v,'Uploads') !== false){
         		$v =".".$v;
-				$ii = explode('/', $src);
+				$ii = explode('/', $v);
 				$ii[count($ii)-1]="m_".$ii[count($ii)-1];
 				$ii1 = implode('/', $ii);
 				if(file_exists($v)){
@@ -227,7 +344,7 @@ class Uploadify extends Base{
 		foreach ($images  as $k=> $v){
         	if(strpos($v,'Uploads') !== false){
         		$v =".".$v;
-				$ii = explode('/', $src);
+				$ii = explode('/', $v);
 				$ii[count($ii)-1]="m_".$ii[count($ii)-1];
 				$ii1 = implode('/', $ii);
 				if(file_exists($v)){
@@ -237,7 +354,7 @@ class Uploadify extends Base{
 					}
 				}
 				if(file_exists($ii1)){
-					if(!unlink("$ii1")){
+					if(!unlink($ii1)){
 						$flag = false;
 						break;
 					}
@@ -258,10 +375,21 @@ class Uploadify extends Base{
 		if(strpos($src,'.')!==true){
 			$src = ".".$src;
 		}
+        $ii = explode('/', $src);
+        $ii[count($ii)-1]="m_".$ii[count($ii)-1];
+        $ii1 = implode('/', $ii);
 
-		if(!unlink($src)){
-			return ['status'=>0,'msg'=>'删除失败请重试'];
-		}
+		if(is_file($src)){
+            if(!unlink($src)){
+                return ['status'=>0,'msg'=>'删除失败请重试'];
+            }
+        }
+		if(is_file($ii1)){
+            if(!unlink($ii1)){
+                return ['status'=>0,'msg'=>'删除失败请重试'];
+            }
+        }
+
 		return ['status'=>1,'msg'=>'删除成功！'];
 	}
 }

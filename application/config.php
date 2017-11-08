@@ -69,9 +69,9 @@ return [
 	],
     //云之讯短信接口
     'Ucpaas'=>[
-        'accountSid'=>'a38579870f0d55815df79e8cb013d43a',
-        'authToken'=>'781dafd8ebfa81bd36356ade09ddd01f',
-        'appId'=>'5c7b9debd600450d9f630efd387b2eb9',
+        'accountSid'=>'73ba580fb6aae884362e1ac7c9fc46b2',
+        'authToken'=>'b7e16a1d2fe0cf267b0803f82813d621',
+        'appId'=>'54ff20b6e6aa40ed8d4adf8e3f034cb7',
     ],
 	'UPLOADE'=>[
 		'path'=>ROOT_PATH . 'public' . DS.'uploads',
