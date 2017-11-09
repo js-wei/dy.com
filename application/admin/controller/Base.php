@@ -69,13 +69,18 @@ class Base extends Controller{
 	 * @return [type] [description]
 	 */
 	protected function auth_list(){
-        $user = Session::get('_id');
-        $gid = $user['gid'];
-        $this->gid =$gid; 
-
-        $nav=array();
+        $gid  = session('_gid');
+        $this->assign('gid',$gid);
+        $nav=[];
+		
         if($gid!=-1 && !empty($gid)){
-            $model = db('model')->where('fid=0 and "show"=0 and status=0 and id in('.$gid.')')->order('sort asc')->select();
+			$_group = db('group')->field('id,title,power')->find($gid);
+            $model = db('model')
+				->where('fid','eq',0)
+				->where('status','eq',0)
+            	->where('id','in',$_group['power'])
+            	->order('sort asc')
+            	->select();
         }else{
             $model = db('model')->where('fid=0 and "show"=0 and status=0')->order('sort asc')->select();
         }
@@ -323,7 +328,7 @@ class Base extends Controller{
             $param = request()->param();
         }
         if(!empty($param['s_keywords'])){
-            $where['title|keywords']=['like',"%".$param['s_keywords']."%"];
+            $where['title']=['like',"%".$param['s_keywords']."%"];
         }
         if(!empty($param['s_status'])){
             $where['status']=$param['s_status']>-1?$param['s_status']:'';

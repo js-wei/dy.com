@@ -65,7 +65,7 @@ class Category{
 	public static function unlimitedForLevel1($cate,$fid=0,$name='child'){
 		$arr=array();
 		foreach ($cate as  $v) {
-			if($v['cid']==$fid){
+			if($v['id']==$fid){
 				$v[$name]=self::unlimitedForLevel1($cate,$v['uid'],$name);
 				$arr[$v['id']]=$v;	
 			}

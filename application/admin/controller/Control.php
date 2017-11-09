@@ -35,7 +35,8 @@ class Control extends Base{
 	 * @param integer $id [description]
 	 */
 	public function add_handler($id=0){
-		$param = request()->param();
+		$param = request()->post();
+		$param['title'] = strtolower($param['title']);
 		if($id){
 			$param['dates']=time();
 			if(!db('model')->update($param)){

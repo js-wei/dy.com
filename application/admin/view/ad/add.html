@@ -51,7 +51,7 @@
                         <div class="clearfix"></div>
                         <div class="image-preview">
                             <notempty name="info.image">
-                                <img src="{$info.image}" width="250" height="auto" id="images_preview">
+                                <img src="{$info.image|image_round}" width="250" height="auto" id="images_preview">
                                 <input type="hidden" name="image" value="{$info.image}" id="reply_img"/>
                                 <else />
                                 <img src="" width="250" height="auto" id="images_preview" style="display:none;">
@@ -291,34 +291,40 @@
             layer.alert('你还没有上传图片',{icon:5});
             return false;
         }
+        pic_url = pic_url +"?_id="+Math.round();
         layer.open({
             type: 1,
             title: '查看图片',
             skin: 'layui-layer-rim', //加上边框
-            area: ['600px', '500px'], //宽高
-            content:`<div style="max-width:600px; max-height:500px; overflow:auto;text-align:center;">
+            area: ['50%', '60%'], //宽高
+            content:`<div style="text-align:center;margin-top:3rem;">
             <img style='max-width:600px; max-height:500px; overflow:auto;' src='${pic_url}'/>
             </div>`
         });
     };
 
     var noMasterImg = function(){
-        $src = $("#images_preview").attr('src');
-        if($src==''){
-            layer.alert('您好没有上传图片',{icon:5});
-            return false;
-        }
-        $.post("{:Url('Uploadify/delmg')}",{src:$src},function(data){
-            if(data.status==1){
-                layer.msg(data.msg,{icon:1});
-                $("#reply_img").val('');
-                $('#images_preview').attr('src','');
-                $('#img_c').hide();
-                $('#images_preview').hide();
-            }else{
-                layer.alert(data.msg,{icon:5});
-            }
-        });
+     	layer.confirm('您确定要删除吗?删除后将不能恢复!', {
+     		title:'友情提示',
+	        btn: ['是的确定','不没想好']
+	      },function(){
+      		$src = $("#images_preview").attr('src');
+	        if($src==''){
+	            layer.alert('您好没有上传图片',{icon:5});
+	            return false;
+	        }
+	        $.post("{:Url('Uploadify/delmg')}",{src:$src},function(data){
+	            if(data.status==1){
+	                layer.msg(data.msg,{icon:1});
+	                $("#reply_img").val('');
+	                $('#images_preview').attr('src','');
+	                $('#img_c').hide();
+	                $('#images_preview').hide();
+	            }else{
+	                layer.alert(data.msg,{icon:5});
+	            }
+	        });
+	    });
     };
 </script>
 <include file="public/footer"/>

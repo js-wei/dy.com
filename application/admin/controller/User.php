@@ -52,6 +52,7 @@ class User extends Controller {
 
 		//保存登录状态
 		Session('_id',$admin['id']);
+		session('_gid',$admin['gid']);
 		Session('_name',ucfirst($admin['username']));
         Session('_logined',$admin);
         //跳转目标页
@@ -59,7 +60,6 @@ class User extends Controller {
 	}
 
 	public function profile(){
-		
 		return view();
 	}
 
@@ -68,9 +68,9 @@ class User extends Controller {
 	 * @return [type] [description]
 	 */
 	public function logout(){
-		Session::delete('_id');
-		Session::delete('_name');
-		Session::delete('_logined');
+		session('_id',null);
+		session('_name',null);
+		session('_logined',null);
 		return array('status'=>1,'msg'=>'退出成功','redirect'=> Url('user/login'));
 	}
 }

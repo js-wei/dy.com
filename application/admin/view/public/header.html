@@ -127,7 +127,9 @@
                                     <!--Avatar Area-->
                                     <li class="edit">
                                         <a href="{:Url('Publish/index')}" class="pull-left">个人信息</a>
-                                        <a href="{:Url('config/index')}" class="pull-right">设置</a>
+                                        <eq name="gid" value="-1">
+                                         	<a href="{:Url('config/index')}" class="pull-right">设置</a>
+                                        </eq>
                                     </li>
                                     <!--Theme Selector Area-->
                                     <li class="theme-area">
@@ -148,7 +150,7 @@
                                     </li>
                                     <!--/Theme Selector Area-->
                                     <li class="dropdown-footer">
-                                        <a href="{:Url('user/logout')}" class="logout">退出</a>
+                                        <a href="{:Url('user/logout')}" class="logout">退出系统</a>
                                     </li>
                                 </ul>
                                 <!--/Login Area Dropdown-->
@@ -157,11 +159,13 @@
                             <!--Note: notice that setting div must start right after account area list.
                             no space must be between these elements-->
                             <!-- Settings -->
-                        </ul><div class="setting">
-                            <a id="btn-setting" title="设置" href="javascript:void(0);">
-                                <i class="icon glyphicon glyphicon-cog"></i>
-                            </a>
-                        </div><div class="setting-container">
+                        </ul>
+                        <div class="setting">
+                            	<a id="btn-setting" title="设置" href="javascript:void(0);">
+	                                <i class="icon glyphicon glyphicon-cog"></i>
+	                            </a>
+                        </div>
+                        <div class="setting-container">
                             <label>
                                 <input type="checkbox" id="checkbox_fixednavbar">
                                 <span class="text">固定顶部导航</span>

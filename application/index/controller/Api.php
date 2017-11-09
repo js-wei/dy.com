@@ -16,10 +16,42 @@ class Api extends Base{
         parent::_initialize();
     }
 
+	public function personal_info($id=0){
+		if(!request()->isPost()){
+			return json(['status'=>0,'msg'=>'错误的请求方式']);
+		}
+	    $_id = $id?$id:session('_mid');
+		if(!$_id){
+			return json(['status'=>0,'msg'=>'缺少必要的条件']);
+		}
+	    $userinfo = db('member')->field('password,openid,last_login_time,last_login_address,last_login_ip,status,dates',true)->find($_id);
+	    if(!$userinfo){
+	    	return json(['status'=>0,'msg'=>'查询失败']);
+	    }
+		return json(['status'=>1,'msg'=>'查询成功','data'=>$userinfo]);
+	}
+	
+	/**
+	 * @author 魏巍
+	 * @descriptionn 检昵称是否存在
+	 * @param $nickname string 昵称
+	 */
+	public function check_nickname($nickname=''){
+		if(empty($nickname)){
+			return json(['status'=>0,'msg'=>'请输入要修改的昵称']);
+		}
+		$member = db('member')->where(['nickname'=>$nickname])->find();
+		if(empty($member)){
+			return json(['status'=>1,'msg'=>'恭喜您昵称未被注册可以使用']);
+		}else{
+			return json(['status'=>0,'msg'=>'抱歉昵称已被占用不可使用']);
+		}
+	}
+
     public function get_site(){
         $data=[
             'title'=>$this->site['title'],
-            'logo'=>$this->site['url'].$this->site['logo'],
+            'logo'=>str_replace('//', '/', $this->site['url'].$this->site['logo']),
             'keywords'=>$this->site['keywords'],
             'description'=>$this->site['description'],
             'url'=>$this->site['url'],
@@ -163,7 +195,7 @@ class Api extends Base{
      * @param string $confirm_password
      * @return \think\response\Json
      */
-    public function find_password($phone='',$password='',$confirm_password=''){
+    public function set_password($phone='',$password='',$confirm_password=''){
         if(!request()->isPost()){
             return json(['status'=>0,'msg'=>'请求方式错误']);
         }
@@ -209,9 +241,9 @@ class Api extends Base{
      * @param string   $email       邮箱
      * @return 返回发送结果
      */
-    public function send_email($email=''){
+    public function send_email_code($email=''){
         if(!request()->isPost()){
-            return json(['status'=>0,'msg'=>'请求方式错误']);
+            //return json(['status'=>0,'msg'=>'请求方式错误']);
         }
         if(empty($email)){
             return json(['status'=>0,'msg'=>'请填写邮箱']);
@@ -227,7 +259,7 @@ class Api extends Base{
         if(!think_send_mail($email,$email,"【".$this->site['title']."】",$html)){
             return json(['status'=>0,'msg'=>'验证码发送失败,请稍后重试:(']);
         }
-        return json(['status'=>1,'msg'=>'验证码发送成功,请及时查收:)']);
+        return json(['status'=>1,'msg'=>'验证码发送成功到邮箱['.$email.']中,请及时查收:)']);
     }
     /**
      * 发送验证码
@@ -236,25 +268,28 @@ class Api extends Base{
      * @return \think\response\json
      */
     public function send_message($tel='',$type=0){
+    	if(!request()->isPost()){
+            //return json(['status'=>0,'msg'=>'请求方式错误']);
+        }
         if(!$tel){
             return json(['status'=>0,'msg'=>'请输入发送手机号']);
         }
-
         if(!Validate::is($tel,'/^1[34578]\d{9}$/')){
             return json(['status'=>0,'msg'=>'请输入正确的手机号']);
         }
 
         if($type==0){
-            $arr =send_sms($tel,'72035');
+            $arr = send_sms($tel,'227478');
         }else if($type==1){
-            $arr =send_sms($tel,'71952');
+            $arr = send_sms($tel,'227475');
         }else{
-            $arr =send_sms($tel,'71952');
+            $arr = send_sms($tel,'227477');
         }
+		
         if (substr($arr,21,6) == 000000) {
-            return json(['status'=>1,'msg'=>'验证发送成功']);
+            return json(['status'=>1,'msg'=>'验证成功下发,请注意查收']);
         }else{
-            return json(['status'=>0,'msg'=>'验证发送失败']);
+            return json(['status'=>0,'msg'=>'验证下发失败']);
         }
     }
     /**
@@ -262,7 +297,7 @@ class Api extends Base{
      * @param string $verify         验证码
      * @return \think\response\json
      */
-    public function check_sms($verify=''){
+    public function check_code($verify=''){
         if(empty($verify)){
             return json(['status'=>0,'msg'=>'请输入验证码']);
         }
@@ -276,6 +311,136 @@ class Api extends Base{
         return json(['status'=>1,'msg'=>'验证码输入正确']);
     }
 
+    /**
+     * 根据ip获取位置
+     * @param string $ip
+     * @return \think\response\Json
+     */
+	public function get_ip_location($ip=''){
+		if(!$ip){
+			return json([
+				'status'=>0,
+				'msg'=>'缺少必要参数IP地址'
+			]);
+		}
+		$location = $this->get_location_ip($ip);
+		return json([
+			'status'=>1,
+			'msg'=>'定位成功',
+			'data'=>$location
+		]);
+	}
+
+    /**
+     * 获取省份
+     * @param string $limit
+     * @return \think\response\Json
+     */
+	public function get_province($limit=''){
+		$list = db('provinces')
+            ->field('provinceid,province')
+            ->where('type','eq',0)
+            ->limit($limit)
+            ->select();
+		if(!$list){
+		    return json([
+                'status'=>0,
+                'msg'=>'没有查到数据'
+            ]);
+        }
+
+        return json([
+            'status'=>1,
+            'msg'=>'查询成功',
+            'data'=>$list
+        ]);
+	}
+
+    public function get_province_jsonp($limit=''){
+        $list = db('provinces')
+            ->field('provinceid,province')
+            ->where('type','eq',0)
+            ->limit($limit)
+            ->select();
+        if(!$list){
+            return jsonp([
+                'status'=>0,
+                'msg'=>'没有查到数据'
+            ]);
+        }
+
+        return jsonp([
+            'status'=>1,
+            'msg'=>'查询成功',
+            'data'=>$list
+        ]);
+    }
+
+    /**
+     * 获取市区信息
+     * @param string $provinceid
+     * @param string $limit
+     * @param string $q
+     * @return \think\response\Json
+     */
+	public function get_city($provinceid='',$limit='',$q=''){
+        $where=[];
+	    if($provinceid){
+            $where['provinceid']=$provinceid;
+        }
+        if($q){
+            $where['city']=['like','%'.$q.'%'];
+        }
+        $list = db('cities')
+            ->field('provinceid,cityid,city')
+            ->where('type','eq',0)
+            ->where($where)
+            ->limit($limit)
+            ->select();
+        if(!$list){
+            return json([
+                'status'=>0,
+                'msg'=>'没有查到数据'
+            ]);
+        }
+
+        return json([
+            'status'=>1,
+            'msg'=>'查询成功',
+            'data'=>$list
+        ]);
+    }
+
+    /**
+     * 获取县区/街道
+     * @param string $cityid
+     * @return \think\response\Json
+     */
+    public function get_areas($cityid=''){
+	    if(!$cityid){
+            return json([
+                'status'=>0,
+                'msg'=>'缺少必要的参数cityid'
+            ]);
+        }
+        $list = db('areas')
+            ->field('areaid,area')
+            ->where('cityid','eq',$cityid)
+            ->select();
+        if(!$list){
+            return json([
+                'status'=>0,
+                'msg'=>'没有查到数据'
+            ]);
+        }
+
+        return json([
+            'status'=>1,
+            'msg'=>'查询成功',
+            'data'=>$list
+        ]);
+    }
+	
     /**
      * 检测验证码
      * @param string $verify
@@ -302,7 +467,6 @@ class Api extends Base{
     /**
      * 获取密码
      * @param $pwd
-     * @param int $t
      * @return bool|string
      */
     protected function get_password($pwd){

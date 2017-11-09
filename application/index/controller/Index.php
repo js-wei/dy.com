@@ -7,6 +7,29 @@ class Index extends Base{
 	    return view($tpl);
     }
 
+    public function lbs(){
+        $lbs = new \service\Baibu();
+        $table = new \service\Geotable();
+        $table->name="商家信息";
+        $table->timestamp=time();
+//        $_table = $lbs->geotable_create($table);
+//        p($_table);
+        $column = new \Service\Geocolumn();
+        $column->name="商铺图片";
+        $column->key="image";
+        $column->type=4;
+        $column->geotable_id='1000002303';
+        $_column = $lbs->geocolumn_create($column);     //创建列
+        //$_column = $lbs->geocolumn_select($column);     //查询列
+        $column->id='1000002885';
+        //$_column = $lbs->geocolumn_detail($column);      //查看列
+        //$_column = $lbs->geocolumn_update($column);        //更新列
+        //$_column = $lbs->geocolumn_delete($column);        //更新列
+        p($_column);
+    }
+
+
+
     public function login(){
         return view();
     }

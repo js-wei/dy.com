@@ -63,3 +63,30 @@ function get_column($column_id=0){
 		return $column['title'];
 	}
 }
+/**
+ * 权限名
+ */
+function get_power($power='',$l=0){
+	if(!$power){
+		return '';
+	}
+	$_power = db('model')->field('id,title,name')->where('id','in',$power)->select();
+	
+	$html = '';
+	if($l){
+		$_power = array_slice($_power,0,$l);
+	}
+	
+	foreach($_power as $k=>$v){
+		$html .= "<label class='label label-success mr10'>{$v['name']}</label>";
+	}
+	return $html;
+}
+
+function get_group($id=''){
+	if(!$id){
+		return '';
+	}
+	$_group = db('group')->field('title')->find($id);
+	return $_group['title'];
+}

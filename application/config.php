@@ -59,7 +59,7 @@ return [
     ],
 	'THINK_EMAIL'=>[       //邮件发送
         'SMTP_HOST'=>'smtp.163.com',
-        'SMTP_PORT'=>25,
+        'SMTP_PORT'=>465,	//25
         'SMTP_USER'=>'jswei30@163.com',
         'SMTP_PASS'=>'jswei30',
         'FROM_EMAIL'=>'jswei30@163.com',
@@ -71,7 +71,7 @@ return [
     'Ucpaas'=>[
         'accountSid'=>'73ba580fb6aae884362e1ac7c9fc46b2',
         'authToken'=>'b7e16a1d2fe0cf267b0803f82813d621',
-        'appId'=>'54ff20b6e6aa40ed8d4adf8e3f034cb7',
+        'appId'=>'47c2f95b586a4ce3ae792cfd4d4d33df',
     ],
 	'UPLOADE'=>[
 		'path'=>ROOT_PATH . 'public' . DS.'uploads',

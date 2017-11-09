@@ -11,3 +11,13 @@
 .preview-item i{position:absolute;right:0; top:-2px;color:mediumvioletred;cursor:pointer;  }
 .preview-item img{width: 100px;height:120px;  }
 #progress{color:#ffffff;}
+.pl-0{padding-left:0;}
+.pt-0{padding-top:0;}
+.pr-0{padding-right:0;}
+.pb-0{padding-bottom:0;}
+.ml-0{margin-left:0;}
+.mt-0{margin-top:0;}
+.mr-0{margin-right:0;}
+.mb-0{margin-bottom:0;}
+.minicolors-swatch{border:1px solid #eeeeee;}
+.mt5{margin-top:5px;}

@@ -12,7 +12,6 @@
 /**
  * 实时图片
  * @param string $image_path
- * @return string
  */
 function image_round($image_path=''){
     if(!$image_path){

@@ -10,32 +10,32 @@
             <form id="togglingForm" action="__URL__/add_handler" method="post" enctype="multipart/form-data" class="form-horizontal" autocomplete="off">
                 <div class="form-group">
                     <label class="col-md-2 col-lg-2 control-label">网站标题<sup>*</sup></label>
-                    <div class="col-md-6 col-md-6 col-lg-6">
+                    <div class="col-lg-3">
                         <input type="text" name="title" value="<notempty name="info">{$info.title}</notempty>" class="form-control" id="name" placeholder="网站标题"/>
                         <input type="hidden" name="id" value="<notempty name='info'>{$info.id}</notempty>">
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="col-md-2 col-lg-2 control-label">网站域名<sup>*</sup></label>
-                    <div class="col-md-6 col-md-6 col-lg-6">
+                    <div class="col-lg-3">
                         <input type="text" name="url" value="<notempty name="info">{$info.url}</notempty>" class="form-control" id="url" placeholder="网站域名"/>
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="col-sm-2 control-label">网站关键词</label>
-                    <div class="col-md-6 col-lg-6">
+                    <div class="col-lg-3">
                         <textarea name="keywords" class="form-control" rows="5" placeholder="文档关键词"><notempty name="info">{$info.keywords}</notempty></textarea>
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="col-md-2 col-lg-2 control-label">网站说明</label>
-                    <div class="col-md-6 col-lg-6">
+                    <div class="col-lg-3">
                         <textarea name="description" class="form-control" rows="6" placeholder="网站说明"><notempty name="info">{$info.description}</notempty></textarea>
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="col-sm-2 control-label">网站LOGO</label>
-                    <div class="col-sm-4">
+                    <div class="col-sm-3">
                         <div id="uploader-demo">
                             <div id="fileList" class="uploader-list"></div>
                             <div id="picker" style="width:100px">选择图片</div>
@@ -59,7 +59,7 @@
                         <div class="clearfix"></div>
                         <div class="image-preview">
                            <notempty name="info.logo">
-                               <img src="{$info.logo}" width="250" height="auto" id="images_preview">
+                               <img src="{$info.logo}" width="150" height="auto" id="images_preview">
                                <input type="hidden" name="logo" value="{$info.logo}" id="reply_img"/>
                                <else />
                                <img src="" width="250" height="auto" id="images_preview" style="display:none;">
@@ -70,49 +70,49 @@
                 </div>
                 <div class="form-group">
                     <label class="col-md-2 col-lg-2 control-label">联系固话</label>
-                    <div class="col-md-6 col-lg-6">
+                    <div class="col-lg-3">
                         <input type="text" name="tel" value="<notempty name="info">{$info.tel}</notempty>" class="form-control" id="tel" placeholder="联系固话"/>
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="col-md-2 col-lg-2 control-label">联系手机</label>
-                    <div class="col-md-6 col-lg-6">
+                    <div class="col-lg-3">
                         <input type="text" name="phone" value="<notempty name="info">{$info.phone}</notempty>" class="form-control" id="phone" placeholder="联系手机"/>
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="col-md-2 col-lg-2 control-label">联系传真</label>
-                    <div class="col-md-6 col-lg-6">
+                    <div class="col-lg-3">
                         <input type="text" name="fax" value="<notempty name="info">{$info.fax}</notempty>" class="form-control" id="fax" placeholder="联系传真"/>
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="col-md-2 col-lg-2 control-label">联系邮箱</label>
-                    <div class="col-md-6 col-lg-6">
+                    <div class="col-lg-3">
                         <input type="text" name="email" value="<notempty name="info">{$info.email}</notempty>" class="form-control" id="email" placeholder="联系邮箱"/>
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="col-md-2 col-lg-2 control-label">联系地址</label>
-                    <div class="col-md-6 col-lg-6">
+                    <div class="col-lg-3">
                         <input type="text" name="address" value="<notempty name="info">{$info.address}</notempty>" class="form-control" id="address" placeholder="联系地址"/>
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="col-md-2 col-lg-2 control-label">版权信息</label>
-                    <div class="col-md-6 col-lg-6">
+                    <div class="col-lg-3">
                         <input type="text" name="copyright" value="<notempty name="info">{$info.copyright}</notempty>" class="form-control" id="copyright" placeholder="版权信息"/>
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="col-md-2 col-lg-2 control-label">统计代码</label>
-                    <div class="col-md-6 col-lg-6">
+                    <div class="col-lg-3">
                         <textarea name="code" class="form-control" rows="5" placeholder="统计代码"><notempty name="info">{$info.code}</notempty></textarea>
                     </div>
                 </div>
                 <hr class="wide" />
                 <div class="form-group">
-                    <div class="col-md-6 col-lg-6 col-lg-offset-2">
+                    <div class="col-lg-3 col-lg-offset-2">
                         <button type="submit" class="btn btn-danger col-lg-2">确认修改</button>
                         <!--<button type="button" class="btn btn-warning col-lg-2 ml10" onclick="window.location.reload()">返回</button>-->
                     </div>
@@ -238,23 +238,28 @@
         });
      };
 
-     var noMasterImg = function(){
-        $src = $("#images_preview").attr('src');
-        if($src==''){
-            layer.alert('您好没有上传图片',{icon:5});
-            return false;
-        }
-        $.post("{:Url('Uploadify/delmg')}",{src:$src},function(data){
-            if(data.status==1){
-                layer.msg(data.msg,{icon:1});
-                $("#reply_img").val('');
-                $('#images_preview').attr('src','');
-                $('#img_c').hide();
-                $('#images_preview').hide();
-            }else{
-                layer.alert(data.msg,{icon:5});
-            }
-        });
+    var noMasterImg = function(){
+     	layer.confirm('您确定要删除吗?删除后将不能恢复!', {
+     		title:'友情提示',
+	        btn: ['是的确定','不没想好']
+	      },function(){
+      		$src = $("#images_preview").attr('src');
+	        if($src==''){
+	            layer.alert('您好没有上传图片',{icon:5});
+	            return false;
+	        }
+	        $.post("{:Url('Uploadify/delmg')}",{src:$src},function(data){
+	            if(data.status==1){
+	                layer.msg(data.msg,{icon:1});
+	                $("#reply_img").val('');
+	                $('#images_preview').attr('src','');
+	                $('#img_c').hide();
+	                $('#images_preview').hide();
+	            }else{
+	                layer.alert(data.msg,{icon:5});
+	            }
+	        });
+	    });
     };
 </script>
 <include file="public/footer"/>

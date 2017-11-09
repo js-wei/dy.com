@@ -6,8 +6,10 @@ class Publish extends Base {
 	
 	public function index(){
 		$admin = db('admin')->field('gid,username,status,last_date,last_ip')->find(session('_id'));
+		$power = db('group')->find($admin['gid']);
 		$this->assign('title','栏目管理');
 		$this->assign('user',$admin);
+		$this->assign('power',$power);
 		return view();
 	}
 	
@@ -97,11 +99,12 @@ class Publish extends Base {
 		if(!db('admin')->update($data)){
 			return array('status'=>0,'msg'=>'登录失败请重试');
 		}
-
+		
 		//保存登录状态
-		Session('_id',$admin['id']);
-		Session('_name',ucfirst($admin['username']));
-        Session('_logined',$admin);
+		session('_id',$admin['id']);
+		session('_gid',$admin['gid']);
+		session('_name',ucfirst($admin['username']));
+        session('_logined',$admin);
         //跳转目标页
 		return array('status'=>1,'msg'=>'登录成功','redirect'=> Url('index/index'));
 	}
@@ -116,9 +119,12 @@ class Publish extends Base {
 	 * @return [type] [description]
 	 */
 	public function logout(){
-		Session::delete('_id');
-		Session::delete('_name');
-		Session::delete('_logined');
+//		Session::delete('_id');
+//		Session::delete('_name');
+//		Session::delete('_logined');
+		session('_id',null);
+		session('_name',null);
+		session('_logined',null);
 		return array('status'=>1,'msg'=>'退出成功','redirect'=> Url('user/login'));
 	}
 }
