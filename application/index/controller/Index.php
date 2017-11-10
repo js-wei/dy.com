@@ -1,5 +1,11 @@
 <?php
 namespace app\index\controller;
+use service\Amap;
+use service\Around;
+use service\CoordType;
+use service\Data;
+use service\Poi;
+use service\Table;
 
 class Index extends Base{
     public function index($tpl=''){
@@ -8,24 +14,39 @@ class Index extends Base{
     }
 
     public function lbs(){
-        $lbs = new \service\Baibu();
-        $table = new \service\Geotable();
-        $table->name="商家信息";
-        $table->timestamp=time();
-//        $_table = $lbs->geotable_create($table);
-//        p($_table);
-        $column = new \Service\Geocolumn();
-        $column->name="商铺图片";
-        $column->key="image";
-        $column->type=4;
-        $column->geotable_id='1000002303';
-        $_column = $lbs->geocolumn_create($column);     //创建列
-        //$_column = $lbs->geocolumn_select($column);     //查询列
-        $column->id='1000002885';
-        //$_column = $lbs->geocolumn_detail($column);      //查看列
-        //$_column = $lbs->geocolumn_update($column);        //更新列
-        //$_column = $lbs->geocolumn_delete($column);        //更新列
-        p($_column);
+        $amap = new Amap();
+        $table = new Table();
+        $table->name='商家信息';
+        //$result = $amap->create_table($table);
+
+        //添加指定位置信息
+        $data = new Data();
+        $data->tableid='5a051fc2305a2a284b735221';
+        $poi =new Poi();
+        $poi->_name="交通规划设计院";
+        $poi->_address="干将西路1359号苏州市航道管理处";
+        $poi->_location="120.579151,31.301185";
+        $poi->coordtype=CoordType::autonavi;
+        $poi->_append=[
+            //'_id'=>5,               //_id 更新数据
+            'telephone'=>''
+        ];
+        //删除指定ids
+        $poi1 =new Poi();
+        $poi1->_append=['ids'=>'5'];
+
+        $data->set_data($poi);  //设置信息点
+
+        //$result = $amap->insert($data);
+        //$result = $amap->update($data->get_query_data());
+        //$result = $amap->delete($data);
+
+
+        $a = new Around();
+        $a->center='120.579725,31.299554';
+        $a->timerange=5;
+        $result = $amap->around($a);
+        return $result;
     }
 
 

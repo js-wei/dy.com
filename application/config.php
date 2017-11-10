@@ -73,6 +73,10 @@ return [
         'authToken'=>'b7e16a1d2fe0cf267b0803f82813d621',
         'appId'=>'47c2f95b586a4ce3ae792cfd4d4d33df',
     ],
+    'AMAP'=>[
+        'KEY'=>'5c34d8399b8beffa18d9b98731385bf3',
+        'SECRET'=>'b2a743e44f477fef25fca9596f193402'
+    ],
 	'UPLOADE'=>[
 		'path'=>ROOT_PATH . 'public' . DS.'uploads',
 	],
