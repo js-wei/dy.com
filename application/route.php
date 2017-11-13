@@ -32,4 +32,6 @@ Route::rule('api/get_ip_location','index/api/get_ip_location');
 Route::rule('api/get_province','index/api/get_province');
 Route::rule('api/get_city','index/api/get_city');
 Route::rule('api/get_areas','index/api/get_areas');
-
+Route::rule('api/upgrade_nickname','index/api/upgrade_nickname');
+Route::rule('api/upgrade_sex','index/api/upgrade_sex');
+Route::rule('api/upgrade_head','index/api/upgrade_head');

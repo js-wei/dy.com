@@ -12,7 +12,9 @@ class Index extends Base{
         $tpl=$tpl?$tpl:'';
 	    return view($tpl);
     }
-
+    public function upload_head(){
+        return view();
+    }
     public function lbs(){
         $amap = new Amap();
         $table = new Table();

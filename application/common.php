@@ -34,6 +34,37 @@ function word2html($file_path){
 }
 
 /**
+ * 请求数据
+ * @param string $url
+ * @param array $data
+ * @param string $method
+ * @return array
+ */
+function http($url='',$data=[],$method='get'){
+    if(!$url){
+        $this->flag = false;
+        $this->msg=[
+            'code'=>804,
+            'massage'=>'错误的请求操作'
+        ];
+    }
+    if(!$data){
+        $this->flag = false;
+        $this->msg=[
+            'code'=>805,
+            'massage'=>'没有请求的参数'
+        ];
+    }
+    if(is_object($data)){
+        $data = json_decode(json_encode($data),true);
+    }
+    $curl = new \Curl\Curl();
+    $response = $curl->$method($url,$data);
+    return json_decode($response->response,true);
+}
+
+
+/**
  * 微信浏览器
  * @return bool
  */

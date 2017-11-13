@@ -30,12 +30,12 @@ class Api extends Base{
 	    }
 		return json(['status'=>1,'msg'=>'查询成功','data'=>$userinfo]);
 	}
-	
-	/**
-	 * @author 魏巍
-	 * @descriptionn 检昵称是否存在
-	 * @param $nickname string 昵称
-	 */
+
+    /**
+     * 检昵称是否存在
+     * @param string $nickname
+     * @return \think\response\Json
+     */
 	public function check_nickname($nickname=''){
 		if(empty($nickname)){
 			return json(['status'=>0,'msg'=>'请输入要修改的昵称']);
@@ -113,8 +113,11 @@ class Api extends Base{
             if($admin['password']!=$this->get_password($password)){
                 return json(['status'=>0,'msg'=>'您的密码输入有误']);
             }
-        }else{      //手机登录
-            $this->check_verify($password,true);
+        }else{
+            $flag = $this->check_verify($password,true);  //验证码验证
+            if(!$flag['status']){
+                return $flag;
+            }
             $where=[
                 'phone'=>$phone
             ];
@@ -158,7 +161,7 @@ class Api extends Base{
      */
     public function register($phone='',$password='',$verify=''){
         if(!request()->isPost()){
-            return json(['status'=>0,'msg'=>'请求方式错误']);
+            //return json(['status'=>0,'msg'=>'请求方式错误']);
         }
         if(empty($verify)){
             return json(['status'=>0,'msg'=>'请输入验证码']);
@@ -169,14 +172,18 @@ class Api extends Base{
         if(empty($password)){
             return json(['status'=>0,'msg'=>'请输入您的密码']);
         }
-        $this->check_verify($verify,true);  //验证码验证
+        $flag = $this->check_verify($verify,true);  //验证码验证
+        if(!$flag['status']){
+            return $flag;
+        }
         $member = [
-            'username'=>$phone,
+            'phone'=>$phone,
             'password'=>$this->get_password($password),
             'tel'=>$phone,
             'date'=>time()
         ];
-        $admin = db('member')->where('username','eq',$phone)->find();
+        $admin = db('member')->where('phone','eq',$phone)->find();
+
         if($admin){
             return json(['status'=>0,'msg'=>'用户已存在']);
         }
@@ -226,8 +233,8 @@ class Api extends Base{
     }
 
     /**
-     * [logout 用户退出]
-     * @return [type] [description]
+     * 用户退出
+     * @return array
      */
     public function logout(){
         Session::delete('_mid');
@@ -269,7 +276,7 @@ class Api extends Base{
      */
     public function send_message($tel='',$type=0){
     	if(!request()->isPost()){
-            //return json(['status'=>0,'msg'=>'请求方式错误']);
+            return json(['status'=>0,'msg'=>'请求方式错误']);
         }
         if(!$tel){
             return json(['status'=>0,'msg'=>'请输入发送手机号']);
@@ -292,43 +299,150 @@ class Api extends Base{
             return json(['status'=>0,'msg'=>'验证下发失败']);
         }
     }
+
     /**
      * 验证验证码
-     * @param string $verify         验证码
-     * @return \think\response\json
+     * @param string $verify
+     * @return array
      */
     public function check_code($verify=''){
-        if(empty($verify)){
-            return json(['status'=>0,'msg'=>'请输入验证码']);
+        if(!$verify){
+            return ['status'=>0,'msg'=>'请输入验证码'];
         }
-        $d = cookie($verify.'_session_code');
-        if(empty(cookie('?'.$verify.'_session_code'))){
-            return json(['status'=>0,'msg'=>'验证码已失效']);
+        $_result = $this->check_verify($verify);
+        return $_result;
+    }
+
+    /**
+     * 修改用户昵称
+     * @param int $uid
+     * @param string $nickname
+     * @return array
+     */
+    public function upgrade_nickname($uid=0,$nickname=''){
+        if(!request()->isPost()){
+            return ['status'=>0,'msg'=>'错误请求方式'];
         }
-        if($verify!=$d){
-            return json(['status'=>0,'msg'=>'验证码错误']);
+        if(!$uid){
+            return ['status'=>0,'msg'=>'缺少必要参数uid'];
         }
-        return json(['status'=>1,'msg'=>'验证码输入正确']);
+        if(!$nickname){
+            return ['status'=>0,'msg'=>'缺少必要参数nickname'];
+        }
+        $member = db('member')->field('id,nickname,phone')->find($uid);
+        if(!$member){
+            return ['status'=>0,'msg'=>'用户不已存在'];
+        }
+        $count = db('member')->where('nickname','like','%'.$nickname.'%')->count('*');
+        if($count){
+            return ['status'=>0,'msg'=>'用户昵称已存在'];
+        }
+        if(has_chiness($nickname) && mb_strlen($nickname)>30){
+            return ['status'=>0,'msg'=>'用户昵称过长'];
+        }
+        if(!has_chiness($nickname) && mb_strlen($nickname)>10){
+
+            return ['status'=>0,'msg'=>'用户昵称过长'];
+        }
+        if(!db('member')->update([
+            'id'=>$member['id'],
+            'nickname'=>$nickname,
+            'dates'=>time()
+        ])){
+            return ['status'=>0,'msg'=>'用户昵称修改失败'];
+        }
+        return ['status'=>1,'msg'=>'用户昵称修改成功','nickname'=>$nickname];
+    }
+
+    /**
+     * 修改性别
+     * @param int $uid
+     * @param int $sex
+     * @return array
+     */
+    public function upgrade_sex($uid=0,$sex=0){
+        if(!request()->isPost()){
+            return ['status'=>0,'msg'=>'错误请求方式'];
+        }
+        if(!$uid){
+            return ['status'=>0,'msg'=>'缺少必要参数uid'];
+        }
+        $member = db('member')->field('id,nickname,phone')->find($uid);
+        if(!$member){
+            return ['status'=>0,'msg'=>'用户不已存在'];
+        }
+        if(!db('member')->update([
+            'id'=>$member['id'],
+            'nickname'=>$sex,
+            'dates'=>time()
+        ])){
+            return ['status'=>0,'msg'=>'用户性别修改失败'];
+        }
+        return ['status'=>1,'msg'=>'用户性别修改成功'];
+    }
+
+    /**
+     * 修改头像
+     * @param int $uid
+     * @return array
+     */
+    public function upgrade_head($uid=0){
+        if(!request()->isPost()){
+            return ['status'=>0,'msg'=>'错误请求方式'];
+        }
+        if(!$uid){
+            return ['status'=>0,'msg'=>'缺少必要参数uid'];
+        }
+        $member = db('member')->field('id,head,phone')->find($uid);
+        if(!$member){
+            return ['status'=>0,'msg'=>'用户不已存在'];
+        }
+
+        $uploadify = new Uploadify();
+        $_result = $uploadify->upload_head();
+
+        if(!db('member')->update([
+            'id'=>$member['id'],
+            'head'=>$_result['fullpath'],
+            'dates'=>time()
+        ])){
+            return ['status'=>0,'msg'=>'用户头像修改失败'];
+        }
+        $fullpath = str_replace('//','/',$this->site['url'].$_result['fullpath']);
+        return ['status'=>1,'msg'=>'用户性头像改成功','fullpath'=>$fullpath."?_id=".time()];
     }
 
     /**
      * 根据ip获取位置
      * @param string $ip
+     * @param int $type
      * @return \think\response\Json
      */
-	public function get_ip_location($ip=''){
-		if(!$ip){
-			return json([
-				'status'=>0,
-				'msg'=>'缺少必要参数IP地址'
-			]);
-		}
-		$location = $this->get_location_ip($ip);
-		return json([
-			'status'=>1,
-			'msg'=>'定位成功',
-			'data'=>$location
-		]);
+	public function get_ip_location($ip='',$type=0){
+        if(!$ip){
+            return json([
+                'status'=>0,
+                'msg'=>'缺少必要参数IP地址'
+            ]);
+        }
+        switch ($type){
+            case 1:
+                $location = http('http://restapi.amap.com/v3/ip',['key'=>config('AMAP.KEY'),'ip'=>$ip]);
+                unset($location['status']);
+                unset($location['info']);
+                unset($location['infocode']);
+                break;
+            case 0:
+            default:
+                $location = $this->get_location_ip($ip);
+                break;
+        }
+        return json([
+            'status'=>1,
+            'msg'=>'定位成功',
+            'data'=>$location
+        ]);
+
 	}
 
     /**
@@ -440,19 +554,18 @@ class Api extends Base{
             'data'=>$list
         ]);
     }
-	
+
     /**
      * 检测验证码
      * @param string $verify
      * @param bool $clear
-     * @return bool
+     * @return array
      */
     protected function check_verify($verify='',$clear=false){
-        if(empty($verify)){
-            return ['status'=>0,'msg'=>'请输入验证码'];
-        }
         $d = cookie($verify.'_session_code');
-        if(empty(cookie('?'.$verify.'_session_code'))){
+        $f = cookie('?'.$verify.'_session_code');
+
+        if(!$f){
             return ['status'=>0,'msg'=>'验证码已失效'];
         }
         if($verify!=$d){
@@ -461,7 +574,7 @@ class Api extends Base{
         if($clear){
             cookie($verify.'_session_code',null,time()-60*2);
         }
-        return true;
+        return ['status'=>1,'msg'=>'验证码正确'];
     }
 
     /**
@@ -472,5 +585,4 @@ class Api extends Base{
     protected function get_password($pwd){
         return substr(md5($pwd),10,15);
     }
-
 }

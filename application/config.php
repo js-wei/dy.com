@@ -77,21 +77,21 @@ return [
         'KEY'=>'5c34d8399b8beffa18d9b98731385bf3',
         'SECRET'=>'b2a743e44f477fef25fca9596f193402'
     ],
-	'UPLOADE'=>[
-		'path'=>ROOT_PATH . 'public' . DS.'uploads',
+	'UPLOAD'=>[
+		'UPLOAD_PATH'=>ROOT_PATH . 'public' . DS.'uploads',
+        'UPLOAD_IMAGE'=>[
+            'size'=>1024*1024*5,        //5M最大
+            'ext'=>'jpg,png,gif,bmp,webp'
+        ],
+        'UPLOAD_FILE'=>[
+            'size'=>1024*1024*8,        //8M最大
+            'ext'=>'txt,zip,tar,xls,pdf,doc,docx,rar,xlsx'
+        ],
+        'UPLOAD_EDITOR'=>[
+            'size'=>1024*1024*8,        //8M最大
+            'ext'=>'jpg,png,gif,txt,zip,rar,tar,xls,pdf,doc,docx,xlsx'
+        ],
 	],
-    'UPLOADE_IMAGE'=>[
-        'size'=>1024*1024*5,        //5M最大
-        'ext'=>'jpg,png,gif,bmp,webp'
-    ],
-    'UPLOADE_FILE'=>[
-        'size'=>1024*1024*8,        //8M最大
-        'ext'=>'txt,zip,tar,xls,pdf,doc,docx,rar,xlsx'
-    ],
-    'UPLOADE_KINDEDITOR'=>[
-        'size'=>1024*1024*8,        //8M最大
-        'ext'=>'jpg,png,gif,txt,zip,rar,tar,xls,pdf,doc,docx,xlsx'
-    ],
     'ENCRYPT_KEY'=>'THINK',         //加密key
     'LOG_PATH'=>'/log',
 ];

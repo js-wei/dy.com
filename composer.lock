@@ -895,16 +895,16 @@
         },
         {
             "name": "riverslei/payment",
-            "version": "v4.1.3",
+            "version": "v4.1.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/helei112g/payment.git",
-                "reference": "4082c6edcd3d5e1fd26fb85d9005ef5cb47db483"
+                "reference": "f0d86d3bf492b0f1111e1d9969b264bb00608f5c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://files.phpcomposer.com/files/helei112g/payment/4082c6edcd3d5e1fd26fb85d9005ef5cb47db483.zip",
-                "reference": "4082c6edcd3d5e1fd26fb85d9005ef5cb47db483",
+                "url": "https://files.phpcomposer.com/files/helei112g/payment/f0d86d3bf492b0f1111e1d9969b264bb00608f5c.zip",
+                "reference": "f0d86d3bf492b0f1111e1d9969b264bb00608f5c",
                 "shasum": ""
             },
             "require": {
@@ -945,7 +945,7 @@
                 "支付宝支付",
                 "集成支付接口SDK"
             ],
-            "time": "2017-09-21T07:14:11+00:00"
+            "time": "2017-11-09T01:49:05+00:00"
         },
         {
             "name": "sinergi/browser-detector",
