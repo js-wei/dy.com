@@ -84,13 +84,10 @@
                             	<neq name="vo.gid" value="-1">
                                 	<a href="__URL__/tianjia?id={$vo['id']}">编辑</a>
                                 	<a href="__URL__/reset?id={$vo['id']}" class="reset-password">重置密码</a>
-                                </neq>
-                                <eq name="vo.status" value="0">
-                                    <a href="__URL__/status&aid={:input('aid')}&p={:input('p')}" data-role="forbidden" data-id="{$vo.id}" class="status">禁用</a>
+                                    <a href="__URL__/status" data-role="delete"  data-id="{$vo.id}" class="status">删除</a>
                                     <else />
-                                    <a href="__URL__/status&aid={:input('aid')}&p={:input('p')}" data-role="enable" data-id="{$vo.id}" class="status">正常</a>
-                                </eq>
-                                <a href="__URL__/status" data-role="delete"  data-id="{$vo.id}" class="status">删除</a>
+                                    <span class="text-danger">不可操作</span>
+                                </neq>
                             </td>
                         </tr>
                     </volist>

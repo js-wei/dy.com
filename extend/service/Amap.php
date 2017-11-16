@@ -6,7 +6,6 @@
  * Time: 10:33
  */
 namespace service;
-use service\Enum;
 
 class Amap{
     private $key;
@@ -102,8 +101,6 @@ class Amap{
         if(is_object($data)){
             $data = json_decode(json_encode($data),true);
         }
-
-        //$data['sin']=$sig?$sig:'';
         $curl = new \Curl\Curl();
         $response = $curl->$method($api,$data);
         return json_decode($response->response,true);
@@ -377,6 +374,10 @@ class Around extends Serializable{
      */
     public $radius=1000;
     /**
+     * @var double
+     */
+    public $tableid=0;
+    /**
      * @var int
      */
     public $limit=30;
@@ -401,7 +402,7 @@ class Around extends Serializable{
     }
 
     /**
-     * 验证时间完整性
+     * 验证完整性
      * @return bool|void
      */
     public function is_valid(){
@@ -419,7 +420,7 @@ class Around extends Serializable{
                 'massage'=>'缺少参数center'
             ];
         }
-       return !$this->flag?$this->msg:true;
+        return !$this->flag?$this->msg:true;
     }
 }
 

@@ -4,6 +4,8 @@ use service\Amap;
 use service\Around;
 use service\CoordType;
 use service\Data;
+use service\DetailPoi;
+use service\Local;
 use service\Poi;
 use service\Table;
 
@@ -17,6 +19,7 @@ class Index extends Base{
     }
     public function lbs(){
         $amap = new Amap();
+        /*
         $table = new Table();
         $table->name='商家信息';
         //$result = $amap->create_table($table);
@@ -42,12 +45,33 @@ class Index extends Base{
         //$result = $amap->insert($data);
         //$result = $amap->update($data->get_query_data());
         //$result = $amap->delete($data);
+         */
 
 
-        $a = new Around();
-        $a->center='120.579725,31.299554';
-        $a->timerange=5;
-        $result = $amap->around($a);
+
+        /*
+        //本地搜索
+        $local = new Local();
+        $local->tableid='5a051fc2305a2a284b735221';
+        $local->limit=5;
+        $local->keywords='大学|科研';
+        $local->set_filters([
+            'type'=>1,
+            'price'=>'[100,500]'
+        ]);
+        $result = $amap->get_location_pois($local);
+        //周边检索
+        $around = new Around();
+        $around->center='120.579274,31.30826';
+        $around->tableid='5a051fc2305a2a284b735221';
+        $result = $amap->around($around);
+        */
+
+        //
+        $poi =new DetailPoi();
+        $poi->_id=10;
+        $poi->tableid='5a051fc2305a2a284b735221';
+        $result = $amap->detail_poi($poi);
         return $result;
     }
 

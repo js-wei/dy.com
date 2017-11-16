@@ -51,22 +51,12 @@ class Base extends Controller{
         if ($curl->error) {
             return '';
         }
-		$res = $curl->response;
-        $temp = explode('",',$res);
+        $temp = explode('",',$curl->response);
         $temp[1]=str_replace('"','',$temp[1]);
         $temp[2] = str_replace('"','',$temp[2]);
         $_result = $temp[2]?$temp[2]:$temp[1];
         return $_result;
     }
-	
-	/**
-	 * 获取定位
-	 */
-	protected function get_location_ip($_ip=''){
-		$ip = new \service\IpLocation();
-		$area = $ip->getlocation($_ip);
-		return $area;
-	}
 
     /**
      * 获取短路由
