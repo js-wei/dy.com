@@ -1,13 +1,15 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: jswei
- * Date: 2017/11/10
- * Time: 10:33
- */
+# @Author: 魏巍
+# @Date:   2017-11-16T17:42:05+08:00
+# @Email:  524314430@qq.com
+# @Last modified by:   魏巍
+# @Last modified time: 2017-11-18T17:40:01+08:00
+
+
 namespace service;
 
-class Amap{
+class Amap
+{
     private $key;
     public $msg;
     private $flag=true;
@@ -18,10 +20,11 @@ class Amap{
         'local'=>'http://yuntuapi.amap.com/datasearch'
     ];
 
-    public function __construct($key=''){
-        if($key){
+    public function __construct($key='')
+    {
+        if ($key) {
             $this->key =$key;
-        }else{
+        } else {
             $this->key = config('AMAP.SECRET');
         }
     }
@@ -31,8 +34,9 @@ class Amap{
      * @param $table
      * @return bool|mixed
      */
-    public function create_table($table){
-        return $this->http("{$this->url['table']}/create",$table);
+    public function create_table($table)
+    {
+        return $this->http("{$this->url['table']}/create", $table);
     }
 
     /**
@@ -40,9 +44,10 @@ class Amap{
      * @param $data
      * @return bool|mixed
      */
-    public function insert($data){
+    public function insert($data)
+    {
         $data = $data->get_query_data();
-        return $this->http("{$this->url['data']}/create",$data);
+        return $this->http("{$this->url['data']}/create", $data);
     }
 
     /**
@@ -50,8 +55,9 @@ class Amap{
      * @param $data
      * @return bool|mixed
      */
-    public function update($data){
-        return $this->http("{$this->url['data']}/update",$data);
+    public function update($data)
+    {
+        return $this->http("{$this->url['data']}/update", $data);
     }
 
     /**
@@ -59,21 +65,23 @@ class Amap{
      * @param $data
      * @return bool|mixed
      */
-    public function delete($data){
+    public function delete($data)
+    {
         $column = $data->get_data()->_append;
-        $data = json_decode(json_encode($data),true);
-        $data = array_merge($data,$column);
+        $data = json_decode(json_encode($data), true);
+        $data = array_merge($data, $column);
         unset($data['loctype']);
-        return $this->http("{$this->url['data']}/delete",$data);
+        return $this->http("{$this->url['data']}/delete", $data);
     }
 
     /**
      * @param Around $data
      * @return bool|mixed
      */
-    public function around($data){
+    public function around($data)
+    {
         $data = $data->get_array_data();
-        return $this->http("{$this->url['around']}",$data,'get');
+        return $this->http("{$this->url['around']}", $data, 'get');
     }
 
     /**
@@ -83,40 +91,43 @@ class Amap{
      * @param string $method
      * @return mixed
      */
-    private function http($api='',$data,$method='post'){
-        if(!$api){
+    private function http($api='', $data, $method='post')
+    {
+        if (!$api) {
             $this->flag = false;
             $this->msg=[
                 'code'=>804,
                 'massage'=>'错误的请求操作'
             ];
         }
-        if(!$data){
+        if (!$data) {
             $this->flag = false;
             $this->msg=[
                 'code'=>805,
                 'massage'=>'没有请求的参数'
             ];
         }
-        if(is_object($data)){
-            $data = json_decode(json_encode($data),true);
+        if (is_object($data)) {
+            $data = json_decode(json_encode($data), true);
         }
         $curl = new \Curl\Curl();
-        $response = $curl->$method($api,$data);
-        return json_decode($response->response,true);
+        $response = $curl->$method($api, $data);
+        return json_decode($response->response, true);
     }
 }
 
-class Table{
+class Table
+{
     public $key;
     public $name;
     private $flag=true;
     private $msg;
 
-    public function __construct($key=''){
-        if($key){
+    public function __construct($key='')
+    {
+        if ($key) {
             $this->key = $key;
-        }else{
+        } else {
             $this->key = config('AMAP.KEY');
         }
     }
@@ -125,30 +136,32 @@ class Table{
      * 获取数据
      * @return mixed
      */
-    public function get_query_data(){
+    public function get_query_data()
+    {
         $this->is_check();
-        if(!$this->flag){
+        if (!$this->flag) {
             return $this->msg;
         }
-        return json_decode(json_encode($this),true);
+        return json_decode(json_encode($this), true);
     }
 
-    private function is_check(){
-        if(!$this->key){
+    private function is_check()
+    {
+        if (!$this->key) {
             $this->flag=false;
             $this->msg=[
               'code'=>801,
               'massage'=>'缺少参数key'
             ];
         }
-        if(!$this->name){
+        if (!$this->name) {
             $this->flag=false;
             $this->msg=[
                 'code'=>802,
                 'massage'=>'缺少参数name'
             ];
         }
-        if(strlen($this->name)>50){
+        if (strlen($this->name)>50) {
             $this->flag=false;
             $this->msg=[
                 'code'=>803,
@@ -158,7 +171,8 @@ class Table{
     }
 }
 
-class Data{
+class Data
+{
     public $key;
     public $tableid;
     /**
@@ -166,10 +180,11 @@ class Data{
      */
     public $loctype=LocType::lat2log;
     private $data;
-    public function __construct($key=''){
-        if($key){
+    public function __construct($key='')
+    {
+        if ($key) {
             $this->key = $key;
-        }else{
+        } else {
             $this->key = config('AMAP.KEY');
         }
     }
@@ -178,7 +193,8 @@ class Data{
      * 设置位置信息
      * @param  Poi $poi
      */
-    public function set_data($poi){
+    public function set_data($poi)
+    {
         $this->data = $poi;
     }
 
@@ -186,7 +202,8 @@ class Data{
      * 获取位置信息
      * @return Poi
      */
-    public function get_data(){
+    public function get_data()
+    {
         return $this->data;
     }
 
@@ -194,15 +211,16 @@ class Data{
      * 获取数据
      * @return Array
      */
-    public function get_query_data(){
-        $data = json_decode(json_encode($this),true);
+    public function get_query_data()
+    {
+        $data = json_decode(json_encode($this), true);
         $data['data']=json_encode($this->data->get_query_data());   //位置详细数据
         return $data;
     }
-
 }
 
-class Poi{
+class Poi
+{
     /**
      * @var string
      */
@@ -227,7 +245,8 @@ class Poi{
     private $flag=true;
     private $msg;
 
-    public function get_query_data(){
+    public function get_query_data()
+    {
         return $this->get_query_column();
     }
 
@@ -235,14 +254,15 @@ class Poi{
      * 获取自定义栏目内容
      * @return array
      */
-    private function get_query_column(){
-        $data = json_decode(json_encode($this),true);
-        if($this->_append){
-            foreach ($data['_append'] as $k=>$v){
-                if($v){
-                    if($k=='ids'){
+    private function get_query_column()
+    {
+        $data = json_decode(json_encode($this), true);
+        if ($this->_append) {
+            foreach ($data['_append'] as $k=>$v) {
+                if ($v) {
+                    if ($k=='ids') {
                         return ['ids'=>$v];
-                    }else{
+                    } else {
                         $data[$k]=$v;
                     }
                 }
@@ -250,7 +270,7 @@ class Poi{
         }
 
         $this->is_check();
-        if(!$this->flag){
+        if (!$this->flag) {
             return $this->msg;
         }
         unset($data['_append']);
@@ -260,8 +280,9 @@ class Poi{
     /**
      * 验证数据完整性
      */
-    private function is_check(){
-        if(!$this->_name){
+    private function is_check()
+    {
+        if (!$this->_name) {
             $this->flag=false;
             $this->msg=[
                 'code'=>801,
@@ -269,7 +290,7 @@ class Poi{
             ];
             return;
         }
-        if(!$this->_location){
+        if (!$this->_location) {
             $this->flag=false;
             $this->msg=[
                 'code'=>802,
@@ -277,7 +298,7 @@ class Poi{
             ];
             return;
         }
-        if(!$this->_address){
+        if (!$this->_address) {
             $this->flag=false;
             $this->msg=[
                 'code'=>803,
@@ -288,16 +309,20 @@ class Poi{
     }
 }
 
-class Serializable{
-    public function get_array_data(){
-        return json_decode(json_encode($this),true);
+class Serializable
+{
+    public function get_array_data()
+    {
+        return json_decode(json_encode($this), true);
     }
-    public function get_json_data(){
+    public function get_json_data()
+    {
         return json_encode($this);
     }
 }
 
-class Local extends Serializable{
+class Local extends Serializable
+{
     public $key;
     public $tableid;
     public $keywords;
@@ -310,10 +335,11 @@ class Local extends Serializable{
     private $flag=false;
     private $msg;
 
-    public function __construct($key=''){
-        if($key){
+    public function __construct($key='')
+    {
+        if ($key) {
             $this->key = $key;
-        }else{
+        } else {
             $this->key = config('AMAP.KEY');
         }
     }
@@ -321,8 +347,9 @@ class Local extends Serializable{
     /**
      * 验证数据完整性
      */
-    public function is_check(){
-        if(!$this->key){
+    public function is_check()
+    {
+        if (!$this->key) {
             $this->flag=false;
             $this->msg=[
                 'code'=>801,
@@ -330,7 +357,7 @@ class Local extends Serializable{
             ];
             return;
         }
-        if(!$this->tableid){
+        if (!$this->tableid) {
             $this->flag=false;
             $this->msg=[
                 'code'=>802,
@@ -338,7 +365,7 @@ class Local extends Serializable{
             ];
             return;
         }
-        if(!$this->keywords){
+        if (!$this->keywords) {
             $this->flag=false;
             $this->msg=[
                 'code'=>803,
@@ -346,7 +373,7 @@ class Local extends Serializable{
             ];
             return;
         }
-        if(!$this->city){
+        if (!$this->city) {
             $this->flag=false;
             $this->msg=[
                 'code'=>803,
@@ -363,7 +390,8 @@ class Local extends Serializable{
  * Class Around
  * @package service
  */
-class Around extends Serializable{
+class Around extends Serializable
+{
     public $key;
     /**
      * @var
@@ -393,10 +421,11 @@ class Around extends Serializable{
     private $flag=false;
     private $msg;
 
-    public function __construct($key=''){
-        if($key){
+    public function __construct($key='')
+    {
+        if ($key) {
             $this->key = $key;
-        }else{
+        } else {
             $this->key = config('AMAP.KEY');
         }
     }
@@ -405,15 +434,16 @@ class Around extends Serializable{
      * 验证完整性
      * @return bool|void
      */
-    public function is_valid(){
-        if(!$this->key){
+    public function is_valid()
+    {
+        if (!$this->key) {
             $this->flag=false;
             $this->msg=[
                 'code'=>801,
                 'massage'=>'缺少参数key'
             ];
         }
-        if(!$this->center){
+        if (!$this->center) {
             $this->flag=false;
             $this->msg=[
                 'code'=>804,
@@ -425,13 +455,15 @@ class Around extends Serializable{
 }
 
 
-class LocType extends Enum {
-     const lat2log = 1;
-     const address = 2;
-     const __default = self::lat2log;
+class LocType extends Enum
+{
+    const lat2log = 1;
+    const address = 2;
+    const __default = self::lat2log;
 }
 
-class CoordType extends Enum{
+class CoordType extends Enum
+{
     const gps = 1;
     const autonavi = 2;
     const baidu=3;
@@ -443,7 +475,8 @@ class CoordType extends Enum{
  * Class SearchType
  * @package service
  */
-class SearchType extends  Enum{
+class SearchType extends Enum
+{
     const line = 0;
     const drive = 1;
     const __default = self::drive;

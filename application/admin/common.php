@@ -1,4 +1,12 @@
 <?php
+# @Author: 魏巍 <jswei>
+# @Date:   2017-11-16T17:42:05+08:00
+# @Email:  524314430@qq.com
+# @Last modified by:   jswei
+# @Last modified time: 2017-11-17T20:52:31+08:00
+
+
+
 /**
  * 获取文档的标题
  */
@@ -71,12 +79,12 @@ function get_power($power='',$l=0){
 		return '';
 	}
 	$_power = db('model')->field('id,title,name')->where('id','in',$power)->select();
-	
+
 	$html = '';
 	if($l){
 		$_power = array_slice($_power,0,$l);
 	}
-	
+
 	foreach($_power as $k=>$v){
 		$html .= "<label class='label label-success mr10'>{$v['name']}</label>";
 	}

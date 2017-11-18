@@ -1,4 +1,12 @@
 <?php
+# @Author: 魏巍 <jswei>
+# @Date:   2017-11-16T17:42:05+08:00
+# @Email:  524314430@qq.com
+# @Last modified by:   jswei
+# @Last modified time: 2017-11-17T20:51:10+08:00
+
+
+
 namespace app\admin\controller;
 
 class Member extends Base {
@@ -164,7 +172,7 @@ class Member extends Base {
 				}
 			}
 		}
-       
+
         if(!empty($param['s_date'])){
             $date = explode('-',$param['s_date']);
             $date[1] = "$date[1] 24:00";

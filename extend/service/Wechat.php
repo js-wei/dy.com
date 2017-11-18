@@ -1,16 +1,17 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: 魏巍
- * Date: 2016/7/5
- * Time: 14:31
- * @todo：微信开放平台授权登录
- */
+# @Author: 魏巍 <jswei>
+# @Date:   2017-11-16T17:42:05+08:00
+# @Email:  jswei30@gmail.com
+# @Filename: Wechat.php
+# @Last modified by:   jswei
+# @Last modified time: 2017-11-18T17:45:47+08:00
 
 namespace service;
+
 use Think\Exception;
 
-class Wechat{
+class Wechat
+{
     private $url="https://api.weixin.qq.com/sns";
     private $path = ROOT_PATH . 'public' . DS;
     private $appid;
@@ -23,7 +24,8 @@ class Wechat{
      * @param $secret       string 密匙
      * @param $redirect_uri string 跳转地址
      */
-    public function __construct($appid,$secret,$redirect_uri){
+    public function __construct($appid, $secret, $redirect_uri)
+    {
         $this->appid=$appid;
         $this->secret=$secret;
         $this->redirect_uri=$redirect_uri;
@@ -32,11 +34,12 @@ class Wechat{
     /**
      *获取登录地址
      */
-    public function get_open_url($state='',$scope='snsapi_login'){
-        if(empty($this->appid)){
+    public function get_open_url($state='', $scope='snsapi_login')
+    {
+        if (empty($this->appid)) {
             throw new Exception('no appId');
         }
-        if(empty($this->redirect_uri)){
+        if (empty($this->redirect_uri)) {
             throw new Exception('no redirect_uri');
         }
         $url ="https://open.weixin.qq.com/connect/qrconnect?appid=$this->appid&redirect_uri=$this->redirect_uri&response_type=code&state={$state}&scope={$scope}";
@@ -49,8 +52,9 @@ class Wechat{
      * @return mixed
      * @throws \Exception
      */
-    public function get_access_token($code){
-        if(empty($code)){
+    public function get_access_token($code)
+    {
+        if (empty($code)) {
             throw new Exception('no code');
         }
         $param=array(
@@ -59,25 +63,27 @@ class Wechat{
             'code'=>$code,
             'grant_type'=>'authorization_code'
         );
-        $_result = $this->http("$this->url/oauth2/access_token",$param);
-        return json_decode($_result,true);
+        $_result = $this->http("$this->url/oauth2/access_token", $param);
+        return json_decode($_result, true);
     }
     /**
      * 获取个人信息
      * @return mixed
      * @throws \Exception
      */
-    public function get_userinfo(){
+    public function get_userinfo()
+    {
         $access_token =$this->get_access_token(input('code'));
         $param=array(
             'access_token'=>$access_token['access_token'],
             'openid'=>$access_token['openid']
         );
-        $_result = $this->http("$this->url/userinfo",$param);
-        return json_decode($_result,true);
+        $_result = $this->http("$this->url/userinfo", $param);
+        return json_decode($_result, true);
     }
 
-    public function getSignPackage() {
+    public function getSignPackage()
+    {
         $jsapiTicket = $this->getJsApiTicket();
 
         // 注意 URL 一定要动态获取，不能 hardcode.
@@ -103,7 +109,8 @@ class Wechat{
         return $signPackage;
     }
 
-    private function createNonceStr($length = 16) {
+    private function createNonceStr($length = 16)
+    {
         $chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         $str = "";
         for ($i = 0; $i < $length; $i++) {
@@ -112,47 +119,49 @@ class Wechat{
         return $str;
     }
 
-    private function getJsApiTicket() {
+    private function getJsApiTicket()
+    {
         // jsapi_ticket 应该全局存储与更新，以下代码以写入到文件中做示例
         $data = json_decode(file_get_contents("{$this->path}data/jsapi_ticket.json"));
-       if(empty($data)){
-           $accessToken = $this->getAccessToken();
-           // 如果是企业号用以下 URL 获取 ticket
-           // $url = "https://qyapi.weixin.qq.com/cgi-bin/get_jsapi_ticket?access_token=$accessToken";
-           $url = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?type=jsapi&access_token=$accessToken";
-           $res = json_decode($this->httpGet($url));
-           $ticket = $res->ticket;
-           if ($ticket) {
-               $fp = fopen("{$this->path}data/jsapi_ticket.json", "w");
-               fwrite($fp, json_encode($res));
-               fclose($fp);
-           }
-       }else{
-           if ($data->expires_in < time()) {
-               $accessToken = $this->getAccessToken();
-               // 如果是企业号用以下 URL 获取 ticket
-               // $url = "https://qyapi.weixin.qq.com/cgi-bin/get_jsapi_ticket?access_token=$accessToken";
-               $url = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?type=jsapi&access_token=$accessToken";
-               $res = json_decode($this->httpGet($url));
-               $ticket = $res->ticket;
-               if ($ticket) {
-                   $data->expires_in = time() + 7000;
-                   $data->jsapi_ticket = $ticket;
-                   $fp = fopen("{$this->path}data/jsapi_ticket.json", "w");
-                   fwrite($fp, json_encode($data));
-                   fclose($fp);
-               }
-           } else {
-               $ticket = $data->jsapi_ticket;
-           }
-           return $ticket;
-       }
+        if (empty($data)) {
+            $accessToken = $this->getAccessToken();
+            // 如果是企业号用以下 URL 获取 ticket
+            // $url = "https://qyapi.weixin.qq.com/cgi-bin/get_jsapi_ticket?access_token=$accessToken";
+            $url = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?type=jsapi&access_token=$accessToken";
+            $res = json_decode($this->httpGet($url));
+            $ticket = $res->ticket;
+            if ($ticket) {
+                $fp = fopen("{$this->path}data/jsapi_ticket.json", "w");
+                fwrite($fp, json_encode($res));
+                fclose($fp);
+            }
+        } else {
+            if ($data->expires_in < time()) {
+                $accessToken = $this->getAccessToken();
+                // 如果是企业号用以下 URL 获取 ticket
+                // $url = "https://qyapi.weixin.qq.com/cgi-bin/get_jsapi_ticket?access_token=$accessToken";
+                $url = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?type=jsapi&access_token=$accessToken";
+                $res = json_decode($this->httpGet($url));
+                $ticket = $res->ticket;
+                if ($ticket) {
+                    $data->expires_in = time() + 7000;
+                    $data->jsapi_ticket = $ticket;
+                    $fp = fopen("{$this->path}data/jsapi_ticket.json", "w");
+                    fwrite($fp, json_encode($data));
+                    fclose($fp);
+                }
+            } else {
+                $ticket = $data->jsapi_ticket;
+            }
+            return $ticket;
+        }
     }
 
-    private function getAccessToken() {
+    private function getAccessToken()
+    {
         // access_token 应该全局存储与更新，以下代码以写入到文件中做示例
         $data = json_decode(file_get_contents("{$this->path}data/access_token.json"));
-        if(empty($data)){
+        if (empty($data)) {
             $url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=$this->appid&secret=$this->secret";
             $res = json_decode($this->httpGet($url));
             $access_token = $res->access_token;
@@ -161,7 +170,7 @@ class Wechat{
                 fwrite($fp, json_encode($res));
                 fclose($fp);
             }
-        }else{
+        } else {
             if ($data->expires_in < time()) {
                 // 如果是企业号用以下URL获取access_token
                 // $url = "https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=$this->appId&corpsecret=$this->appSecret";
@@ -189,31 +198,33 @@ class Wechat{
      * @param $param    array   参数
      * @return bool
      */
-    private function http($url,$param){
-        if($param != null) {
+    private function http($url, $param)
+    {
+        if ($param != null) {
             $query = http_build_query($param);
             $url = $url . '?' . $query;
         }
         $ch = curl_init();
-        if(stripos($url, "https://") !== false){
+        if (stripos($url, "https://") !== false) {
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
             curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
         }
 
         curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1 );
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         $content = curl_exec($ch);
         $status = curl_getinfo($ch);
         curl_close($ch);
-        if(intval($status["http_code"]) == 200) {
+        if (intval($status["http_code"]) == 200) {
             return $content;
-        }else{
+        } else {
             echo $status["http_code"];
             return false;
         }
     }
 
-    private function httpGet($url) {
+    private function httpGet($url)
+    {
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_TIMEOUT, 500);

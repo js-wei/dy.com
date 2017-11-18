@@ -1048,7 +1048,7 @@
         },
         {
             "name": "symfony/process",
-            "version": "v2.8.29",
+            "version": "v2.8.31",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/process.git",

@@ -1,15 +1,14 @@
 <?php
-// +----------------------------------------------------------------------
-// | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
-// +----------------------------------------------------------------------
-// | Copyright (c) 2009 http://thinkphp.cn All rights reserved.
-// +----------------------------------------------------------------------
-// | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
-// +----------------------------------------------------------------------
-// | Author: liu21st <liu21st@gmail.com>
-// +----------------------------------------------------------------------
+# @Author: 魏巍 <jswei>
+# @Date:   2017-11-16T17:42:05+08:00
+# @Email:  jswei30@gmail.com
+# @Filename: IpLocation.php
+# @Last modified by:   jswei
+# @Last modified time: 2017-11-18T17:44:24+08:00
+
 
 namespace service;
+
 /**
  *  IP 地理位置查询类 修改自 CoolCode.CN
  *  由于使用UTF8编码 如果使用纯真IP地址库的话 需要对返回结果进行编码转换
@@ -18,7 +17,8 @@ namespace service;
  * @subpackage  Net
  * @author    liu21st <liu21st@gmail.com>
  */
-class IpLocation {
+class IpLocation
+{
     /**
      * QQWry.Dat文件指针
      *
@@ -53,7 +53,8 @@ class IpLocation {
      * @param string $filename
      * @return IpLocation
      */
-    public function __construct($filename = "UTFWry.dat") {
+    public function __construct($filename = "UTFWry.dat")
+    {
         $this->fp = 0;
         if (($this->fp = fopen(ROOT_PATH .'public' . DS .'data' . DS . $filename, 'rb')) !== false) {
             $this->firstip = $this->getlong();
@@ -68,7 +69,8 @@ class IpLocation {
      * @access private
      * @return int
      */
-    private function getlong() {
+    private function getlong()
+    {
         //将读取的little-endian编码的4个字节转化为长整型数
         $result = unpack('Vlong', fread($this->fp, 4));
         return $result['long'];
@@ -80,7 +82,8 @@ class IpLocation {
      * @access private
      * @return int
      */
-    private function getlong3() {
+    private function getlong3()
+    {
         //将读取的little-endian编码的3个字节转化为长整型数
         $result = unpack('Vlong', fread($this->fp, 3).chr(0));
         return $result['long'];
@@ -93,7 +96,8 @@ class IpLocation {
      * @param string $ip
      * @return string
      */
-    private function packip($ip) {
+    private function packip($ip)
+    {
         // 将IP地址转化为长整型数，如果在PHP5中，IP地址错误，则返回False，
         // 这时intval将Flase转化为整数-1，之后压缩成big-endian编码的字符串
         return pack('N', intval(ip2long($ip)));
@@ -106,7 +110,8 @@ class IpLocation {
      * @param string $data
      * @return string
      */
-    private function getstring($data = "") {
+    private function getstring($data = "")
+    {
         $char = fread($this->fp, 1);
         while (ord($char) > 0) {        // 字符串按照C格式保存，以\0结束
             $data .= $char;             // 将读取的字符连接到给定字符串之后
@@ -121,7 +126,8 @@ class IpLocation {
      * @access private
      * @return string
      */
-    private function getarea() {
+    private function getarea()
+    {
         $byte = fread($this->fp, 1);    // 标志字节
         switch (ord($byte)) {
             case 0:                     // 没有区域信息
@@ -146,9 +152,14 @@ class IpLocation {
      * @param string $ip
      * @return array
      */
-    public function getlocation($ip='') {
-        if (!$this->fp) return null;            // 如果数据文件没有被正确打开，则直接返回空
-		if(empty($ip)) $ip = get_client_ip();
+    public function get_location($ip='')
+    {
+        if (!$this->fp) {
+            return null;
+        }            // 如果数据文件没有被正确打开，则直接返回空
+        if (empty($ip)) {
+            $ip = get_client_ip();
+        }
         $location['ip'] = gethostbyname($ip);   // 将输入的域名转化为IP地址
         $ip = $this->packip($location['ip']);   // 将输入的IP地址转化为可比较的IP地址
                                                 // 不合法的IP地址会被转化为255.255.255.255
@@ -164,14 +175,12 @@ class IpLocation {
             // 以便用于比较，后面相同。
             if ($ip < $beginip) {       // 用户的IP小于中间记录的开始IP地址时
                 $u = $i - 1;            // 将搜索的上边界修改为中间记录减一
-            }
-            else {
+            } else {
                 fseek($this->fp, $this->getlong3());
                 $endip = strrev(fread($this->fp, 4));   // 获取中间记录的结束IP地址
                 if ($ip > $endip) {     // 用户的IP大于中间记录的结束IP地址时
                     $l = $i + 1;        // 将搜索的下边界修改为中间记录加一
-                }
-                else {                  // 用户的IP在中间记录的IP范围内时
+                } else {                  // 用户的IP在中间记录的IP范围内时
                     $findip = $this->firstip + $i * 7;
                     break;              // 则表示找到结果，退出循环
                 }
@@ -227,11 +236,11 @@ class IpLocation {
      * 析构函数，用于在页面执行结束后自动关闭打开的文件。
      *
      */
-    public function __destruct() {
+    public function __destruct()
+    {
         if ($this->fp) {
             fclose($this->fp);
         }
         $this->fp = 0;
     }
-
 }

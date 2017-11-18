@@ -1,4 +1,12 @@
 <?php
+# @Author: 魏巍 <jswei>
+# @Date:   2017-11-16T17:42:05+08:00
+# @Email:  524314430@qq.com
+# @Last modified by:   jswei
+# @Last modified time: 2017-11-17T20:50:59+08:00
+
+
+
 namespace app\admin\controller;
 
 class Control extends Base{
@@ -7,7 +15,7 @@ class Control extends Base{
 	}
 
 	public function index(){
-		
+
 		$model = db('model')->where(['title'=>$this->controller])->find();
 		$controller = db('model')->order('sort asc')->select();
 		$controller = \Service\Category::LimitForLevel($controller);

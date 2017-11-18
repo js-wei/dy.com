@@ -1,10 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: 魏巍
- * Date: 2017/8/2
- * Time: 17:50
- */
+# @Author: 魏巍 <jswei>
+# @Date:   2017-11-16T17:42:05+08:00
+# @Email:  524314430@qq.com
+# @Last modified by:   jswei
+# @Last modified time: 2017-11-17T20:51:19+08:00
+
 namespace app\admin\controller;
 
 class Message extends Base{

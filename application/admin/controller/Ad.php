@@ -1,4 +1,12 @@
 <?php
+# @Author: 魏巍 <jswei>
+# @Date:   2017-11-16T17:42:05+08:00
+# @Email:  524314430@qq.com
+# @Last modified by:   jswei
+# @Last modified time: 2017-11-17T20:50:03+08:00
+
+
+
 namespace app\admin\controller;
 
 class Ad extends Base{
@@ -22,7 +30,7 @@ class Ad extends Base{
 		$this->assign('count',$count);
 		$this->assign('model',$model);
 		$this->assign('list',$list);
-		return $this->fetch();
+		return view();
 	}
 
 	public function add($id=0){
