@@ -1,13 +1,20 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: 魏巍
- * Date: 2017/8/31
- * Time: 8:26
- */
+# @Author: 魏巍
+# @Date:   2017-11-16T17:42:05+08:00
+# @Email:  jswei30@gmail.com
+# @Filename: Article.php
+# @Last modified by:   魏巍
+# @Last modified time: 2017-11-20T12:43:25+08:00
+
+
+
+
 namespace app\common\taglib;
+
 use think\template\TagLib;
-class Article extends TagLib{
+
+class Article extends TagLib
+{
     /**
      * 定义标签列表
      */
@@ -34,22 +41,23 @@ class Article extends TagLib{
      * @param $content
      * @return string
      */
-    public function tagList ($attr,$content){
+    public function tagList($attr, $content)
+    {
         $model=!empty($attr['model'])?$attr['model']:'Article';
         $field=!empty($attr['field'])?$attr['field']:'"dates",true';
         $limit=!empty($attr['limit'])?$attr['limit']:'';
         $order=!empty($attr['order'])?$attr['order']:'';
         $where= $this->adjunct($attr);
         $id=!empty($attr['cid'])?$attr['cid']:input('cid/d');
-        if($id){
+        if ($id) {
             $id = $this->_get_child($id);
         }
-        if(!empty($id)){
-            if(!empty($where)){
-                if (strpos($where,'column_id')===false) {
+        if (!empty($id)) {
+            if (!empty($where)) {
+                if (strpos($where, 'column_id')===false) {
                     $where.=" and column_id in ({$id})";
                 }
-            }else{
+            } else {
                 $where.= " column_id in ({$id})";
             }
         }
@@ -75,14 +83,15 @@ class Article extends TagLib{
      * @param $content
      * @return string
      */
-    public function tagArticle($attr,$content){
+    public function tagArticle($attr, $content)
+    {
         $model=!empty($attr['model'])?$attr['model']:'Article';
         $field=!empty($attr['field'])?$attr['field']:'*';
         $key=!empty($attr['key'])?$attr['key']:'id';
         $id=!empty($attr['id'])?$attr['id']:input('id/d');
         $where= $this->adjunct($attr);
 
-        if(!empty($where)){
+        if (!empty($where)) {
             $str='<?php ';
             $str .= '$_result_content=db("'.$model.'")->field("'.$field.'")->where("'.$where.'")->find();';//查询语句
             $str .= '$_column=db("Column")->find($_result_content["column_id"]);';
@@ -93,7 +102,7 @@ class Article extends TagLib{
             $str .= '?>';
             $str .= $content;
             return $str;
-        }else{
+        } else {
             $str='<?php ';
             $str .= '$_result_content=M("'.$model.'")->field("'.$field.'")->where("'.$where.'")->find("'.$id.'");';
             $str .= '$_column=db("Column")->find($_result_content["column_id"]);';
@@ -113,18 +122,20 @@ class Article extends TagLib{
      * @param $content
      * @return string
      */
-    public function tagNav ($attr,$content){
+    public function tagNav($attr, $content)
+    {
         $model=!empty($attr['model'])?$attr['model']:'Column';
         $field=!empty($attr['field'])?$attr['field']:'*';
         $limit=!empty($attr['limit'])?$attr['limit']:'';
         $order=!empty($attr['order'])?$attr['order']:'';
         $position=$attr['position'];
         $where= $this->adjunct($attr);
-        if(!empty($position)){
-            if(empty($where))
+        if (!empty($position)) {
+            if (empty($where)) {
                 $where .=' position = '.$position;
-            else
+            } else {
                 $where .=' and position = '.$position;
+            }
         }
         $str='<?php ';
         $str .= '$_list_result=db("'.$model.'")->field("'.$field.'")->where("'.$where.'")->limit('.$limit.')->order("'.$order.'")->select();';
@@ -140,20 +151,21 @@ class Article extends TagLib{
      * @param $content
      * @return string
      */
-    public function tagLocation($attr,$content){
+    public function tagLocation($attr, $content)
+    {
         $model=!empty($attr['model'])?$attr['model']:'Column';
         $field=!empty($attr['field'])?$attr['field']:'*';
         $where= $this->adjunct($attr);
         $id = input('id/d');
-        if($id){
+        if ($id) {
             $_article=db('Article')->find($id);
             $current=!empty($attr["current"])?$attr["current"]:$_article['column_id'];
-        }else{
+        } else {
             $current=!empty($attr["current"])?$attr["current"]:input('cid/d');
         }
 
         $str='<?php ';
-        $str .= '$_current_column=db("'.$model.'")->field("'.$field.'")->find("'.$current.'"); 
+        $str .= '$_current_column=db("'.$model.'")->field("'.$field.'")->find("'.$current.'");
               $_result_content=db("'.$model.'")->field("'.$field.'")->where("'.$where.'")->select();
               $location=\service\Category::getParents($_result_content,$_current_column);
               $location[]=$_current_column;
@@ -187,7 +199,8 @@ class Article extends TagLib{
      * @param $content
      * @return string
      */
-    public function tagBanner($attr,$content){
+    public function tagBanner($attr, $content)
+    {
         $model=!empty($attr['model'])?$attr['model']:'carousel';
         $field=!empty($attr['field'])?$attr['field']:'*';
         $where= $this->adjunct($attr);
@@ -220,7 +233,8 @@ class Article extends TagLib{
         PRIMARY KEY (`id`)
         ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT '广告表';
      ***/
-    public function tagMyad($attr,$content){
+    public function tagMyad($attr, $content)
+    {
         $model=!empty($attr['model'])?$attr['model']:'Ad';
         $field=!empty($attr['field'])?$attr['field']:'*';
         $where= $this->adjunct($attr);
@@ -261,7 +275,7 @@ class Article extends TagLib{
         }
          */
 
-        $str='<?php 
+        $str='<?php
           $_result_content=db("'.$model.'")->field("'.$field.'")->where("'.$where.'")->order("'.$order.'")->limit("'.$limit.'")->select();
           $myad=$_result_content;
           ?>';
@@ -291,7 +305,8 @@ class Article extends TagLib{
      * @param $content
      * @return string
      */
-    public function tagLink($attr,$content){
+    public function tagLink($attr, $content)
+    {
         $model=!empty($attr['model'])?$attr['model']:'Flink';
         $field=!empty($attr['field'])?$attr['field']:'*';
         $position=!empty($attr['position'])?$attr['position']:0;
@@ -299,10 +314,10 @@ class Article extends TagLib{
         $limit=!empty($attr['limit'])?$attr['limit']:'';
         $order=!empty($attr['order'])?$attr['order']:'';
 
-        if(!empty($position)){
+        if (!empty($position)) {
             $where.=' and position='.$position;
         }
-        $str='<?php 
+        $str='<?php
           $_result_content=db("'.$model.'")->field("'.$field.'")->where("'.$where.'")->order("'.$order.'")->limit("'.$limit.'")->select();
           $flink=$_result_content;
       ?>';
@@ -334,17 +349,18 @@ class Article extends TagLib{
      * @param $content
      * @return string
      */
-    public function tagChannel($attr,$content){
+    public function tagChannel($attr, $content)
+    {
         $model=!empty($attr['model'])?$attr['model']:'Column';
         $field=!empty($attr['field'])?$attr['field']:'*';
         $position=!empty($attr['position'])?$attr['position']:0;
         $id=!empty($attr['id'])?$attr['id']:0;
         $where = $this->adjunct($attr);
-        if(!empty($position)){
+        if (!empty($position)) {
             $where.=' and position='.$position;
         }
 
-        $str='<?php 
+        $str='<?php
           $channel=db("'.$model.'")->field("'.$field.'")->where("'.$where.'")->find("'.$id.'");
        ?>';
         $str .= $content;
@@ -357,7 +373,8 @@ class Article extends TagLib{
      * @param $content
      * @return string
      */
-    public function tagChannels($attr,$content){
+    public function tagChannels($attr, $content)
+    {
         $model=!empty($attr['model'])?$attr['model']:'Column';
         $position=!empty($attr['position'])?$attr['position']:'';
         $field=!empty($attr['field'])?$attr['field']:'*';
@@ -365,10 +382,10 @@ class Article extends TagLib{
         $where= $this->adjunct($attr);
         $limit=!empty($attr['limit'])?$attr['limit']:'';
         $order=!empty($attr['order'])?$attr['order']:'';
-        if(!empty($position)){
+        if (!empty($position)) {
             $where.=' and position = '.$position;
         }
-        $str='<?php 
+        $str='<?php
       	  $parent=db("'.$model.'")->field("'.$field.'")->find('.$fid.');
           $_result_channellist=db("'.$model.'")->field("'.$field.'")->where("'.$where.'")->order("'.$order.'")->limit("'.$limit.'")->select();
           $channels=\service\Category::unlimitedForLevel($_result_channellist);
@@ -384,7 +401,8 @@ class Article extends TagLib{
      * @param $content
      * @return string
      */
-    public function tagCarousel($attr,$content){
+    public function tagCarousel($attr, $content)
+    {
         $model  = !empty($attr['model'])?$attr['model']:'Carousel';
         $position   =  !empty($attr['position'])?$attr['position']:'';
         $field  =   !empty($attr['field'])?$attr['field']:'*';
@@ -396,18 +414,18 @@ class Article extends TagLib{
         $prev = !empty($attr['prev'])?$attr['prev']:'Previous';
         $next = !empty($attr['next'])?$attr['next']:'Next';
         $cycle_show = !empty($attr['cycle'])?$attr['cycle']:0;
-        if(!empty($position)){
+        if (!empty($position)) {
             $where.=' and position = '.$position;
         }
-        if($fid){
+        if ($fid) {
             $where.=' and fid = '.$fid;
         }
         $_banner = db($model)->field($field)->where($where)->limit($limit)->order($order)->select();
 
         $c = '<ol class="carousel-indicators">';
         $item = '';
-        foreach ($_banner as $k=>$v){
-            if($k==0){
+        foreach ($_banner as $k=>$v) {
+            if ($k==0) {
                 $c.= '<li data-target="#myCarousel" data-slide-to="'.$k.'" class="active"></li>';
                 $item .=' <div class="item active">
                       <img class="first-slide" src="'.$v['image'].'" alt="First slide">
@@ -419,7 +437,7 @@ class Article extends TagLib{
                         </div>
                       </div>
                     </div>';
-            }else{
+            } else {
                 $c.= '<li data-target="#myCarousel" data-slide-to="'.$k.'"></li>';
                 $item .=' <div class="item">
                       <img class="first-slide" src="'.$v['image'].'" alt="First slide">
@@ -491,14 +509,15 @@ EOT;
      * @param $content
      * @return string
      */
-    public function tagRandom($attr,$content){
+    public function tagRandom($attr, $content)
+    {
         $model=!empty($attr['model'])?$attr['model']:'Article';
         $fid=!empty($attr['fid'])?$attr['fid']:0;
         $limit=!empty($attr['limit'])?$attr['limit']:'';
         $order=!empty($attr['order'])?$attr['order']:'id';
         $where= $this->adjunct($attr);
 
-        if(!empty($fid)){
+        if (!empty($fid)) {
             $where.=' and fid = '.$fid;
         }
         $DB_PREFIX = config('prefix');
@@ -506,35 +525,35 @@ EOT;
               (SELECT ROUND(RAND() * ((SELECT MAX(id) FROM `'.$DB_PREFIX.$model.'`)-(SELECT MIN(id) FROM `'.$DB_PREFIX.$model.'`))+(SELECT MIN(id) FROM `'.$DB_PREFIX.$model.'`)) AS id) AS t2
               WHERE t1.id >= t2.id ORDER BY t1.'.$order.' LIMIT '.$limit;*/
         $sql='SELECT * FROM `'.$DB_PREFIX.$model.'`
-          WHERE id >= (SELECT floor(RAND() * (SELECT MAX(id) FROM `'.$DB_PREFIX.$model.'`))) and '.$where.' 
+          WHERE id >= (SELECT floor(RAND() * (SELECT MAX(id) FROM `'.$DB_PREFIX.$model.'`))) and '.$where.'
           ORDER BY '.$order.' LIMIT '.$limit;
 
-        $str='<?php 
-          $_result_randomrecom=db("'.$model.'")->query("'.$sql.'");  
+        $str='<?php
+          $_result_randomrecom=db("'.$model.'")->query("'.$sql.'");
           $randomrecom=$_result_randomrecom;
         ?>';
         $str .= $content;
         return $str;
     }
-    /**
-     *--
-     *-- 表的结构 `think_file`
-     *--
+    /*
+     --
+     -- 表的结构 `think_file`
+     --
      CREATE TABLE IF NOT EXISTS `think_file` (
-       `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键自动增长',
-       `title` varchar(50) NOT NULL COMMENT '文件名称',
-       `ico` varchar(150) NOT NULL COMMENT '文件图标',
-       `name` varchar(50) NOT NULL COMMENT '文件名称',
-       `rename` varchar(50) NOT NULL COMMENT '文件上传名',
-       `type` varchar(20) NOT NULL COMMENT '文件类型',
-       `description` varchar(250) NOT NULL COMMENT '文件说明',
-       `size` int(11) NOT NULL COMMENT '文件大小(B)',
-       `path` varchar(150) NOT NULL COMMENT '文件路径',
-       `sort` int(11) NOT NULL COMMENT '排序:愈小愈靠前',
-       `status` tinyint(1) NOT NULL COMMENT '文件状态:0正常,1禁用',
-       `date` int(11) NOT NULL COMMENT '文件上传时间',
-       `dates` int(11) NOT NULL COMMENT '时间戳',
-       PRIMARY KEY (`id`)
+      `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键自动增长',
+      `title` varchar(50) NOT NULL COMMENT '文件名称',
+      `ico` varchar(150) NOT NULL COMMENT '文件图标',
+      `name` varchar(50) NOT NULL COMMENT '文件名称',
+      `rename` varchar(50) NOT NULL COMMENT '文件上传名',
+      `type` varchar(20) NOT NULL COMMENT '文件类型',
+      `description` varchar(250) NOT NULL COMMENT '文件说明',
+      `size` int(11) NOT NULL COMMENT '文件大小(B)',
+      `path` varchar(150) NOT NULL COMMENT '文件路径',
+      `sort` int(11) NOT NULL COMMENT '排序:愈小愈靠前',
+      `status` tinyint(1) NOT NULL COMMENT '文件状态:0正常,1禁用',
+      `date` int(11) NOT NULL COMMENT '文件上传时间',
+      `dates` int(11) NOT NULL COMMENT '时间戳',
+      PRIMARY KEY (`id`)
      ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='文件表' AUTO_INCREMENT=1 ;
      **/
     /**
@@ -543,7 +562,8 @@ EOT;
      * @param $content
      * @return string
      */
-    public function tagFile($attr,$content){
+    public function tagFile($attr, $content)
+    {
         $model=!empty($attr['model'])?$attr['model']:'File';
         $field=!empty($attr['field'])?$attr['field']:'*';
         $limit=!empty($attr['limit'])?$attr['limit']:'';
@@ -588,7 +608,8 @@ EOT;
      * @param $content
      * @return string
      */
-    public function tagSite($attr,$content){
+    public function tagSite($attr, $content)
+    {
         $model=!empty($attr['model'])?$attr['model']:'config';
         $field=!empty($attr['field'])?$attr['field']:'*';
         $empty=!empty($attr['empty'])?$attr['empty']:'没有数据';
@@ -605,57 +626,58 @@ EOT;
      * @param $attr
      * @return string
      */
-    private function adjunct($attr){
+    private function adjunct($attr)
+    {
         $date=!empty($attr['date'])?$attr['date']:'';
         $where = !empty($attr['where'])?$attr['where']:'';
         $where= $this->condition($where);
-        $file = strstr($date,'/e')?'effective':'date';
-        if(empty($where)){
+        $file = strstr($date, '/e')?'effective':'date';
+        if (empty($where)) {
             $where.='status = 0';
-        }else{
-            if(strpos($where,'status') === false){
+        } else {
+            if (strpos($where, 'status') === false) {
                 $where.=' and status = 0';
             }
         }
 
-        if(!empty($date)){
+        if (!empty($date)) {
             $date1 = $date;
             $date=explode(' ', $date);
             $temp = '';
-            if(count($date)>1){
-                if(count($date)==2){  //两个区间查询
+            if (count($date)>1) {
+                if (count($date)==2) {  //两个区间查询
                     $where.=' and date between '.strtotime($date[0]).' and '.strtotime($date[1]);
-                }else{
+                } else {
                     foreach ($date as $v) { //两个以上存在查询
                         $temp.= strtotime($v).',';
                     }
                     $temp=substr($temp, 1, -1);   //去掉最后一个字符
                     $where.=' and '.$file.' IN ('.$temp.')';
                 }
-            }else{  //一个精确查询
+            } else {  //一个精确查询
                 //$where.=' and date = '.strtotime($date[0]);
-                if(strstr($date1,'eq')){
+                if (strstr($date1, 'eq')) {
                     $where.=' and '.$file.' = '.strtotime($date[0]);
                 }
-                if(strstr($date1,'lt')){
+                if (strstr($date1, 'lt')) {
                     $where.=' and '.$file.' < '.strtotime($date[0]);
                 }
-                if(strstr($date1,'gt')){
+                if (strstr($date1, 'gt')) {
                     $where.=' and '.$file.' > '.strtotime($date[0]);
                 }
-                if(strstr($date1,'elt')){
+                if (strstr($date1, 'elt')) {
                     $where.=' and '.$file.' <= '.strtotime($date[0]);
                 }
-                if(strstr($date1,'egt')){
+                if (strstr($date1, 'egt')) {
                     $where.=' and '.$file.' >= '.strtotime($date[0]);
                 }
             }
         }
         $attr1=!empty($attr['attr'])?$this->makeAttr($attr['attr']):'';
         if (!empty($where) || !empty($attr1)) {
-            if(!empty($where) && !empty($attr1)){
+            if (!empty($where) && !empty($attr1)) {
                 $where .= ' and '.$attr1;
-            }else{
+            } else {
                 $where .= $attr1;
             }
         }
@@ -667,28 +689,28 @@ EOT;
      * @param $str
      * @return mixed
      */
-    private function condition($str){
-        if(strstr($str,'neq') || strstr($str,'eq')){
-            if(strstr($str,'neq')){
+    private function condition($str)
+    {
+        if (strstr($str, 'neq') || strstr($str, 'eq')) {
+            if (strstr($str, 'neq')) {
                 $str=str_replace('neq', '!=', $str);
-            }else{
+            } else {
                 $str=str_replace('eq', '=', $str);
             }
         }
-        if(strstr($str,'elt') || strstr($str,'lgt') || strstr($str,'lt') ){
-            if(strstr($str,'elt')){
+        if (strstr($str, 'elt') || strstr($str, 'lgt') || strstr($str, 'lt')) {
+            if (strstr($str, 'elt')) {
                 $str=str_replace('elt', '<=', $str);
-            }elseif(strstr($str,'lgt')){
+            } elseif (strstr($str, 'lgt')) {
                 $str=str_replace('lgt', '<>', $str);
-            }else{
+            } else {
                 $str=str_replace('lt', '<', $str);
             }
         }
-        if(strstr($str,'gt') || strstr($str,'egt')){
-
-            if(strstr($str,'egt')){
+        if (strstr($str, 'gt') || strstr($str, 'egt')) {
+            if (strstr($str, 'egt')) {
                 $str=str_replace('egt', '>=', $str);
-            }else{
+            } else {
                 $str=str_replace('gt', '>', $str);
             }
         }
@@ -700,11 +722,12 @@ EOT;
      * @param $id
      * @return string
      */
-    protected function _get_child($id){
-        $curr=db('column')->field('dates',true)->find($id);
-        $column=db('column')->field('dates',true)->where('status','eq',0)->select();
-        $data = \service\Category::getChildrenById($column,$curr['id']);
-        $retVal = (!empty($data)) ? implode(',',$data).','.$id : $id;
+    protected function _get_child($id)
+    {
+        $curr=db('column')->field('dates', true)->find($id);
+        $column=db('column')->field('dates', true)->where('status', 'eq', 0)->select();
+        $data = \service\Category::getChildrenById($column, $curr['id']);
+        $retVal = (!empty($data)) ? implode(',', $data).','.$id : $id;
         return $retVal;
     }
 
@@ -713,10 +736,11 @@ EOT;
      * @param $id
      * @return string
      */
-    protected function _get_parent($id){
+    protected function _get_parent($id)
+    {
         $curr=db('column')->find($id);
         $column=db('column')->where(array('status = 0'))->select();
-        $data = \service\Category::getParentsById($column,$curr['fid']);
+        $data = \service\Category::getParentsById($column, $curr['fid']);
         rsort($data);
         $retVal = $this->_get_child($data[0]);
         return $retVal;
@@ -726,7 +750,8 @@ EOT;
      * @param $attr
      * @return string
      */
-    protected function makeAttr($attr){
+    protected function makeAttr($attr)
+    {
         switch ($attr) {
             case 'com':   #推荐
                 return ' com = 1';
@@ -758,21 +783,21 @@ EOT;
      * @param string $op
      * @return string
      */
-    protected function _split_parama($param,$op="column_id"){
+    protected function _split_parama($param, $op="column_id")
+    {
         $temp = explode('and', $param);
         $res="column_id in ";
         $t ='';
         $reid='';
         foreach ($temp as $k => $v) {
-            if(strpos($v,$op)!==false){
-                $temp1=explode('=',$v);
-                if(count($temp1)>=2){
+            if (strpos($v, $op)!==false) {
+                $temp1=explode('=', $v);
+                if (count($temp1)>=2) {
                     $res.=$temp1[1];
                 }
-            }else{
+            } else {
                 $t.=$v;
             }
-
         }
         $where= $t." ".$res.$reid;
         return $where;

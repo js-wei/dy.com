@@ -3,19 +3,8 @@
 # @Date:   2017-11-16T17:42:05+08:00
 # @Email:  524314430@qq.com
 # @Last modified by:   魏巍
-# @Last modified time: 2017-11-18T17:39:37+08:00
+# @Last modified time: 2017-11-20T15:14:46+08:00
 
-
-
-// +----------------------------------------------------------------------
-// | ThinkPHP [ WE CAN DO IT JUST THINK ]
-// +----------------------------------------------------------------------
-// | Copyright (c) 2006~2016 http://thinkphp.cn All rights reserved.
-// +----------------------------------------------------------------------
-// | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
-// +----------------------------------------------------------------------
-// | Author: liu21st <liu21st@gmail.com>
-// +----------------------------------------------------------------------
 use think\Route;
 
 // 给publish控制器设置快捷路由
@@ -46,3 +35,4 @@ Route::rule('api/upgrade_sex', 'index/api/upgrade_sex');
 Route::rule('api/upgrade_head', 'index/api/upgrade_head');
 Route::rule('api/upgrade_phone', 'index/api/upgrade_phone');
 Route::rule('api/upgrade_email', 'index/api/upgrade_email');
+Route::rule('api/set_hobbise', 'index/api/set_hobbise');

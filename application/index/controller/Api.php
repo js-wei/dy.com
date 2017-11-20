@@ -3,8 +3,8 @@
 # @Date:   2017-11-16T17:42:05+08:00
 # @Email:  jswei30@gmail.com
 # @Filename: Api.php  开发接口
-# @Last modified by:   jswei
-# @Last modified time: 2017-11-18T17:46:45+08:00
+# @Last modified by:   魏巍
+# @Last modified time: 2017-11-20T15:24:55+08:00
 
 namespace app\index\controller;
 
@@ -243,26 +243,26 @@ class Api extends Base
             return json(['status'=>0,'msg'=>'请输入新密码']);
         }
         if (empty($confirm_password)) {
-            return json(['status'=>0,'msg'=>'请输入确认密码']);
+            return ['status'=>0,'msg'=>'请输入确认密码'];
         }
         if ($confirm_password!=$password) {
-            return json(['status'=>0,'msg'=>'两次密码不一致']);
+            return ['status'=>0,'msg'=>'两次密码不一致'];
         }
         $member = db('member')->field('id')
             ->field('date', true)
             ->where('phone', 'eq', $phone)
             ->find();
         if (empty($member)) {
-            return json(['status'=>0,'msg'=>'用户名不存在']);
+            return ['status'=>0,'msg'=>'用户名不存在'];
         }
         if (!db('member')->update([
             'id'=>$member['id'],
             'password'=>$this->get_password($password),
             'dates'=>time()
         ])) {
-            return json(['status'=>0,'msg'=>'修改失败请重试']);
+            return ['status'=>0,'msg'=>'修改失败请重试'];
         }
-        return json(['status'=>1,'msg'=>'修改成功']);
+        return ['status'=>1,'msg'=>'修改成功'];
     }
 
     /**
@@ -285,13 +285,13 @@ class Api extends Base
     public function send_email_code($email='')
     {
         if (!request()->isPost()) {
-            //return json(['status'=>0,'msg'=>'请求方式错误']);
+            return json(['status'=>0,'msg'=>'请求方式错误']);
         }
         if (empty($email)) {
-            return json(['status'=>0,'msg'=>'请填写邮箱']);
+            return ['status'=>0,'msg'=>'请填写邮箱'];
         }
         if (!Validate::is($email, 'email')) {
-            return json(['status'=>0,'msg'=>'抱歉邮箱格式错误']);
+            return ['status'=>0,'msg'=>'抱歉邮箱格式错误'];
         }
         $_code = NoRand(0, 9, 6);
         cookie($_code.'_session_code', $_code, 60*15);
@@ -300,9 +300,9 @@ class Api extends Base
             ."】相关产品,请自动忽略此邮件谢谢:)";
 
         if (!think_send_mail($email, $email, "【".$this->site['title']."】", $html)) {
-            return json(['status'=>0,'msg'=>'验证码发送失败,请稍后重试:(']);
+            return ['status'=>0,'msg'=>'验证码发送失败,请稍后重试:('];
         }
-        return json(['status'=>1,'msg'=>'验证码发送成功到邮箱['.$email.']中,请及时查收:)']);
+        return ['status'=>1,'msg'=>'验证码发送成功到邮箱['.$email.']中,请及时查收:)'];
     }
     /**
      * 发送验证码
@@ -313,13 +313,13 @@ class Api extends Base
     public function send_message($tel='', $type=0)
     {
         if (!request()->isPost()) {
-            return json(['status'=>0,'msg'=>'请求方式错误']);
+            return ['status'=>0,'msg'=>'请求方式错误'];
         }
         if (!$tel) {
-            return json(['status'=>0,'msg'=>'请输入发送手机号']);
+            return ['status'=>0,'msg'=>'请输入发送手机号'];
         }
         if (!Validate::is($tel, '/^1[34578]\d{9}$/')) {
-            return json(['status'=>0,'msg'=>'请输入正确的手机号']);
+            return ['status'=>0,'msg'=>'请输入正确的手机号'];
         }
 
         if ($type==0) {
@@ -331,9 +331,9 @@ class Api extends Base
         }
 
         if (substr($arr, 21, 6) == 000000) {
-            return json(['status'=>1,'msg'=>'验证成功下发,请注意查收']);
+            return ['status'=>1,'msg'=>'验证成功下发,请注意查收'];
         } else {
-            return json(['status'=>0,'msg'=>'验证下发失败']);
+            return ['status'=>0,'msg'=>'验证下发失败'];
         }
     }
 
@@ -453,6 +453,38 @@ class Api extends Base
         $fullpath = str_replace('//', '/', $this->site['url'].$_result['fullpath']);
         return ['status'=>1,'msg'=>'用户性头像改成功','fullpath'=>$fullpath."?_id=".time()];
     }
+    /**
+     * [set_hobbise 设置用户的喜好]
+     * @param integer $id      [用户id]
+     * @param string  $hobbies [用户喜好]
+     */
+    public function set_hobbise($id=0, $hobbies='')
+    {
+        if (!request()->isPOST()) {
+            return ['status'=>0,'msg'=>'错误的请求方式'];
+        }
+        if (!$id) {
+            return ['status'=>0,'msg'=>'缺少参数用户ID'];
+        }
+        if (!$hobbies) {
+            return ['status'=>0,'msg'=>'缺少参数用户喜好'];
+        }
+        if (is_array($hobbies)) {
+            $hobbies = implode(',', $hobbies);
+        }
+        $member = db('member')->field('id,phone')->find($id);
+        if (!$member) {
+            return ['status'=>0,'msg'=>'用户不已存在'];
+        }
+        if (!db('member')->update([
+          'id'=>$member['id'],
+          'hobbies'=>$hobbies,
+          'dates'=>time()
+        ])) {
+            return ['status'=>0,'msg'=>'用户喜好设置失败'];
+        }
+        return ['status'=>1,'msg'=>'用户喜好设置成功'];
+    }
 
     /**
      * 更新手机
@@ -510,7 +542,7 @@ class Api extends Base
     public function upgrade_email($uid=0, $email='', $verify='')
     {
         if (!request()->isPost()) {
-            //return ['status'=>0,'msg'=>'错误请求方式'];
+            return ['status'=>0,'msg'=>'错误请求方式'];
         }
         if (!$uid) {
             return ['status'=>0,'msg'=>'缺少必要参数uid'];
@@ -565,17 +597,22 @@ class Api extends Base
                 unset($location['info']);
                 unset($location['infocode']);
                 break;
+            case 2:
+              $p = ['ip'=>$ip];
+              $location = http('http://ip.taobao.com/service/getIpInfo.php', $p);
+              $location = $location['data'];
+            break;
             case 0:
             default:
                 $_ip = new \service\IpLocation();
                 $location = $_ip->get_location($ip);
                 break;
         }
-        return json([
+        return [
             'status'=>1,
             'msg'=>'定位成功',
             'data'=>$location
-        ]);
+        ];
     }
 
     /**
@@ -626,17 +663,17 @@ class Api extends Base
             ->limit($limit)
             ->select();
         if (!$list) {
-            return json([
+            return [
                 'status'=>0,
                 'msg'=>'没有查到数据'
-            ]);
+            ];
         }
 
-        return json([
+        return [
             'status'=>1,
             'msg'=>'查询成功',
             'data'=>$list
-        ]);
+        ];
     }
 
     /**
@@ -657,17 +694,17 @@ class Api extends Base
             ->where('cityid', 'eq', $cityid)
             ->select();
         if (!$list) {
-            return json([
+            return [
                 'status'=>0,
                 'msg'=>'没有查到数据'
-            ]);
+            ];
         }
 
-        return json([
+        return [
             'status'=>1,
             'msg'=>'查询成功',
             'data'=>$list
-        ]);
+        ];
     }
 
     /**

@@ -3,7 +3,7 @@
 # @Date:   2017-11-16T17:42:05+08:00
 # @Email:  524314430@qq.com
 # @Last modified by:   魏巍
-# @Last modified time: 2017-11-18T17:36:39+08:00
+# @Last modified time: 2017-11-19T16:18:25+08:00
 
 
 
@@ -17,6 +17,10 @@ class Base extends Controller
     protected function _initialize()
     {
         header('Content-type:text/html;charset=utf-8;');
+        header('Access-Control-Allow-Origin: *');
+        header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
+        header('Access-Control-Allow-Methods: GET, POST, PUT,DELETE');
+
         set_time_limit(0);
         //常用变量
         $this->action = request()->action();
