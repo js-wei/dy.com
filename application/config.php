@@ -59,7 +59,7 @@ return [
     ],
 	'THINK_EMAIL'=>[       //邮件发送
         'SMTP_HOST'=>'smtp.163.com',
-        'SMTP_PORT'=>465,	//25
+        'SMTP_PORT'=>25,
         'SMTP_USER'=>'jswei30@163.com',
         'SMTP_PASS'=>'jswei30',
         'FROM_EMAIL'=>'jswei30@163.com',

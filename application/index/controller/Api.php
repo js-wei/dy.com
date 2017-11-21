@@ -16,6 +16,11 @@ class Api extends Base{
         parent::_initialize();
     }
 
+    /**
+     * 个人信息
+     * @param int $id
+     * @return \think\response\Json
+     */
 	public function personal_info($id=0){
 		if(!request()->isPost()){
 			return json(['status'=>0,'msg'=>'错误的请求方式']);
@@ -48,6 +53,10 @@ class Api extends Base{
 		}
 	}
 
+    /**
+     * 配置站点信息
+     * @return array
+     */
     public function get_site(){
         $data=[
             'title'=>$this->site['title'],
@@ -59,6 +68,11 @@ class Api extends Base{
         return ['status'=>1,'data'=>$data];
     }
 
+    /**
+     * 获取栏目
+     * @param int $id
+     * @return array
+     */
     public function get_column($id=0){
         $data = db('column')->field('id,title,name')->where(['status'=>0,'fid'=>0])->order('sort asc')->select();
         if($id==0){
@@ -161,7 +175,7 @@ class Api extends Base{
      */
     public function register($phone='',$password='',$verify=''){
         if(!request()->isPost()){
-            //return json(['status'=>0,'msg'=>'请求方式错误']);
+            return json(['status'=>0,'msg'=>'请求方式错误']);
         }
         if(empty($verify)){
             return json(['status'=>0,'msg'=>'请输入验证码']);
@@ -246,7 +260,7 @@ class Api extends Base{
      * @author 魏巍
      * @description 发送验证码邮件
      * @param string   $email       邮箱
-     * @return 返回发送结果
+     * @return \think\response\json 返回发送结果
      */
     public function send_email_code($email=''){
         if(!request()->isPost()){
@@ -413,6 +427,93 @@ class Api extends Base{
     }
 
     /**
+     * 更新手机
+     * @param int $uid
+     * @param string $phone
+     * @param string $verify
+     * @return array
+     */
+    public function upgrade_phone($uid=0,$phone='',$verify=''){
+        if(!request()->isPost()){
+            return ['status'=>0,'msg'=>'错误请求方式'];
+        }
+        if(!$uid){
+            return ['status'=>0,'msg'=>'缺少必要参数uid'];
+        }
+        if(!$phone){
+            return  ['status'=>0,'msg'=>'请输入手机号'];
+        }
+        if(!Validate::is($phone,'/^1[34578]\d{9}$/')){
+            return ['status'=>0,'msg'=>'手机号码不正确'];
+        }
+        if(!$verify){
+            return  ['status'=>0,'msg'=>'请输入验证码'];
+        }
+        $flag = $this->check_verify($verify,true);  //验证码验证
+        if(!$flag['status']){
+            return $flag;
+        }
+        $member = db('member')->field('id,phone')->find($uid);
+        if(!$member){
+            return ['status'=>0,'msg'=>'用户不已存在'];
+        }
+        if($member['phone']==$phone){
+            return ['status'=>0,'msg'=>'手机号已存在,请更换一个'];
+        }
+
+        if(!db('member')->update([
+            'id'=>$member['id'],
+            'phone'=>$phone,
+            'dates'=>time()
+        ])){
+            return ['status'=>0,'msg'=>'安全手机跟换失败'];
+        }
+        return ['status'=>1,'msg'=>'安全手机跟换成功'];
+    }
+
+    /**
+     * 更换邮箱
+     * @param int $uid
+     * @param string $email
+     * @param string $verify
+     * @return array
+     */
+    public function upgrade_email($uid=0,$email='',$verify=''){
+        if(!request()->isPost()){
+            //return ['status'=>0,'msg'=>'错误请求方式'];
+        }
+        if(!$uid){
+            return ['status'=>0,'msg'=>'缺少必要参数uid'];
+        }
+        if(!$email){
+            return ['status'=>0,'msg'=>'请输入邮箱'];
+        }
+        if(!Validate::is($email,'email')){
+            return ['status'=>0,'msg'=>'邮箱格式不正确'];
+        }
+        if(!$verify){
+            return ['status'=>0,'msg'=>'请输入邮箱验证码'];
+        }
+        $flag = $this->check_verify($verify,true);  //验证码验证
+        if(!$flag['status']){
+            return $flag;
+        }
+        $member = db('member')->field('id,email')->find($uid);
+        if(!$member){
+            return ['status'=>0,'msg'=>'用户不已存在'];
+        }
+
+        if(!db('member')->update([
+            'id'=>$member['id'],
+            'email'=>$email,
+            'dates'=>time()
+        ])){
+            return ['status'=>0,'msg'=>'安全邮箱跟换失败'];
+        }
+        return ['status'=>1,'msg'=>'安全邮箱跟换成功'];
+    }
+
+    /**
      * 根据ip获取位置
      * @param string $ip
      * @param int $type
@@ -469,27 +570,6 @@ class Api extends Base{
             'data'=>$list
         ]);
 	}
-
-    public function get_province_jsonp($limit=''){
-        $list = db('provinces')
-            ->field('provinceid,province')
-            ->where('type','eq',0)
-            ->limit($limit)
-            ->select();
-        if(!$list){
-            return jsonp([
-                'status'=>0,
-                'msg'=>'没有查到数据'
-            ]);
-        }
-
-        return jsonp([
-            'status'=>1,
-            'msg'=>'查询成功',
-            'data'=>$list
-        ]);
-    }
-
     /**
      * 获取市区信息
      * @param string $provinceid

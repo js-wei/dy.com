@@ -35,3 +35,5 @@ Route::rule('api/get_areas','index/api/get_areas');
 Route::rule('api/upgrade_nickname','index/api/upgrade_nickname');
 Route::rule('api/upgrade_sex','index/api/upgrade_sex');
 Route::rule('api/upgrade_head','index/api/upgrade_head');
+Route::rule('api/upgrade_phone','index/api/upgrade_phone');
+Route::rule('api/upgrade_email','index/api/upgrade_email');
