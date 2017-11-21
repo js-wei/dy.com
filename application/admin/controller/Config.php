@@ -1,4 +1,12 @@
 <?php
+# @Author: 魏巍 <jswei>
+# @Date:   2017-11-16T17:42:05+08:00
+# @Email:  524314430@qq.com
+# @Last modified by:   jswei
+# @Last modified time: 2017-11-17T20:50:56+08:00
+
+
+
 namespace app\admin\controller;
 
 class Config extends Base{
@@ -11,7 +19,7 @@ class Config extends Base{
 			'name'=>'网站设置'
 		];
 		$list = db('config')->find();
-		
+
 		// 查询状态为1的用户数据 并且每页显示10条数据
 		$count = db('config')->count('*');
 		$this->assign('count',$count);
@@ -21,7 +29,7 @@ class Config extends Base{
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	public function add($id=0){
 		$model = [

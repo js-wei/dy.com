@@ -1,4 +1,12 @@
 <?php
+# @Author: 魏巍 <jswei>
+# @Date:   2017-11-16T17:42:05+08:00
+# @Email:  524314430@qq.com
+# @Last modified by:   jswei
+# @Last modified time: 2017-11-17T20:51:23+08:00
+
+
+
 namespace app\admin\controller;
 
 class Order extends Base{
@@ -45,7 +53,7 @@ class Order extends Base{
 		$this->assign('model',$model);
 		return view();
 	}
-	
+
 	public function set_account($id=0,$p=''){
 		$model = [
 			'name'=>'查看用户信息'
@@ -56,15 +64,15 @@ class Order extends Base{
         	$this->assign('fid',$id);
 		}
 		$this->assign('model',$model);
-		return $this->fetch();	
+		return $this->fetch();
 	}
 
 	public function see_user($id=0,$t=0){
 		if(!$id){
-			echo "参数错误";		
+			echo "参数错误";
 		}
 		$vo = db('orderlist')->field('subscribe,fans,collection')->find($id);
-		
+
 		if($t==0){
 			$orderlist = db('orderlist')->field('id,phone,head,nickname')->where(['id'=>['in',$vo['subscribe']]])->select();
 			$this->assign('list',$orderlist);
@@ -100,7 +108,7 @@ class Order extends Base{
 			return ['status'=>1,'msg'=>'添加成功','redirect'=>Url('index')];
 		}
 	}
-	
+
 	public function add_account($id=0){
 		$param = request()->param();
 		if($id){

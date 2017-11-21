@@ -1,4 +1,12 @@
 <?php
+# @Author: 魏巍 <jswei>
+# @Date:   2017-11-16T17:42:05+08:00
+# @Email:  524314430@qq.com
+# @Last modified by:   jswei
+# @Last modified time: 2017-11-17T20:52:19+08:00
+
+
+
 namespace app\admin\controller;
 use org\Upload;
 use think\File;
@@ -136,7 +144,7 @@ class Uploadify extends Base{
 	        return $file->getError();
 	    }
 	}
-	
+
 	/**
 	 * [uploads 上传多个文件]
 	 * @param  string $file [接收字段]
@@ -149,13 +157,13 @@ class Uploadify extends Base{
 	    $path = ROOT_PATH . 'public' . DS . 'uploads'. DS . 'file';
 	    foreach($files as $file){
 	        $info = $file->validate(config('UPLOADE_FILE'))->move($path);
-	        if($info){ 
+	        if($info){
 	            $_result['ext']=$info->getExtension();
 	            $_result['file_name']=$info->getFilename();
 	            $_result['full_path']=$path. DS .$info->getFilename();
 	        }else{
 	            return $file->getError();
-	        }    
+	        }
 	    }
 	}
 
@@ -175,7 +183,7 @@ class Uploadify extends Base{
 			//文件保存地址
 			$path = ROOT_PATH . 'public' . DS . 'uploads'. DS . 'KindEditor'. DS .'file';
 		}
-		
+
 		//字体地址
 		$font = ROOT_PATH . 'public' . DS .'static'.DS .'fonts'. DS .'HYQingKongTiJ.ttf';
 		//Logo
@@ -216,7 +224,7 @@ class Uploadify extends Base{
 	    	}
         }else{
             return json(['error'=>1,'message'=>$file->getError(),'url'=>'']);
-        } 
+        }
 	}
 
 	/**
@@ -264,16 +272,16 @@ class Uploadify extends Base{
 		if(empty($src)){
 			return $flag;
 		}
-		
+
 		if(strpos($src,'.')!==true){
 			$src = ".".$src;
 		}
-		
+
 		$ii = explode('/', $src);
 
 		$ii[count($ii)-1]="m_".$ii[count($ii)-1];
 		$ii1 = implode('/', $ii);
-		
+
 		if(file_exists($src)){
 			if(!unlink("$src")){
 				$flag = false;
@@ -336,7 +344,7 @@ class Uploadify extends Base{
 	public function delImageAtlas($model,$where,$field='atlas'){
 		$flag =true;
         $a = $model->where($where)->find();
-		
+
         if(empty($a) || empty($a[$field])){
             return $flag;
         }

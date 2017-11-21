@@ -1,15 +1,16 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: jswei
- * Date: 2017/11/10
- * Time: 13:11
- */
+# @Author: 魏巍
+# @Date:   2017-11-16T17:42:05+08:00
+# @Email:  524314430@qq.com
+# @Last modified by:   jswei
+# @Last modified time: 2017-11-18T17:44:06+08:00
+
+
 
 namespace service;
 
-
-abstract class Enum {
+abstract class Enum
+{
     /**
      * Constant with default value for creating enum object
      */
@@ -24,7 +25,8 @@ abstract class Enum {
      * @param bool $includeDefault If true, default value is included into return
      * @return array Array with constant values
      */
-    public function getConstList($includeDefault = false) {
+    public function getConstList($includeDefault = false)
+    {
         $class = get_class($this);
         if (!array_key_exists($class, self::$constants)) {
             self::populateConstants();
@@ -42,7 +44,8 @@ abstract class Enum {
      * @param bool $strict If set to true, type and value must be equal
      * @throws UnexpectedValueException If value is not valid enum value
      */
-    public function __construct($initialValue = null, $strict = true) {
+    public function __construct($initialValue = null, $strict = true)
+    {
         $class = get_class($this);
         if (!array_key_exists($class, self::$constants)) {
             self::populateConstants();
@@ -57,7 +60,8 @@ abstract class Enum {
         $this->value = $initialValue;
         $this->strict = $strict;
     }
-    private function populateConstants() {
+    private function populateConstants()
+    {
         $class = get_class($this);
         $r = new ReflectionClass($class);
         $constants = $r->getConstants();
@@ -71,7 +75,8 @@ abstract class Enum {
      *
      * @return string String representation of this enum's value
      */
-    public function __toString() {
+    public function __toString()
+    {
         return (string) $this->value;
     }
     /**
@@ -81,7 +86,8 @@ abstract class Enum {
      *
      * @return bool True if enums are equal
      */
-    public function equals($object) {
+    public function equals($object)
+    {
         if (!($object instanceof Enum)) {
             return false;
         }

@@ -1,4 +1,12 @@
 <?php
+# @Author: 魏巍 <jswei>
+# @Date:   2017-11-16T17:42:05+08:00
+# @Email:  524314430@qq.com
+# @Last modified by:   jswei
+# @Last modified time: 2017-11-17T20:51:02+08:00
+
+
+
 /**
  * Created by PhpStorm.
  * User: 魏巍
@@ -61,7 +69,7 @@ class Guanliyuan extends Base{
 			$param['password'] = $this->_password($param['password']);
 			unset($param['comfrim_password']);
 		}
-        if($id){	
+        if($id){
             $param['dates']=time();
             if(!db('admin')->update($param)){
                 return ['status'=>0,'msg'=>'修改失败请重试'];
@@ -149,7 +157,7 @@ class Guanliyuan extends Base{
 		}
 		return ['status'=>0,'msg'=>'重置密码成功,重置后初始密码是:123456'];
 	}
-	
+
 	protected function _search($param=[]){
         $where=[];
         if(empty($param)){
@@ -174,7 +182,7 @@ class Guanliyuan extends Base{
         ]);
         return $where;
     }
-	
+
 	protected function _search1($param=[]){
         $where=[];
         if(empty($param)){
@@ -210,7 +218,7 @@ class Guanliyuan extends Base{
         $_result = $this->_status($id,'group',$type,'','quanxian');
         return $_result;
     }
-	
+
 	protected function _password($pwd){
 		return substr(md5($pwd),10,15);
 	}

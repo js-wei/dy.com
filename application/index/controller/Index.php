@@ -1,5 +1,14 @@
 <?php
+# @Author: 魏巍
+# @Date:   2017-11-16T17:42:05+08:00
+# @Email:  524314430@qq.com
+# @Last modified by:   魏巍
+# @Last modified time: 2017-11-18T17:37:05+08:00
+
+
+
 namespace app\index\controller;
+
 use service\Amap;
 use service\Around;
 use service\CoordType;
@@ -9,15 +18,19 @@ use service\Local;
 use service\Poi;
 use service\Table;
 
-class Index extends Base{
-    public function index($tpl=''){
+class Index extends Base
+{
+    public function index($tpl='')
+    {
         $tpl=$tpl?$tpl:'';
-	    return view($tpl);
+        return view($tpl);
     }
-    public function upload_head(){
+    public function upload_head()
+    {
         return view();
     }
-    public function lbs(){
+    public function lbs()
+    {
         $amap = new Amap();
         /*
         $table = new Table();
@@ -77,15 +90,17 @@ class Index extends Base{
 
 
 
-    public function login(){
+    public function login()
+    {
         return view();
     }
 
-    public function word2html(){
+    public function word2html()
+    {
         $path = ROOT_PATH .'public'.DS .'data'. DS  ;
         $phpWord = \PhpOffice\PhpWord\IOFactory::load($path .'我的测试文档.docx');
         $f = $path.'mydoc.html';
-        $phpWord->save($f,'HTML',false);
+        $phpWord->save($f, 'HTML', false);
     }
 
     /**
@@ -93,44 +108,46 @@ class Index extends Base{
      * @param $phone
      * @return bool
      */
-    public function check_phone($phone){
-        $i = db('member')->where('phone','eq',$phone)->count();
+    public function check_phone($phone)
+    {
+        $i = db('member')->where('phone', 'eq', $phone)->count();
         return $i?false:true;
     }
 
-    public function signup($phone='',$verify='',$password='',$confirm_password=''){
-        if(request()->IsGet()){
+    public function signup($phone='', $verify='', $password='', $confirm_password='')
+    {
+        if (request()->IsGet()) {
             return view();
         }
 
-        if(empty($phone)){
+        if (empty($phone)) {
             return json([
                 'status'=>0,
                 'msg'=>'请输入手机号'
             ]);
         }
-        if(empty($verify)){
+        if (empty($verify)) {
             return json([
                 'status'=>0,
                 'msg'=>'请输入验证码'
             ]);
         }
-        if(empty($password)){
+        if (empty($password)) {
             return json([
                 'status'=>0,
                 'msg'=>'请输入密码'
             ]);
         }
-        if(empty($confirm_password)){
+        if (empty($confirm_password)) {
             return json([
                 'status'=>0,
                 'msg'=>'请输入确认密码'
             ]);
         }
-        if($verify!=cookie($verify.'_session_code')){
+        if ($verify!=cookie($verify.'_session_code')) {
             return json(['status'=>0,'msg'=>'验证码错误']);
         }
-        if($confirm_password!=$password){
+        if ($confirm_password!=$password) {
             return json([
                 'status'=>0,
                 'msg'=>'输入的密码不一致'
@@ -141,9 +158,9 @@ class Index extends Base{
         $param['type']=1;
         unset($param['confirm_password']);
         unset($param['verify']);
-        $param['password'] = substr(md5($password),10,15);
+        $param['password'] = substr(md5($password), 10, 15);
 
-        if(!db('member')->insert($param)){
+        if (!db('member')->insert($param)) {
             return json([
                 'status'=>0,
                 'msg'=>'抱歉注册失败,请稍后再试'

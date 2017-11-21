@@ -1,16 +1,20 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: jswei30
- * Date: 2017/9/15
- * Time: 15:24
- */
+# @Author: 魏巍
+# @Date:   2017-11-16T17:42:05+08:00
+# @Email:  jswei30@gmail.com
+# @Filename: Word.php
+# @Last modified by:   魏巍
+# @Last modified time: 2017-11-20T12:38:38+08:00
+
+
 namespace  app\common\controller;
+
 use PhpOffice\PhpWord\Settings;
 
-class Word{
-
-    protected function _initialize(){
+class Word
+{
+    protected function _initialize()
+    {
         date_default_timezone_set('UTC');
         error_reporting(E_ALL);
         define('CLI', (PHP_SAPI == 'cli') ? true : false);
@@ -49,38 +53,39 @@ class Word{
             closedir($handle);
         }
     }
-/**
- * Write documents
- *
- * @param \PhpOffice\PhpWord\PhpWord $phpWord
- * @param string $filename
- * @param array $writers
- *
- * @return string
- */
-function write($phpWord, $filename, $writers)
-{
-    $result = '';
+    /**
+     * Write documents
+     *
+     * @param \PhpOffice\PhpWord\PhpWord $phpWord
+     * @param string $filename
+     * @param array $writers
+     *
+     * @return string
+     */
+    public function write($phpWord, $filename, $writers)
+    {
+        $result = '';
 
-    // Write documents
-    foreach ($writers as $format => $extension) {
-        $result .= date('H:i:s') . " Write to {$format} format";
-        if (null !== $extension) {
-            $targetFile = __DIR__ . "/results/{$filename}.{$extension}";
-            $phpWord->save($targetFile, $format);
-        } else {
-            $result .= ' ... NOT DONE!';
+        // Write documents
+        foreach ($writers as $format => $extension) {
+            $result .= date('H:i:s') . " Write to {$format} format";
+            if (null !== $extension) {
+                $targetFile = __DIR__ . "/results/{$filename}.{$extension}";
+                $phpWord->save($targetFile, $format);
+            } else {
+                $result .= ' ... NOT DONE!';
+            }
+            $result .= EOL;
         }
-        $result .= EOL;
+
+        $result .= getEndingNotes($writers);
+
+        return $result;
     }
 
-    $result .= getEndingNotes($writers);
-
-    return $result;
-}
-
-public function html(){
-    $html = <<<EOT
+    public function html()
+    {
+        $html = <<<EOT
 <title>{$this->pageTitle}</title>
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -125,46 +130,46 @@ public function html(){
 </html>
 EOT;
 
-    return $html;
-}
-
-/**
- * Get ending notes
- *
- * @param array $writers
- *
- * @return string
- */
-function getEndingNotes($writers)
-{
-    $result = '';
-
-    // Do not show execution time for index
-    if (!IS_INDEX) {
-        $result .= date('H:i:s') . " Done writing file(s)" . EOL;
-        $result .= date('H:i:s') . " Peak memory usage: " . (memory_get_peak_usage(true) / 1024 / 1024) . " MB" . EOL;
+        return $html;
     }
 
-    // Return
-    if (CLI) {
-        $result .= 'The results are stored in the "results" subdirectory.' . EOL;
-    } else {
+    /**
+     * Get ending notes
+     *
+     * @param array $writers
+     *
+     * @return string
+     */
+    public function getEndingNotes($writers)
+    {
+        $result = '';
+
+        // Do not show execution time for index
         if (!IS_INDEX) {
-            $types = array_values($writers);
-            $result .= '<p>&nbsp;</p>';
-            $result .= '<p>Results: ';
-            foreach ($types as $type) {
-                if (!is_null($type)) {
-                    $resultFile = 'results/' . SCRIPT_FILENAME . '.' . $type;
-                    if (file_exists($resultFile)) {
-                        $result .= "<a href='{$resultFile}' class='btn btn-primary'>{$type}</a> ";
+            $result .= date('H:i:s') . " Done writing file(s)" . EOL;
+            $result .= date('H:i:s') . " Peak memory usage: " . (memory_get_peak_usage(true) / 1024 / 1024) . " MB" . EOL;
+        }
+
+        // Return
+        if (CLI) {
+            $result .= 'The results are stored in the "results" subdirectory.' . EOL;
+        } else {
+            if (!IS_INDEX) {
+                $types = array_values($writers);
+                $result .= '<p>&nbsp;</p>';
+                $result .= '<p>Results: ';
+                foreach ($types as $type) {
+                    if (!is_null($type)) {
+                        $resultFile = 'results/' . SCRIPT_FILENAME . '.' . $type;
+                        if (file_exists($resultFile)) {
+                            $result .= "<a href='{$resultFile}' class='btn btn-primary'>{$type}</a> ";
+                        }
                     }
                 }
+                $result .= '</p>';
             }
-            $result .= '</p>';
         }
-    }
 
-    return $result;
-}
+        return $result;
+    }
 }

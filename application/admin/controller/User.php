@@ -1,9 +1,17 @@
 <?php
+# @Author: 魏巍 <jswei>
+# @Date:   2017-11-16T17:42:05+08:00
+# @Email:  524314430@qq.com
+# @Last modified by:   jswei
+# @Last modified time: 2017-11-17T20:52:23+08:00
+
+
+
 namespace app\admin\controller;
 use think\Controller;
 
 class User extends Controller {
-	
+
 	public function login(){
 		return view();
 	}
@@ -16,11 +24,11 @@ class User extends Controller {
 	 * @return [type]                   [登录信息]
 	 */
 	public function login_handler($username='',$password='',$verify=''){
-		
+
 		if(!captcha_check($verify)){
 		 	return array('status'=>0,'msg'=>'请填写正确的验证码');
 		}
-		
+
 		$pwd = substr(input('password','','MD5'),10,15);
 		$username=strtolower(input('username'));
 		$admin=db("admin")->where(array('username'=>$username))->find();
@@ -38,7 +46,7 @@ class User extends Controller {
 		if($admin['status']==1){
 			return array('status'=>0,'msg'=>'账号已锁定，请联系管理员');
 		}
-        
+
         //更新登录信息
 		$data=[
 			'id'=>$admin['id'],

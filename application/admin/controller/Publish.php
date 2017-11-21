@@ -1,9 +1,17 @@
 <?php
+# @Author: 魏巍 <jswei>
+# @Date:   2017-11-16T17:42:05+08:00
+# @Email:  524314430@qq.com
+# @Last modified by:   jswei
+# @Last modified time: 2017-11-17T20:51:57+08:00
+
+
+
 namespace app\admin\controller;
 use think\Controller;
 
 class Publish extends Base {
-	
+
 	public function index(){
 		$admin = db('admin')->field('gid,username,status,last_date,last_ip')->find(session('_id'));
 		$power = db('group')->find($admin['gid']);
@@ -12,7 +20,7 @@ class Publish extends Base {
 		$this->assign('power',$power);
 		return view();
 	}
-	
+
 	public function exchange(){
 		return view();
 	}
@@ -66,11 +74,11 @@ class Publish extends Base {
 	 * @return [type]                   [登录信息]
 	 */
 	public function login_handler($username='',$password='',$verify=''){
-		
+
 //		if(!captcha_check($verify)){
 //		 	return array('status'=>0,'msg'=>'请填写正确的验证码');
 //		}
-		
+
 		$pwd = substr(input('password','','MD5'),10,15);
 		$username=strtolower(input('username'));
 		$admin=db("admin")->where(array('username'=>$username))->find();
@@ -88,7 +96,7 @@ class Publish extends Base {
 		if($admin['status']==1){
 			return array('status'=>0,'msg'=>'账号已锁定，请联系管理员');
 		}
-        
+
         //更新登录信息
 		$data=[
 			'id'=>$admin['id'],
@@ -99,7 +107,7 @@ class Publish extends Base {
 		if(!db('admin')->update($data)){
 			return array('status'=>0,'msg'=>'登录失败请重试');
 		}
-		
+
 		//保存登录状态
 		session('_id',$admin['id']);
 		session('_gid',$admin['gid']);
@@ -110,7 +118,7 @@ class Publish extends Base {
 	}
 
 	public function profile(){
-		
+
 		return view();
 	}
 

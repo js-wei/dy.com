@@ -1,4 +1,5 @@
 <?php
+<<<<<<< HEAD
 namespace app\admin\controller;
 
 class Shanghu extends Base{
@@ -17,12 +18,44 @@ class Shanghu extends Base{
             ->where($where)
             ->order('date desc')
             ->paginate(15,false,[
+=======
+# @Author: 魏巍 <jswei>
+# @Date:   2017-11-16T17:42:05+08:00
+# @Email:  524314430@qq.com
+# @Last modified by:   魏巍
+# @Last modified time: 2017-11-19T15:18:21+08:00
+
+
+
+namespace app\admin\controller;
+
+class Shanghu extends Base
+{
+    protected function _initialize()
+    {
+        parent::_initialize();
+    }
+
+    public function index()
+    {
+        $model = [
+            'name'=>$this->current
+        ];
+        $where=[];
+        $search = $this->_search();
+        $where = array_merge($where, $search);
+        $list = db('seller')
+            ->where($where)
+            ->order('date desc')
+            ->paginate(15, false, [
+>>>>>>> 19036e92e85ade35ad278ccb99e0880219a90a40
             'query'=>[
                 'title'=>input('s_keywords'),
                 "date"=>input('s_date'),
                 "status"=>input('s_status')
             ]
         ]);
+<<<<<<< HEAD
 		// 查询状态为1的用户数据 并且每页显示10条数据
 		$count = db('seller')->count('*');
 		$this->assign('count',$count);
@@ -340,15 +373,84 @@ class Shanghu extends Base{
         }
         if(!empty($param['s_date'])){
             $date = explode('-',$param['s_date']);
+=======
+        // 查询状态为1的用户数据 并且每页显示10条数据
+        $count = db('seller')->count('*');
+        $this->assign('count', $count);
+        $this->assign('model', $model);
+        $this->assign('list', $list);
+        return view();
+    }
+
+    /**
+     * [add 条件]
+     * @param integer $id [添加的id]
+     */
+    public function add($id=0)
+    {
+        $model = [
+            'name'=>$this->current
+        ];
+        $c = [];
+        if ($id) {
+            $vo = db('provinces')->field('date', true)->find($id);
+            $c = db('cities')->field('dates', true)->where('provinceid', 'eq', $vo['provinceid'])->select();
+            $this->assign('info', $vo);
+        }
+        $this->assign('c', $c);
+        $this->assign('model', $model);
+        return view();
+    }
+
+    /**
+     * [status 状态操作]
+     * @param  [type] $id [修改id]
+     * @param  [type] $type  [操作类型]
+     * @return [type]     [description]
+     */
+    public function status($id, $type)
+    {
+        $type = ($type=="delete-all")?"delete":$type;
+        $_result = $this->_status($id, 'seller', $type, '');
+        return $_result;
+    }
+    /**
+     * [_search 搜索条件]
+     * @param  array  $param [description]
+     * @return [type]        [description]
+     */
+    protected function _search($param=[])
+    {
+        $where=[];
+        if (empty($param)) {
+            $param = request()->param();
+        }
+        if (!empty($param['s_keywords'])) {
+            $where['title|owner']=['like',"%".$param['s_keywords']."%"];
+        }
+        if (!empty($param['s_status'])) {
+            $where['status']=$param['s_status']>-1?$param['s_status']:'';
+        }
+        if (!empty($param['s_date'])) {
+            $date = explode('-', $param['s_date']);
+>>>>>>> 19036e92e85ade35ad278ccb99e0880219a90a40
             $date[1] = "$date[1] 24:00";
             $where['date']=['between',[strtotime($date[0]),strtotime($date[1])]];
         }
 
+<<<<<<< HEAD
         $this->assign('search',[
+=======
+        $this->assign('search', [
+>>>>>>> 19036e92e85ade35ad278ccb99e0880219a90a40
             's_keywords'=>!empty($param['s_keywords'])?$param['s_keywords']:'',
             's_date'=>!empty($param['s_date'])?$param['s_date']:'',
             's_status'=>!empty($param['s_status'])?$param['s_status']:-1
         ]);
         return $where;
     }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 19036e92e85ade35ad278ccb99e0880219a90a40

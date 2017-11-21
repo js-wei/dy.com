@@ -1,20 +1,28 @@
 <?php
+# @Author: 魏巍 <jswei>
+# @Date:   2017-11-16T17:42:05+08:00
+# @Email:  524314430@qq.com
+# @Last modified by:   jswei
+# @Last modified time: 2017-11-17T20:50:47+08:00
+
+
+
 namespace app\admin\controller;
 use think\Controller;
 use think\Session;
 
 class Base extends Controller{
-	
+
 	protected function _initialize(){
 		header('Content-type:text/html;charset=utf-8;');
 		set_time_limit(0);
-      
+
 		//常用变量
 		$this->action = request()->action();
 		$this->controller = request()->controller();
 		$this->module = request()->module();
  		//判断是否登录
-		$this->check_priv(); 
+		$this->check_priv();
 		//获取功能导航
 		$nav = $this->auth_list();
 
@@ -34,7 +42,7 @@ class Base extends Controller{
 		$ctr = db('model')->where(['title'=>$this->controller])->find();
         $act = db('model')->where(['title'=>$this->action,'fid'=>$ctr['id']])->find();
         $this->current=$act['name'];
-	
+
 		//$nav = array_merge($nav,$col);
         $this->_msg();
 		//输出导航
@@ -72,7 +80,7 @@ class Base extends Controller{
         $gid  = session('_gid');
         $this->assign('gid',$gid);
         $nav=[];
-		
+
         if($gid!=-1 && !empty($gid)){
 			$_group = db('group')->field('id,title,power')->find($gid);
             $model = db('model')
@@ -127,7 +135,7 @@ class Base extends Controller{
         $where['id']=array('in',$id);
         $redirect = $redirect?$redirect:Url('index');   //跳转地址
         $m = db($model);
-		
+
         switch($t){
             case 'enable':            //启用
                 $result = $m->where($where)->update(array('status'=>0));
@@ -148,7 +156,7 @@ class Base extends Controller{
                 $upload = new Uploadify();
                 $flag =true;
                 if(!empty($img)){
-                    $flag =  $upload->delmgByWhere1($m,$where,$img) && $upload->delArticleImage($m,$where,'content') 
+                    $flag =  $upload->delmgByWhere1($m,$where,$img) && $upload->delArticleImage($m,$where,'content')
                     		&& $upload->delImageAtlas($m, $where);
                 }
                 if($flag){
@@ -230,7 +238,7 @@ class Base extends Controller{
 	/**
      * [makeAttr 重置文章属性]
      * @param  [array] $resetAttr 重置的属性
-     * @return [array] 返回重置的属性	
+     * @return [array] 返回重置的属性
      */
     protected function makeAttr($resetAttr){
     	$attr=array('com'=>0,'new'=>0,'head'=>0,'top'=>0,'img'=>0,'hot'=>0);
