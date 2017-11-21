@@ -1,4 +1,12 @@
 <?php
+# @Author: 魏巍 <jswei>
+# @Date:   2017-07-31T16:54:43+08:00
+# @Email:  524314430@qq.com
+# @Last modified by:   jswei
+# @Last modified time: 2017-11-21T16:41:44+08:00
+
+
+
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
@@ -10,7 +18,7 @@
 // +----------------------------------------------------------------------
 
 return [
-	'app_debug'              => true,
+    'app_debug'              => true,
     // 默认模块名
     'default_module'        => 'index',
     // 默认控制器名
@@ -19,18 +27,18 @@ return [
     'default_action'        => 'index',
     'captcha'  => [
         // 验证码字符集合
-        'codeSet'  => '2345678abcdefhijkmnpqrstuvwxyzABCDEFGHJKLMNPQRTUVWXY', 
+        'codeSet'  => '2345678abcdefhijkmnpqrstuvwxyzABCDEFGHJKLMNPQRTUVWXY',
         // 验证码字体大小(px)
-        'fontSize' => 25, 
+        'fontSize' => 25,
         // 是否画混淆曲线
-        'useCurve' => false, 
+        'useCurve' => false,
          // 验证码图片高度
         'imageH'   => 50,
         // 验证码图片宽度
-        'imageW'   => 220, 
+        'imageW'   => 220,
         // 验证码位数
-        'length'   => 5, 
-        // 验证成功后是否重置        
+        'length'   => 5,
+        // 验证成功后是否重置
         'reset'    => true
     ],
     'session'                => [
@@ -49,7 +57,7 @@ return [
     'template'      => [
         // 模板引擎
         'type'   => 'think',
-        //标签库标签开始标签 
+        //标签库标签开始标签
         'taglib_begin'  =>  '<',
         //标签库标签结束标记
         'taglib_end'    =>  '>',
@@ -57,7 +65,7 @@ return [
         //'taglib_pre_load'     => 'app\common\taglib\Article',
         'taglib_build_in'    =>    'cx,app\common\taglib\Article',
     ],
-	'THINK_EMAIL'=>[       //邮件发送
+    'THINK_EMAIL'=>[       //邮件发送
         'SMTP_HOST'=>'smtp.163.com',
         'SMTP_PORT'=>25,
         'SMTP_USER'=>'jswei30@163.com',
@@ -66,7 +74,7 @@ return [
         'FROM_NAME'=>'官方邮件',
         'REPLY_EMAIL'=>'',
         'REPLY_NAME'=>''
-	],
+    ],
     //云之讯短信接口
     'Ucpaas'=>[
         'accountSid'=>'73ba580fb6aae884362e1ac7c9fc46b2',
@@ -77,8 +85,14 @@ return [
         'KEY'=>'5c34d8399b8beffa18d9b98731385bf3',
         'SECRET'=>'b2a743e44f477fef25fca9596f193402'
     ],
-	'UPLOAD'=>[
-		'UPLOAD_PATH'=>ROOT_PATH . 'public' . DS.'uploads',
+    'GeTui'=>[
+        'AppID'=>'gOgGqTwgRh7vHyFk0r4yIA',
+        'AppSecret'=>'zlNnaU8SYd9VLuQJ2RNBY7',
+        'AppKey'=>'BhwmxGZyBU9EzbKxYXfuE7',
+        'MasterSecret'=>'ZYaWeKKGAL8Y8vTrwiYf9A'
+    ],
+    'UPLOAD'=>[
+        'UPLOAD_PATH'=>ROOT_PATH . 'public' . DS.'uploads',
         'UPLOAD_IMAGE'=>[
             'size'=>1024*1024*5,        //5M最大
             'ext'=>'jpg,png,gif,bmp,webp'
@@ -91,7 +105,7 @@ return [
             'size'=>1024*1024*8,        //8M最大
             'ext'=>'jpg,png,gif,txt,zip,rar,tar,xls,pdf,doc,docx,xlsx'
         ],
-	],
+    ],
     'ENCRYPT_KEY'=>'THINK',         //加密key
     'LOG_PATH'=>'/log',
 ];

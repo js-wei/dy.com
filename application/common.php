@@ -1,21 +1,15 @@
 <?php
-# @Author: 魏巍
-# @Date:   2017-11-16T17:42:05+08:00
+# @Author: 魏巍 <jswei>
+# @Date:   2017-07-31T16:54:43+08:00
 # @Email:  524314430@qq.com
-# @Last modified by:   魏巍
-# @Last modified time: 2017-11-18T17:39:09+08:00
+# @Last modified by:   jswei
+# @Last modified time: 2017-11-21T15:06:32+08:00
 
-
-
-// +----------------------------------------------------------------------
-// | ThinkPHP [ WE CAN DO IT JUST THINK ]
-// +----------------------------------------------------------------------
-// | Copyright (c) 2006-2016 http://thinkphp.cn All rights reserved.
-// +----------------------------------------------------------------------
-// | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
-// +----------------------------------------------------------------------
-// | Author: 流年 <liu21st@gmail.com>
-// +----------------------------------------------------------------------
+function timestamp()
+{
+    list($t1, $t2) = explode(' ', microtime());
+    return (float)sprintf('%.0f', (floatval($t1)+floatval($t2))*1000);
+}
 
 /**
  * 实时图片

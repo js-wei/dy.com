@@ -68,19 +68,9 @@ class Income extends Base{
             ->field('a.ordid,a.ordtitle,a.ordprice,a.ordfee,a.ordstatus,a.ordbuynum,a.ordtime,a.finishtime,b.divides')
             ->order('ordtime desc')
             ->select();
-<<<<<<< HEAD
 		if(empty($list)){
 			 return array('status'=>0,'msg'=>'没有需要导出的数据');
 		}
-=======
-<<<<<<< HEAD
-		if(empty($list)){
-			 return array('status'=>0,'msg'=>'没有需要导出的数据');
-		}
-=======
-
->>>>>>> b7b7ce70e46143263b0990a44b58872ca586abc9
->>>>>>> 9040bfc163dd1d8eb6cb9190074ba0adade850b6
         $divides=0;
         foreach ($list as $k=>$v){
             $list[$k]['ordtime']=date('Y-m-d H:i:s',$v['ordtime']);
@@ -104,15 +94,7 @@ class Income extends Base{
             if(!empty($list)){
                 return array('status'=>1,'msg'=>'有导出数据','redirect'=>Url('export')."?time={$time}&user={$user}");
             }else{
-<<<<<<< HEAD
                 return array('status'=>0,'msg'=>'没有需要导出的数据');
-=======
-<<<<<<< HEAD
-                return array('status'=>0,'msg'=>'没有需要导出的数据');
-=======
-                return array('status'=>0,'msg'=>'导出数据');
->>>>>>> b7b7ce70e46143263b0990a44b58872ca586abc9
->>>>>>> 9040bfc163dd1d8eb6cb9190074ba0adade850b6
             }
         }else{
 

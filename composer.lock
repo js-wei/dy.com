@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "9409f3ec2b23d300f5b7698047924052",
+    "content-hash": "e624e45d40ee5c4e6e38d1e0ad53fc2b",
     "packages": [
         {
             "name": "curl/curl",
@@ -1396,6 +1396,45 @@
                 "pdftotext"
             ],
             "time": "2015-09-01T00:54:02+00:00"
+        },
+        {
+            "name": "wy0727/getui",
+            "version": "v0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/wy0727/getui.git",
+                "reference": "46a67e900667bf24c4c2ed3f1d1a7995850aa0c6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://files.phpcomposer.com/files/wy0727/getui/46a67e900667bf24c4c2ed3f1d1a7995850aa0c6.zip",
+                "reference": "46a67e900667bf24c4c2ed3f1d1a7995850aa0c6",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.5.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "getuisdk\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "authors": [
+                {
+                    "name": "wangxuyin",
+                    "email": "wangxuyin@wangxuyin.cn"
+                }
+            ],
+            "description": "GetuiSDK,PSR-4 Autoloader support!",
+            "keywords": [
+                "GeTui",
+                "getui-laravel",
+                "getui-sdk",
+                "getuisdk"
+            ],
+            "time": "2016-01-20T15:18:40+00:00"
         },
         {
             "name": "zendframework/zend-escaper",

@@ -17,7 +17,7 @@ class Amap
         'table'=>'http://yuntuapi.amap.com/datamanage/table',
         'data'=>'http://yuntuapi.amap.com/datamanage/data',
         'around'=>'http://yuntuapi.amap.com/nearby/around',
-        'datasearch'=>'http://yuntuapi.amap.com/datasearch'
+        'local'=>'http://yuntuapi.amap.com/datasearch'
     ];
 
     public function __construct($key='')
@@ -78,37 +78,12 @@ class Amap
      * @param Around $data
      * @return bool|mixed
      */
-<<<<<<< HEAD
-    public function around($data){
-        $_data = $data->get_query_data();
-        return $this->http("{$this->url['datasearch']}/around",$_data,'get');
-=======
     public function around($data)
     {
         $data = $data->get_array_data();
         return $this->http("{$this->url['around']}", $data, 'get');
->>>>>>> 19036e92e85ade35ad278ccb99e0880219a90a40
     }
 
-    /**
-     * 获取本地位置信息
-     * @param Local $local
-     * @return mixed
-     */
-    public function get_location_pois($local){
-        $data = $local->get_array_data();
-        return $this->http("{$this->url['datasearch']}/local",$data,'get');
-    }
-
-    /**
-     * 查询详情
-     * @param DetailPoi $poi
-     * @return mixed
-     */
-    public function detail_poi($poi){
-        $data = $poi->get_array_data();
-        return $this->http("{$this->url['datasearch']}/id",$data,'get');
-    }
     /**
      * 请求数据
      * @param string $api
@@ -135,27 +110,14 @@ class Amap
         if (is_object($data)) {
             $data = json_decode(json_encode($data), true);
         }
-<<<<<<< HEAD
-        //$data['sin']=$sig?$sig:'';
-=======
->>>>>>> 19036e92e85ade35ad278ccb99e0880219a90a40
         $curl = new \Curl\Curl();
         $response = $curl->$method($api, $data);
         return json_decode($response->response, true);
     }
 }
 
-<<<<<<< HEAD
-/**
- * 数据表
- * Class Table
- * @package service
- */
-class Table{
-=======
 class Table
 {
->>>>>>> 19036e92e85ade35ad278ccb99e0880219a90a40
     public $key;
     public $name;
     private $flag=true;
@@ -209,17 +171,8 @@ class Table
     }
 }
 
-<<<<<<< HEAD
-/**
- * 插入数据
- * Class Data
- * @package service
- */
-class Data{
-=======
 class Data
 {
->>>>>>> 19036e92e85ade35ad278ccb99e0880219a90a40
     public $key;
     public $tableid;
     /**
@@ -266,23 +219,8 @@ class Data
     }
 }
 
-<<<<<<< HEAD
-/**
- * 位置信息表
- * Class Poi
- * @package service
- */
-class Poi{
-=======
 class Poi
 {
->>>>>>> 19036e92e85ade35ad278ccb99e0880219a90a40
-    /**
-     * @var int 主键
-     */
-    public $_id=0;
-    public $tableid;
-    public $key;
     /**
      * @var string
      */
@@ -371,77 +309,6 @@ class Poi
     }
 }
 
-<<<<<<< HEAD
-/**
- * 查询POi详情
- * Class DetailPoi
- * @package service
- */
-class DetailPoi extends Serializable {
-    /**
-     * @var int 主键
-     */
-    public $_id=0;
-    public $tableid;
-    public $key;
-
-    private $flag=true;
-    private $msg;
-
-    public function __construct($key=''){
-        if($key){
-            $this->key = $key;
-        }else{
-            $this->key = config('AMAP.KEY');
-        }
-    }
-
-    public function get_query_data(){
-        $data = json_decode(json_encode($this),true);
-        $this->is_check();
-        if(!$this->flag){
-            return $this->msg;
-        }
-        return $data;
-    }
-    /**
-     * 验证数据完整性
-     */
-    private function is_check(){
-        if(!$this->key){
-            $this->flag=false;
-            $this->msg=[
-                'code'=>801,
-                'massage'=>'缺少参数key'
-            ];
-            return;
-        }
-        if(!$this->tableid){
-            $this->flag=false;
-            $this->msg=[
-                'code'=>802,
-                'massage'=>'缺少参数tableid'
-            ];
-            return;
-        }
-        if(!$this->_id){
-            $this->flag=false;
-            $this->msg=[
-                'code'=>803,
-                'massage'=>'缺少参数id'
-            ];
-            return;
-        }
-    }
-}
-
-/**
- * 本地搜索类
- * Class Local
- * @package service
- */
-class Local extends Serializable{
-=======
 class Serializable
 {
     public function get_array_data()
@@ -456,16 +323,14 @@ class Serializable
 
 class Local extends Serializable
 {
->>>>>>> 19036e92e85ade35ad278ccb99e0880219a90a40
     public $key;
     public $tableid;
+    public $keywords;
+    public $city;
+    public $filter;
+    public $sortrule;
     public $limit=20;
     public $page=1;
-
-    public $keywords=' ';
-    public $city = '全国';
-    public $filter;
-    public $sortrule='_weight:0';
 
     private $flag=false;
     private $msg;
@@ -480,45 +345,11 @@ class Local extends Serializable
     }
 
     /**
-     * 获取请求数据
-     * @return array
-     */
-    public function get_query_data(){
-        $this->is_check();
-        if(!$this->flag){
-            exit(json_encode($this->msg));
-        }
-        $data = $this->get_array_data();
-        ksort($data);
-        return $data;
-    }
-
-    /**
-     * 设置过滤参数
-     * @param array $filter
-     */
-    public function set_filters($filter=[]){
-        $_filter='';
-        if($filter){
-            foreach ($filter as $k=>$v){
-                $_filter.= "+".$k.'='.$v;
-            }
-            $_filter = substr($_filter,1);
-        }
-        $this->filter = $_filter;
-    }
-
-    /**
      * 验证数据完整性
      */
-<<<<<<< HEAD
-    private function is_check(){
-        if(!$this->key){
-=======
     public function is_check()
     {
         if (!$this->key) {
->>>>>>> 19036e92e85ade35ad278ccb99e0880219a90a40
             $this->flag=false;
             $this->msg=[
                 'code'=>801,
@@ -553,6 +384,7 @@ class Local extends Serializable
     }
 }
 
+
 /**
  * 周边类
  * Class Around
@@ -561,16 +393,14 @@ class Local extends Serializable
 class Around extends Serializable
 {
     public $key;
-    public $tableid;
-    public $keywords=' ';
     /**
-     * @var string
+     * @var
      */
     public $center;
     /**
      * @var int
      */
-    public $radius=3000;
+    public $radius=1000;
     /**
      * @var double
      */
@@ -580,19 +410,15 @@ class Around extends Serializable
      */
     public $limit=30;
     /**
-     * @var array
+     * @var SearchType
      */
-    public $filter;
-    /**
-     * @var string
-     */
-    public $sortrule='_ weight:0';
+    public $searchtype=SearchType::line;
     /**
      * @var int
      */
-    public $page=1;
+    public $timerange=1800;
 
-    private $flag=true;
+    private $flag=false;
     private $msg;
 
     public function __construct($key='')
@@ -605,120 +431,30 @@ class Around extends Serializable
     }
 
     /**
-<<<<<<< HEAD
-     * 设置过滤参数
-     * @param array $filter
-     */
-    public function set_filters($filter=[]){
-        $_filter='';
-        if($filter){
-            foreach ($filter as $k=>$v){
-                $_filter.= "+".$k.'='.$v;
-            }
-            $_filter = substr($_filter,1);
-        }
-        $this->filter = $_filter;
-    }
-
-    public function get_query_data(){
-        $this->is_valid();
-        if(!$this->flag){
-          exit(json_encode($this->msg));
-        }else{
-            $data = $this->get_array_data();
-            ksort($data);
-            return $data;
-        }
-    }
-
-    /**
-     * 验证时间完整性
-     * @return bool|void
-     */
-    private function is_valid(){
-        if(!$this->key){
-=======
      * 验证完整性
      * @return bool|void
      */
     public function is_valid()
     {
         if (!$this->key) {
->>>>>>> 19036e92e85ade35ad278ccb99e0880219a90a40
             $this->flag=false;
             $this->msg=[
                 'code'=>801,
                 'massage'=>'缺少参数key'
             ];
         }
-<<<<<<< HEAD
-        if(!$this->tableid){
-            $this->flag=false;
-            $this->msg=[
-                'code'=>802,
-                'massage'=>'缺少参数tableid'
-            ];
-            return;
-        }
-        if(!$this->keywords){
-            $this->flag=false;
-            $this->msg=[
-                'code'=>803,
-                'massage'=>'缺少参数keywords'
-            ];
-            return;
-        }
-        if(!$this->center){
-=======
         if (!$this->center) {
->>>>>>> 19036e92e85ade35ad278ccb99e0880219a90a40
             $this->flag=false;
             $this->msg=[
                 'code'=>804,
                 'massage'=>'缺少参数center'
             ];
         }
-<<<<<<< HEAD
-
-    }
-}
-
-
-/**
- * Class Serializable
- * @package service
- */
-class Serializable{
-    public function get_array_data(){
-        return json_decode(json_encode($this),true);
-    }
-    public function get_json_data(){
-        return json_encode($this);
-=======
         return !$this->flag?$this->msg:true;
->>>>>>> 19036e92e85ade35ad278ccb99e0880219a90a40
     }
 }
 
 
-<<<<<<< HEAD
-/**
- * Class LocType
- * @package service
- */
-class LocType extends Enum {
-     const lat2log = 1;
-     const address = 2;
-     const __default = self::lat2log;
-}
-
-/**
- *
- * Class CoordType
- * @package service
- */
-class CoordType extends Enum{
-=======
 class LocType extends Enum
 {
     const lat2log = 1;
@@ -728,7 +464,6 @@ class LocType extends Enum
 
 class CoordType extends Enum
 {
->>>>>>> 19036e92e85ade35ad278ccb99e0880219a90a40
     const gps = 1;
     const autonavi = 2;
     const baidu=3;

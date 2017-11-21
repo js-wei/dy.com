@@ -2,8 +2,8 @@
 # @Author: 魏巍
 # @Date:   2017-11-16T17:42:05+08:00
 # @Email:  524314430@qq.com
-# @Last modified by:   魏巍
-# @Last modified time: 2017-11-18T17:37:05+08:00
+# @Last modified by:   jswei
+# @Last modified time: 2017-11-21T16:42:39+08:00
 
 
 
@@ -88,7 +88,12 @@ class Index extends Base
         return $result;
     }
 
-
+    public function getui()
+    {
+        $g = new \service\GeTui();
+        $g->setClientID('0b056f0b02b629a0e3a809f1bf504fb2');
+        $g->push_single('双十二大酬宾一律八折', '为了迎接双十二现在进行大酬宾活动，在本店消费的用户一律享受八折优惠');
+    }
 
     public function login()
     {
