@@ -2,8 +2,8 @@
 # @Author: 魏巍 <jswei>
 # @Date:   2017-07-31T16:54:43+08:00
 # @Email:  524314430@qq.com
-# @Last modified by:   jswei
-# @Last modified time: 2017-11-21T16:41:44+08:00
+# @Last modified by:   魏巍
+# @Last modified time: 2017-11-22T11:49:58+08:00
 
 
 
@@ -89,7 +89,8 @@ return [
         'AppID'=>'gOgGqTwgRh7vHyFk0r4yIA',
         'AppSecret'=>'zlNnaU8SYd9VLuQJ2RNBY7',
         'AppKey'=>'BhwmxGZyBU9EzbKxYXfuE7',
-        'MasterSecret'=>'ZYaWeKKGAL8Y8vTrwiYf9A'
+        'MasterSecret'=>'ZYaWeKKGAL8Y8vTrwiYf9A',
+        'ClientID'=>'0b056f0b02b629a0e3a809f1bf504fb2'
     ],
     'UPLOAD'=>[
         'UPLOAD_PATH'=>ROOT_PATH . 'public' . DS.'uploads',

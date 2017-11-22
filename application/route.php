@@ -2,8 +2,8 @@
 # @Author: 魏巍
 # @Date:   2017-11-16T17:42:05+08:00
 # @Email:  524314430@qq.com
-# @Last modified by:   jswei
-# @Last modified time: 2017-11-21T15:58:44+08:00
+# @Last modified by:   魏巍
+# @Last modified time: 2017-11-22T16:05:05+08:00
 
 use think\Route;
 
@@ -36,3 +36,5 @@ Route::rule('api/upgrade_head', 'index/api/upgrade_head');
 Route::rule('api/upgrade_phone', 'index/api/upgrade_phone');
 Route::rule('api/upgrade_email', 'index/api/upgrade_email');
 Route::rule('api/set_hobbise', 'index/api/set_hobbise');
+Route::rule('api/push_app', 'index/api/push_app');
+Route::rule('api/push_recive', 'index/api/push_recive');

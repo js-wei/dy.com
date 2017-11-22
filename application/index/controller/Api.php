@@ -3,8 +3,8 @@
 # @Date:   2017-11-16T17:42:05+08:00
 # @Email:  jswei30@gmail.com
 # @Filename: Api.php  开发接口
-# @Last modified by:   jswei
-# @Last modified time: 2017-11-21T15:57:34+08:00
+# @Last modified by:   魏巍
+# @Last modified time: 2017-11-22T16:23:55+08:00
 
 namespace app\index\controller;
 
@@ -336,7 +336,38 @@ class Api extends Base
             return ['status'=>0,'msg'=>'验证下发失败'];
         }
     }
-
+    /**
+     * [set_hobbise 设置个人喜好]
+     * @param integer $id      [description]
+     * @param string  $hobbies [description]
+     */
+    public function set_hobbise($id=0, $hobbies='')
+    {
+        if (!request()->isPost()) {
+            return ['status'=>0,'msg'=>'请求方式错误'];
+        }
+        if (!$id) {
+            return ['status'=>0,'msg'=>'缺少必要参数id'];
+        }
+        if (!$hobbies) {
+            return ['status'=>0,'msg'=>'缺少必要参数hobbies'];
+        }
+        if (is_array($hobbies)) {
+            $hobbies = implode(',', $hobbies);
+        }
+        $member = db('member')->field('id')->find($id);
+        if (!$member) {
+            return ['status'=>0,'msg'=>'用户不已存在'];
+        }
+        if (!db('member')->update([
+            'id'=>$member['id'],
+            'hobbise'=>$hobbies,
+            'dates'=>time()
+        ])) {
+            return ['status'=>0,'msg'=>'用户喜好设置失败'];
+        }
+        return ['status'=>1,'msg'=>'用户喜好设置成功'];
+    }
     /**
      * 验证验证码
      * @param string $verify
@@ -668,6 +699,107 @@ class Api extends Base
             'msg'=>'查询成功',
             'data'=>$list
         ];
+    }
+    /**
+     * [push_app 推送消息APP]
+     * @param  string $title  [消息头]
+     * @param  string $text   [消息正文]
+     * @param  string $banner [显示图片]
+     * @param  string $url    [跳转地址]
+     * @return [type]         [description]
+     */
+    public function push_app($title='', $text='', $banner='', $url='')
+    {
+        if (!request()->isPost()) {
+            //return ['status'=>0,'msg'=>'错误请求方式'];
+        }
+        if (!$title) {
+            return [
+              'status'=>0,
+              'msg'=>'缺少参数[title]'
+          ];
+        }
+        if (!$text) {
+            return [
+              'status'=>0,
+              'msg'=>'缺少参数[text]'
+          ];
+        }
+        //个推类
+        $getui = new \service\GeTui();
+        //通知样式
+        $style = new \service\MessageStyle();
+        $style->type=\service\MessageType::getui;
+        $style->text=$text;
+        $style->title=$title;
+        $style->is_ring=true;
+        $style->logourl=$banner?$banner:''; //http://q1.qlogo.cn/g?b=qq&nk=524314430&s=100&t=1511320210
+
+        if ($url) {
+            //链接消息
+            $link = new \service\LinkNotifi();
+            $link->cid='0b056f0b02b629a0e3a809f1bf504fb2';
+            $link->set_style($style);
+            $link->set_url($url);
+            $_data  = $link->merge();
+        } else {
+            $link = new \service\TextNotifi();
+            $link->cid='0b056f0b02b629a0e3a809f1bf504fb2';
+            $link->set_style($style);
+            $_data  = $link->merge();
+        }
+        $result = $getui->push_app($_data);
+        $_url = $url?$url:'未填写';
+        $_banner=$banner?$banner:'未填写';
+        $data = [
+          'title'=>$title,
+          'content'=>$text."|".$_banner."|".$_url,
+          'date'=>time(),
+          'type'=>0
+        ];
+        if ($result['result']=='ok') {
+            $data['status']=1;
+            db('message')->insert($data);
+            return [
+              'status'=>1,
+              'msg'=>'消息推送成功'
+            ];
+        } else {
+            $data['status']=0;
+            db('message')->insert($data);
+            return [
+              'status'=>0,
+              'msg'=>'消息推送失败'
+            ];
+        }
+    }
+    /**
+     * [push_recive 修改推送]
+     * @param  integer $uid    [用户ID]
+     * @param  integer $recive [推送：0不接受，1接受，默认：1]
+     * @return [type]          [description]
+     */
+    public function push_recive($uid=0, $recive=1)
+    {
+        if (!request()->isPost()) {
+            return ['status'=>0,'msg'=>'错误请求方式'];
+        }
+        if (!$uid) {
+            return ['status'=>0,'msg'=>'缺少必要参数uid'];
+        }
+        $member = db('member')->field('id')->find($uid);
+        if (!$member) {
+            return ['status'=>0,'msg'=>'用户不已存在'];
+        }
+
+        if (!db('member')->update([
+          'id'=>$member['id'],
+          'is_recive'=>$recive,
+          'dates'=>time()
+        ])) {
+            return ['status'=>0,'msg'=>'设置失败'];
+        }
+        return ['status'=>1,'msg'=>'设置成功'];
     }
 
     /**

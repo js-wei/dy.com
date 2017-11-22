@@ -2,8 +2,8 @@
 # @Author: 魏巍
 # @Date:   2017-11-16T17:42:05+08:00
 # @Email:  524314430@qq.com
-# @Last modified by:   jswei
-# @Last modified time: 2017-11-21T16:42:39+08:00
+# @Last modified by:   魏巍
+# @Last modified time: 2017-11-22T14:36:43+08:00
 
 
 
@@ -88,11 +88,40 @@ class Index extends Base
         return $result;
     }
 
+    /**
+     * [getui 推送消息]
+     * @return [type] [description]
+     */
     public function getui()
     {
-        $g = new \service\GeTui();
-        $g->setClientID('0b056f0b02b629a0e3a809f1bf504fb2');
-        $g->push_single('双十二大酬宾一律八折', '为了迎接双十二现在进行大酬宾活动，在本店消费的用户一律享受八折优惠');
+        //个推类
+        $getui = new \service\GeTui();
+        //通知样式
+        $style = new \service\MessageStyle();
+        $style->type=\service\MessageType::getui;
+        $style->text='在元旦和圣诞节期间所有顾客一律半价，并赠送有没年历一台！！！';
+        $style->title='喜迎双旦特别优惠';
+        $style->is_ring=true;
+        $style->logourl='http://q1.qlogo.cn/g?b=qq&nk=524314430&s=100&t=1511320210';
+        //链接消息
+        $link = new \service\LinkNotifi();
+        $link->cid='0b056f0b02b629a0e3a809f1bf504fb2';
+        $link->set_style($style);
+        $link->set_url('www.baidu.com');
+        $link_data  = $link->merge();
+        //文本信息
+        $text = new \service\TextNotifi();
+        $text->cid='0b056f0b02b629a0e3a809f1bf504fb2';
+        $text->set_style($style);
+        $text_data  = $text->merge();
+        p($text_data);
+        p($link_data);
+        //return $getui->push_list($text_data);
+        //return $getui->push_single($link_data);
+        /*return $getui->push_app($text_data, ['condition'=> [
+          ['key'=>'phonetype','values'=>['ANDROID','IOS'],'opt_type'=>0]]
+        ]);*/
+        //return $getui->push_single_batch([json_decode($text_data, true),json_decode($link_data, true)]);
     }
 
     public function login()
