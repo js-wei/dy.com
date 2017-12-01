@@ -22,7 +22,7 @@
                 </div>
                 <div class="form-group">
                     <label class="col-lg-2 control-label">城市图片</label>
-                    <div class="col-sm-2">
+                    <div class="col-sm-4">
                         <div id="uploader-demo">
                             <div id="fileList" class="uploader-list"></div>
                             <div id="picker" style="width:100px">选择图片</div>
@@ -66,16 +66,16 @@
                     <div class="col-lg-6" style="padding-left:0;">
                         <div class="radio pull-left">
                             <label>
-                                <input name="com" type="radio" value="0" class="colored-success" <notempty name="info">
+                                <input name="com" type="radio" value="0" <notempty name="info">
                                 <eq name="info.com" value="0">checked="checked"</eq><else />checked="checked"</notempty>>
-                                <span class="text">否</span>
+                                <span class="text">不推荐</span>
                             </label>
                         </div>
                         <div class="radio pull-left">
                             <label>
-                                <input name="com" type="radio" value="1" class="colored-danger" <notempty name="info">
+                                <input name="com" type="radio" value="1" <notempty name="info">
                                 <eq name="info.com" value="1">checked="checked"</eq></notempty>>
-                                <span class="text">是</span>
+                                <span class="text">推荐</span>
                             </label>
                         </div>
                         <div class="radio hide">
@@ -91,14 +91,14 @@
                     <div class="col-lg-6" style="padding-left:0;">
                         <div class="radio pull-left">
                             <label>
-                                <input name="status" type="radio" value="0" class="colored-success" <notempty name="info"><eq name="info.status" value="0">checked="checked"</eq><else />checked="checked"</notempty>>
-                                <span class="text">是</span>
+                                <input name="status" type="radio" value="0" <notempty name="info"><eq name="info.status" value="0">checked="checked"</eq><else />checked="checked"</notempty>>
+                                <span class="text">显示</span>
                             </label>
                         </div>
                         <div class="radio pull-left">
                             <label>
-                                <input name="status" type="radio" value="1" class="colored-danger" <notempty name="info"><eq name="info.status" value="1">checked="checked"</eq></notempty>>
-                                <span class="text">否</span>
+                                <input name="status" type="radio" value="1"  <notempty name="info"><eq name="info.status" value="1">checked="checked"</eq></notempty>>
+                                <span class="text">不显示</span>
                             </label>
                         </div>
                         <div class="radio hide">
@@ -113,7 +113,7 @@
                 <div class="form-group">
                     <div class="col-lg-4 col-lg-offset-2">
                         <button type="submit" class="btn btn-danger col-lg-2">提交</button>
-                        <button type="button" class="btn btn-warning col-lg-2 ml10" onclick="window.history.go(-1);">返回</button>
+                        <a href="{:Url('region/add?id='.input('fid'))}" class="btn btn-warning col-lg-2 ml10">返回</a>
                     </div>
                 </div>
             </form>
@@ -164,21 +164,22 @@
                 }
             }
         })
-            .find('button[data-toggle]')
-            .on('click', function () {
-                var $target = $($(this).attr('data-toggle'));
-                $target.toggle();
-                if (!$target.is(':visible')) {
-                    $('#togglingForm').data('bootstrapValidator').disableSubmitButtons(false);
-                }
-            });
+        .find('button[data-toggle]')
+        .on('click', function () {
+            var $target = $($(this).attr('data-toggle'));
+            $target.toggle();
+            if (!$target.is(':visible')) {
+                $('#togglingForm').data('bootstrapValidator').disableSubmitButtons(false);
+            }
+        });
     });
     var uploader = WebUploader.create({
         swf:'__PLUG__/webuploader/Uploader.swf',
         server: '{:Url("Uploadify/webUploader")}',
         pick: '#picker',
+        disableGlobalDnd:true,
         resize : true,      //压缩上传
-        duplicate :false,    //多次上传
+        duplicate :true,    //多次上传
         accept: {           // 只允许选择图片文件。
             title: 'Images',
             extensions: 'gif,jpg,jpeg,bmp,png',
@@ -186,17 +187,25 @@
         },
         formData: { w:64, h:64 }
     });
+
     // 当有文件添加进来的时候
     uploader.on('fileQueued', function( file ) {
-        $('.progress-bar1').css('display','block');
         uploader.upload();
     });
+
     // 文件上传过程中创建进度条实时显示。
     uploader.on( 'uploadProgress', function( file, percentage ) {
+        $('.progress-bar1').css('display','block');
         $('.progress-bar1')
             .css( 'width', percentage * 100 + '%' );
         $('#progress').text('上传成功');
+        setTimeout(()=>{
+          $('.progress-bar1')
+              .css( 'width', '0%' );
+            $('.progress-bar1').hide();
+        },1e3);
     });
+
     // 文件上传成功，给item添加成功class, 用样式标记上传成功。
     uploader.on('uploadSuccess', function( file,response ) {
         if(response.result.code==200){
@@ -206,10 +215,11 @@
             $('#images_preview').show();
         }
     });
+
     var imgView = function(pic_url){
         pic_url = $('#reply_img').val();
         if(!pic_url){
-            layer.alert('你还没有上传图片',{icon:5});
+            layer.msg('你还没有上传图片');
             return false;
         }
         layer.open({
@@ -226,18 +236,18 @@
     var noMasterImg = function(){
         $src = $("#images_preview").attr('src');
         if($src==''){
-            layer.alert('您好没有上传图片',{icon:5});
+            layer.msg('您好没有上传图片');
             return false;
         }
         $.post("{:Url('Uploadify/delmg')}",{src:$src},function(data){
             if(data.status==1){
-                layer.msg(data.msg,{icon:1});
+                layer.msg(data.msg);
                 $("#reply_img").val('');
                 $('#images_preview').attr('src','');
                 $('#img_c').hide();
                 $('#images_preview').hide();
             }else{
-                layer.alert(data.msg,{icon:5});
+                layer.msg(data.msg);
             }
         });
     };

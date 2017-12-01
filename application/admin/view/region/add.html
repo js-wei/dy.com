@@ -53,8 +53,9 @@
                                     <label class="label label-azure">未推荐</label>
                                 </eq>
                                 <a href="__URL__/set_city?id={$vo1.id}&fid={:input('id')}">详细</a>
+                                <a href="__URL__/del?id={$vo1.id}&fid={:input('id')}" class="del">删除</a>
                                 <input type="text" class="form-control" name="id_city[{$vo1.id}]" value="{$vo1.sort}" >
-                                <input type="hidden" class="form-control" name="status_city[{$vo1.id}]" value="0" />
+                                <input type="hidden" class="form-control" name="status_city[{$vo1.id}]" value="{$vo1.status}" />
                             </div>
                         </volist>
                     </div>
@@ -86,7 +87,7 @@
                 <div class="form-group">
                     <div class="col-lg-4 col-lg-offset-2">
                         <button type="submit" class="btn btn-danger col-lg-2">提交</button>
-                        <button type="button" class="btn btn-warning col-lg-2 ml10" onclick="window.history.go(-1);">返回</button>
+                        <a href="{:Url('region/index')}" class="btn btn-warning col-lg-2 ml10">返回</a>
                     </div>
                 </div>
             </form>
@@ -110,11 +111,11 @@
                 $.post(form.attr('action'),form.serialize(),function(data){
                     layer.close(index);
                     if(data.status==1){
-                        layer.alert(data.msg,{icon:6,end:function(){
+                        layer.alert(data.msg,{icon:5,end:function(){
                             location.href = data.redirect;
                         }});
                     }else {
-                        layer.alert(data.msg,{icon:5});
+                        layer.alert(data.msg,{icon:6});
                     }
                 });
             },
@@ -158,6 +159,22 @@
                 p.val(0);
             }
         });
+        $(document).on('click','.del',function (e) {
+          e.preventDefault();
+          let url = $(this).attr('href');
+          let index = layer.load();
+          $.get(url,function(result){
+            layer.close(index);
+            if(result.status){
+              layer.alert(data.msg,{icon:5,end:function(){
+                  location.reload();
+              }});
+            }else{
+                layer.alert(layer.msg,{icon:6});
+            }
+          });
+        });
+
     });
 </script>
 <include file="public/footer"/>
