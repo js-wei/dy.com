@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>KindEditor PHP</title>
+    <link rel="stylesheet" href="__PLUG__/kindeditor/themes/default/default.css" />
+    <link rel="stylesheet" href="__PLUG__/kindeditor/plugins/code/prettify.css" />
+    <script charset="utf-8" src="__PLUG__/kindeditor/kindeditor-all.js"></script>
+    <script charset="utf-8" src="__PLUG__/kindeditor/lang/zh-CN.js"></script>
+    <script charset="utf-8" src="__PLUG__/kindeditor/plugins/code/prettify.js"></script>
+    <script>
+        KindEditor.ready(function(K) {
+            var editor1 = K.create('textarea[name="content1"]', {
+                cssPath : '__PLUG__/kindeditor/plugins/code/prettify.css',
+                uploadJson : '__PLUG__/kindeditor/php/upload_json.php',
+                fileManagerJson : '__PLUG__/kindeditor/php/file_manager_json.php',
+                allowFileManager : true,
+                afterCreate : function() {
+                    var self = this;
+                    K.ctrl(document, 13, function() {
+                        self.sync();
+                        K('form[name=example]')[0].submit();
+                    });
+                    K.ctrl(self.edit.doc, 13, function() {
+                        self.sync();
+                        K('form[name=example]')[0].submit();
+                    });
+                }
+            });
+            prettyPrint();
+        });
+    </script>
+</head>
+<body>
+
+    <form name="example" method="post" action="demo.php">
+        <textarea name="content1" style="width:700px;height:200px;visibility:hidden;"></textarea>
+        <br />
+        <input type="submit" name="button" value="提交内容" /> (提交快捷键: Ctrl + Enter)
+    </form>
+</body>
+</html>

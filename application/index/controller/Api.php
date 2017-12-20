@@ -33,7 +33,7 @@ class Api extends Base
             return json(['status'=>0,'msg'=>'缺少必要的条件']);
         }
         $userinfo = db('member')
-          ->field('password,openid,last_login_time,last_login_address,last_login_ip,status,dates', true)
+          ->field('id,password,openid,last_login_time,last_login_address,last_login_ip,status,dates', true)
           ->find($_id);
         if (!$userinfo) {
             return json(['status'=>0,'msg'=>'查询失败']);
@@ -45,6 +45,9 @@ class Api extends Base
      * 检昵称是否存在
      * @param string $nickname
      * @return \think\response\Json
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
      */
     public function check_nickname($nickname='')
     {
@@ -129,7 +132,7 @@ class Api extends Base
                 ];
             }
             $admin = db("member")
-                ->field('id,phone,password,nickname,head,email,last_login_time,last_login_ip,status')
+                ->field('id as user_id,phone,password,nickname,head,email,last_login_time,last_login_ip,status')
                 ->where($where)->find();
             if (!$admin) {
                 return json(['status'=>0,'msg'=>'您的账号输入有误']);
@@ -147,7 +150,7 @@ class Api extends Base
                 'phone'=>$phone
             ];
             $admin = db("member")
-                ->field('id,phone,password,nickname,head,email,last_login_time,
+                ->field('id as user_id,phone,password,nickname,head,email,last_login_time,
                 last_login_ip,status')
                 ->where($where)->find();
             if (!$admin) {
@@ -161,7 +164,7 @@ class Api extends Base
 
         //更新登录信息
         $data=array(
-            'id'=>$admin['id'],
+            'id'=>$admin['user_id'],
             'last_login_time'=>time(),
             'last_login_ip'=>request()->ip(),
             'last_login_address'=>$this->get_location()
@@ -171,11 +174,10 @@ class Api extends Base
         db("member")->update($data);
 
         //保存登录状态
-        session('_mid', $admin['id']);
+        session('_mid', $admin['user_id']);
         session('_m', $admin['phone']);
         //跳转目标页
         unset($admin['password']);
-        unset($admin['id']);
         unset($admin['status']);
         return json(['status'=>1,'msg'=>'登录成功','data'=>$admin]);
     }
@@ -336,6 +338,38 @@ class Api extends Base
             return ['status'=>0,'msg'=>'验证下发失败'];
         }
     }
+
+    /**
+     *
+     * @param int $uid
+     * @param string $info
+     * @return array
+     * @throws \think\Exception
+     * @throws \think\exception\PDOException
+     */
+    public function set_information($uid=0,$info=''){
+        if (!request()->isPost()) {
+            return ['status'=>0,'msg'=>'请求方式错误'];
+        }
+        if (!$uid) {
+            return ['status'=>0,'msg'=>'缺少必要参数uid'];
+        }
+        if (!$info) {
+            return ['status'=>0,'msg'=>'缺少必要参数info'];
+        }
+        if(mb_strlen($info)>50){
+            return ['status'=>0,'msg'=>'个性签名在50个字符之内'];
+        }
+        if(!db('member')->update([
+            'id'=>$uid,
+            'information'=>$info,
+            'dates'=>time()
+        ])){
+            return ['status'=>0,'msg'=>'个性签名设置失败'];
+        }
+        return ['status'=>1,'msg'=>'个性签名设置成功'];
+    }
+
     /**
      * [set_hobbise 设置个人喜好]
      * @param integer $id      [description]
@@ -460,8 +494,9 @@ class Api extends Base
      */
     public function upgrade_head($uid=0)
     {
+        //p(request());die;
         if (!request()->isPost()) {
-            return ['status'=>0,'msg'=>'错误请求方式'];
+            //return ['status'=>0,'msg'=>'错误请求方式'];
         }
         if (!$uid) {
             return ['status'=>0,'msg'=>'缺少必要参数uid'];
@@ -473,16 +508,21 @@ class Api extends Base
 
         $uploadify = new Uploadify();
         $_result = $uploadify->upload_head();
-
+        $_path =  DS .'uploads' . DS .'head'.DS .$_result['filename'];
         if (!db('member')->update([
             'id'=>$member['id'],
-            'head'=>$_result['fullpath'],
+            'head'=> $_path,
             'dates'=>time()
         ])) {
             return ['status'=>0,'msg'=>'用户头像修改失败'];
         }
-        $fullpath = str_replace('//', '/', $this->site['url'].$_result['fullpath']);
-        return ['status'=>1,'msg'=>'用户性头像改成功','fullpath'=>$fullpath."?_id=".time()];
+
+		if(is_file($member['head'])){
+			unlink($member['head']);
+		}
+		
+        $full_path = $this->site['url']. $_path;
+        return ['status'=>1,'msg'=>'用户性头像改成功','fullpath'=>$full_path."?_id=".time()];
     }
 
     /**

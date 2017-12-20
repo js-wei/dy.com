@@ -57,6 +57,63 @@
             </li>
         </empty>
     </volist>
+    <li>
+    	<a href="javascript:void(0);" class="menu-dropdown">
+            <i class="menu-icon fa fa-file"></i>
+            <span class="menu-text">文档管理</span>
+       </a>
+        <ul class="submenu">
+            <volist name="col" id="cols">
+		     	<empty name="cols.child">
+		     		<li <if condition="$controller eq 'article' and $cols['id'] eq $aid or $controller eq 'single' and $cols['id'] eq $aid">class="active"</if>>
+		                <a href="{:Url('article/index?aid='.$cols['id'])}" <empty name="cols['ico']">style="padding-left: 6px;"</empty>>
+		                	<i class="menu-icon <empty name="cols['ico']"><else />{$cols['ico']}</empty>"></i>
+		                    <span class="menu-text">{$cols.title}</span>
+		                </a>
+		            </li>
+		            <else />
+		            <li <if condition="$fid eq $cols['id']">class="open"</if>>
+		                <a href="javascript:void(0);" class="menu-dropdown">
+		                    <span class="menu-text">{$cols.title}</span>
+		                    <i class="menu-expand"></i>
+		                </a>
+		                <ul class="submenu">
+                            <volist name="cols.child" id="vo3">
+                                <empty name="vo3.child">
+                                    <li <if condition="$aid eq $vo3['id'] and $fid eq $vo3['fid'] ">class="active" </if>>
+                                        <a href="{:Url('article/index?aid='.$vo3['id'].'&fid='.$cols['id'])}">
+                                            <i class="menu-icon <empty name="$vo3['ico']">fa fa-file-o<else />{$vo3['ico']}</empty>"></i>
+                                            <span class="menu-text">{$vo3.title}</span>
+                                        </a>
+                                    </li>
+                                    <else />
+                                    <li <if condition="$aid eq $vo3['id'] and $fid eq $vo3['fid'] ">class="active" </if>>
+                                        <a href="javascript:void(0);" class="menu-dropdown">
+                                            <span class="menu-text">{$vo3.title}</span>
+                                            <i class="menu-expand"></i>
+                                        </a>
+                                        <ul class="submenu">
+                                            <volist name="vo3.child" id="vo4">
+                                                <empty name="vo4.child">
+                                                    <li <if condition="$aid eq $vo4['id']">class="active"</if>>
+                                                    <!--{$aid} &#45;&#45; {$vo4['id']}-->
+                                                        <a href="{:Url('article/index?aid='.$vo4['id'].'&fid='.$cols['id'].'&_id='.$vo3['id'])}">
+                                                            <i class="menu-icon <empty name="$vo4['ico']">fa fa-file-o<else />{$vo4['ico']}</empty>"></i>
+                                                            <span class="menu-text">{$vo4.title}</span>
+                                                        </a>
+                                                    </li>
+                                                </empty>
+                                            </volist>
+                                        </ul>
+                                    </li>
+                                </empty>
+                            </volist>
+                        </ul>
+		            </li>
+		     	</empty>
+	    	</volist>
+        </ul>
+    </li>
 </ul>
 <!-- /Sidebar Menu -->
 </div>
@@ -64,21 +121,16 @@
     <script type="text/javascript">
         (function(){
             var li = $('li.active').parent('ul.submenu').parent('li');
-            //$('li.active .open').find('ul.submenu>li:first').addClass('active');
             li.addClass('open');
+            $('li.open').parent('ul.submenu').css('display','block');
         })();
-        function getQueryString(name) {
-            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
-            var r = window.location.search.substr(1).match(reg);
-            if (r != null) return unescape(r[2]); return null;
-        }
-    </script>
-    <else />
-    <script type="text/javascript">
-        function getQueryString(name) {
-            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
-            var r = window.location.search.substr(1).match(reg);
-            if (r != null) return unescape(r[2]); return null;
-        }
     </script>
 </if>
+<script type="text/javascript">
+    function getQueryString(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+        var r = window.location.search.substr(1).match(reg);
+        if (r != null) return unescape(r[2]); return null;
+    }
+    $('li.open').parent('ul.submenu').css('display','block');
+</script>

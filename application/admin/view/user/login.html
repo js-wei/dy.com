@@ -60,9 +60,12 @@ Purchase: http://wrapbootstrap.com
     <script src="__JS__/jquery-2.0.3.min.js"></script>
     <script src="__JS__/bootstrap.min.js"></script>
     <script src="__JS__/validation/bootstrapValidator.js"></script>
-    <js file="__PLUG__/layer/layer.js"/>
+    <link href="__PLUG__/layui/css/layui.css" rel="stylesheet" />
+    <script src="__PLUG__/layui/layui.all.js"></script>
     <script type="text/javascript">
         $(function(){
+          layui.use('layer', function(){
+            layer = layui.layer;
             $('form').bootstrapValidator({
                 excluded: [':disabled'],
                 feedbackIcons: {
@@ -97,7 +100,7 @@ Purchase: http://wrapbootstrap.com
                     }
                 }
             });
-           
+
             $('.loginbox-submit input[type="submit"]').click(function(e) {
                 e.preventDefault();
                 var bootstrapValidator = $("form").data('bootstrapValidator');
@@ -117,7 +120,8 @@ Purchase: http://wrapbootstrap.com
                         }
                     });
                 }
-            });  
+            });
+          });
         });
     </script>
 </body>

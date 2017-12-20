@@ -1,0 +1,161 @@
+<include file="public/header" title="{$model.name}" keywords="{$model.name}"/>
+<link href="__CSS__/dataTables.bootstrap.css" rel="stylesheet" />
+<div class="row">
+    <div class="col-xs-12 col-md-12">
+        <div class="widget">
+            <div class="widget-header">
+                <span class="widget-caption pull-left"><i class="fa fa-columns"></i>&nbsp;{$model.name}</span>
+                <div class="widget-buttons">
+                    <a href="#" data-toggle="maximize">
+                        <i class="fa fa-expand"></i>
+                    </a>
+                    <a href="#" data-toggle="collapse">
+                        <i class="fa fa-minus"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="widget-body">
+                <div class="col-xs-4 col-md-6 pb10 zindex">
+                    <a href="__URL__/add?aid={:input('aid')}&fid={:input('fid')}&_id={:input('_id')}" class="btn btn-success">添加文档</a>
+                    <a href="__URL__/status&aid={:input('aid')}&p={:input('p')}&fid={:input('fid')}&_id={:input('_id')}" data-role="forbidden" class="btn btn-warning status">选中禁用</a>
+                    <a href="__URL__/status&aid={:input('aid')}&p={:input('p')}&fid={:input('fid')}&_id={:input('_id')}" data-role="enable" class="btn btn-info status">选中启用</a>
+                    <a href="__URL__/status&aid={:input('aid')}&p={:input('p')}&fid={:input('fid')}&_id={:input('_id')}" data-role="delete-all" class="btn btn-danger status">选中删除</a>
+                	<include file="public/search" title="请输入标题/关键词/发布者"/>
+                </div>
+                <table class="table table-striped table-bordered table-hover pt10" id="simpledatatable">
+                    <thead>
+                        <tr>
+                            <th style="width:80px">
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" class="group-checkable">
+                                        <span class="text"></span>
+                                    </label>
+                                </div>
+                            </th>
+                            <th>标题</th>
+                            <th class="hidden-xs hidden-sm hidden-md">发布者</th>
+                            <th class="hidden-xs hidden-sm hidden-md">关键词</th>
+                            <th class="hidden-xs hidden-sm hidden-md">简介</th>
+                            <th class="hidden-xs hidden-sm hidden-md">标签属性</th>
+                            <th class="hidden-xs hidden-sm hidden-md">阅读量</th>
+                            <th class="hidden-xs hidden-sm hidden-md">添加时间</th>
+                            <th style="width:80px;">状态</th>
+                            <th style="width:120px;">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <volist name="list" id="vo">
+                            <tr>
+                                <td>
+                                    <div class="checkbox">
+                                        <label>
+                                            <input type="checkbox" class="checkboxes" value="{$vo.id}">
+                                            <span class="text"></span>
+                                        </label>
+                                    </div>
+                                </td>
+                                <td class="tips" data-role = "{$vo.title}">
+                                    {$vo.title|sub_str=0,20,false}
+                                </td>
+                                <td class="hidden-xs hidden-sm hidden-md">
+                                    {$vo.author}
+                                </td>
+                                <td class="tips hidden-xs hidden-sm hidden-md" data-role = "{$vo.keywords}">{$vo.keywords|sub_str=0,20,false}</td>
+                                <td class="tips hidden-xs hidden-sm hidden-md" data-role = "{$vo.description}">{$vo.description|sub_str=0,20,false}</td>
+                                <td class="hidden-xs hidden-sm hidden-md">
+                                    <eq name="vo.com" value="1"><span class="label label-primary ml10">推荐</span></eq>
+                                    <eq name="vo.hot" value="1"><span class="label label-info ml10">最热</span></eq>
+                                    <eq name="vo.new" value="1"><span class="label label-danger ml10">最新</span></eq>
+                                    <eq name="vo.head" value="1"><span class="label label-warning ml10">头条</span></eq>
+                                    <eq name="vo.top" value="1"><span class="label label-sky ml10">置顶</span></eq>
+                                    <eq name="vo.img" value="1"><span class="label label-blueberry ml10">图文</span></eq>
+                                    <if condition="$vo['com'] eq 0 and $vo['hot'] eq 0 and $vo['new'] eq 0 and $vo['head'] eq 0 and $vo['top'] eq 0 and $vo['img'] eq 0 "><span class="label label-default ml10">无</span></if>
+                                </td>
+                                <td class="hidden-xs hidden-sm hidden-md"><span class="badge badge-success badge-square">{$vo.hits}</span></td>
+                                <td class="hidden-xs hidden-sm hidden-md">
+                                   {$vo.date|date='Y-m-d H:i:s',###}
+                                </td>
+                                <td class="">
+                                   <eq name="vo.status" value="0"> <span class="text-success">正常</span><else /><span class="text-danger">禁用</span> </eq>
+                                </td>
+                                <td>
+                                    <a href="__URL__/add?id={$vo['id']}&aid={:input('aid')}&fid={:input('fid')}&_id={:input('_id')}">编辑</a>
+                                    <if condition="input('_id') eq 16">
+                                        <a href="__URL__/fangjian?id={$vo.id}&aid={:input('aid')}&fid={:input('fid')}&t=1&_id={:input('_id')}">房间</a>
+                                        <a href="__URL__/zhoubian?id={$vo['id']}&aid={:input('aid')}&fid={:input('fid')}&t=1&_id={:input('_id')}">周边景点</a>
+                                    </if>
+                                    <a href="__URL__/tiyan?id={$vo.id}&aid={:input('aid')}&fid={:input('fid')}&t=1&_id={:input('_id')}">攻略</a>
+                                    <a href="__URL__/tiyan?id={$vo.id}&aid={:input('aid')}&fid={:input('fid')}&t=4&_id={:input('_id')}">游记</a>
+                                    <a href="__URL__/comm?id={$vo.id}&aid={:input('aid')}&fid={:input('fid')}&_id={:input('_id')}">评论</a>
+                                    <eq name="vo.status" value="0">
+                                        <a href="__URL__/status&aid={:input('aid')}&p={:input('p')}&fid={:input('fid')}&_id={:input('_id')}" data-role="forbidden" data-id="{$vo.id}" class="status">禁用</a>
+                                        <else />
+                                        <a href="__URL__/status&aid={:input('aid')}&p={:input('p')}&fid={:input('fid')}&_id={:input('_id')}" data-role="enable" data-id="{$vo.id}" class="status">正常</a>
+                                    </eq>
+                                    <a href="__URL__/status" data-role="delete"  data-id="{$vo.id}" class="status">删除</a>
+                                </td>
+                            </tr>
+                        </volist>
+                    </tbody>
+                </table>
+                <div class="mt10">
+                	{$list->render()}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(function(){
+        $('#simpledatatable').dataTable({
+            "sDom": "Tflt",
+            "iDisplayLength": {$count},
+            "searching": false,
+            "paging":false,
+            "oTableTools": {
+                "aButtons": [
+                    "copy", "csv", "xls","pdf"
+                ],
+                "sSwfPath": "//cdn.bootcss.com/datatables-tabletools/2.1.5/swf/copy_csv_xls_pdf.swf"
+            },
+            "language": {
+                "search": "",
+                "sEmptyTable": "暂无数据",
+                "sLengthMenu": "_MENU_",
+                "oPaginate": {
+                    "sPrevious": "Prev",
+                    "sNext": "Next"
+                }
+            },
+            "aoColumns": [
+                { "bSortable": false },
+                { "bSortable": true },
+                { "bSortable": true },
+                { "bSortable": false },
+                { "bSortable": false },
+                { "bSortable": false },
+                { "bSortable": true },
+                { "bSortable": true },
+                { "bSortable": true },
+                { "bSortable": false }
+            ],
+            "aaSorting": []
+        });
+        $('#simpledatatable .group-checkable').change(function () {
+            var set = $(".checkboxes");
+            var checked = $(this).is(":checked");
+            $(set).each(function () {
+                if (checked) {
+                    $(this).prop("checked", true);
+                    $(this).parents('tr').addClass("active");
+                } else {
+                    $(this).prop("checked", false);
+                    $(this).parents('tr').removeClass("active");
+                }
+            });
+
+        });
+    });
+</script>
+<include file="public/footer"/>

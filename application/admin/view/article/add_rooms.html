@@ -1,0 +1,619 @@
+<include file="public/header" title="{$model.name}" keywords="{$model.name}"/>
+<link href="__PLUG__/webuploader-0.1.5/webuploader.css" rel="stylesheet">
+<script src="__PLUG__/webuploader-0.1.5/webuploader.min.js"></script>
+<style>
+    .image-preview{
+        width:100%;
+        height:auto;
+        padding-bottom:5px;
+        margin-top:10px;
+    }
+    .preview-item{
+        float: left;
+        width:110px;
+        height:auto;
+        margin-right:10px;
+        position:relative;
+    }
+    .preview-item i{
+        position:absolute;
+        right:0;
+        top:-2px;
+        color:mediumvioletred;
+        cursor:pointer;
+    }
+    .preview-item img{
+        width: 100px;
+        height:120px;
+    }
+</style>
+<div class="col-lg-12 col-sm-12 col-xs-12">
+    <div class="widget  radius-bordered">
+        <div class="widget-header">
+            <span class="widget-caption">文档操作</span>
+        </div>
+        <div class="widget-body">
+            <form id="togglingForm" action="__URL__/add_rooms_handler" method="post" enctype="multipart/form-data" class="form-horizontal" autocomplete="off">
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">房间名称<sup class="text-danger">*</sup></label>
+                    <div class="col-lg-4">
+                        <input type="text" name="title"
+                               value="<notempty name="info.title">{$info.title}</notempty>"
+                            class="form-control" id="name" placeholder="房间名称"/>
+                        <input type="hidden" name="id" value='<notempty name="info">{$info.id}</notempty>'>
+                        <input type="hidden" name="nid" value="{:input('nid')}">
+                        <input type="hidden" name="aid" value="{:input('aid')}">
+                        <input type="hidden" name="fid" value="{:input('fid')}">
+                        <input type="hidden" name="_id" value="{:input('_id')}">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">封面图片</label>
+                    <div class="col-lg-4">
+                        <div>
+                            <div style="float:left; margin-top:8px;margin-right:6px;"><input type="button" name="image" id="fileImg" size="16" value="上传" class="table_btn"/></div>
+                            <div class="btn btn-warning btn-xs" onclick="imgView('master');return false;" id="img_b"><i class="fa fa-search-plus" style="cursor:pointer;display:block"></i></div>
+                            <div class="btn btn-danger btn-xs" onclick="noMasterImg('')"><i class="fa fa-trash-o" style="cursor:pointer;display:block"></i></div>
+                            <div style="clear:both;"></div>
+                        </div>
+                        <div>
+                            <notempty name="info.image">
+                                <img src="{$info.image}" id="images_preview" width="380" height="auto">
+                                <input type="hidden" value="{$info.image}" name="image" id="reply_img">
+                                <else />
+                                <img src="" id="images_preview" width="380" height="auto" style="display:none;">
+                                <input type="hidden"  name="image" id="reply_img">
+                            </notempty>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">房间图片</label>
+                    <div class="col-sm-4">
+                        <div id="uploader-demo">
+                            <!--用来存放item-->
+                            <div id="fileList" class="uploader-list"></div>
+                            <div id="picker">选择图片</div>
+                        </div>
+                        <div class="progress" style="padding:0">
+                            <div class="progress-bar progress-bar1 progress-bar-danger" role="progressbar"
+                                 aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"
+                                 style="display:none;">
+                                <span class="" id="progress"></span>
+                            </div>
+                        </div>
+                        <div class="clearfix"></div>
+                        <div>
+                            <p>上传的活动图集</p>
+                            <ul class="image-preview" id="_preview">
+                                <notempty name="info">
+                                    <volist name="info.pics" id="imf">
+                                        <li class="preview-item">
+                                            <i class="fa fa-times" data-image="{$imf}"></i>
+                                            <img src="{$imf}"
+                                                 width="250" height="auto">
+                                            <input type="hidden" name="pics[]" value="{$imf}">
+                                        </li>
+                                    </volist>
+                                </notempty>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">楼层介绍</label>
+                    <div class="col-lg-6">
+                        <textarea name="description" class="form-control" rows="5"
+                                  placeholder="楼层介绍"><notempty name="info">{$info.description}</notempty></textarea>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">房型介绍</label>
+                    <div class="col-lg-6">
+                        <textarea name="content" class="form-control" rows="5"
+                                  placeholder="主要内容"><notempty name="info">{$info.content}</notempty></textarea>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">价格</label>
+                    <div class="col-lg-2">
+                        <input type="text" name="price" class="form-control"
+                               placeholder="价格" value="<notempty name="info">{$info.price}</notempty>">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">房间数</label>
+                    <div class="col-lg-2">
+                        <input name="nums" value="<notempty name='info'>{$info.nums}</notempty>"
+                               class="form-control" placeholder="房间数"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">床型</label>
+                    <div class="col-lg-6" style="padding:0;">
+                        <div class="radio pull-left">
+                            <label>
+                                <input name="bag" type="radio" value="0"
+                                <notempty name="info"><eq name="info.bag" value="0">checked="checked"</eq><else />checked="checked"</notempty>>
+                                <span class="text">大床</span>
+                            </label>
+                        </div>
+                        <div class="radio pull-left">
+                            <label>
+                                <input name="bag" type="radio" value="1"
+                                <notempty name="info"><eq name="info.bag" value="1">checked="checked"</eq></notempty>>
+                                <span class="text">双床</span>
+                            </label>
+                        </div>
+                        <div class="radio pull-left">
+                            <label>
+                                <input name="bag" type="radio" value="2"
+                                <notempty name="info"><eq name="info.bag" value="2">checked="checked"</eq></notempty>>
+                                <span class="text">三人/家庭房</span>
+                            </label>
+                        </div>
+                        <div class="radio hide">
+                            <label>
+                                <input name="bag" type="radio">
+                                <span class="text"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">早餐</label>
+                    <div class="col-lg-6" style="padding:0;">
+                        <div class="radio pull-left">
+                            <label>
+                                <input name="dinner" type="radio" value="0" <notempty name="info"><eq name="info.dinner" value="0">checked="checked"</eq><else />checked="checked"</notempty>>
+                                <span class="text">含早餐</span>
+                            </label>
+                        </div>
+                        <div class="radio pull-left">
+                            <label>
+                                <input name="dinner" type="radio" value="1" <notempty name="info"><eq name="info.dinner" value="1">checked="checked"</eq></notempty>>
+                                <span class="text">单份早餐</span>
+                            </label>
+                        </div>
+                        <div class="radio pull-left">
+                            <label>
+                                <input name="dinner" type="radio" value="2" <notempty name="info"><eq name="info.dinner" value="2">checked="checked"</eq></notempty>>
+                                <span class="text">双份早餐</span>
+                            </label>
+                        </div>
+                        <div class="radio pull-left">
+                            <label>
+                                <input name="dinner" type="radio" value="3" <notempty name="info"><eq name="info.dinner" value="3">checked="checked"</eq></notempty>>
+                                <span class="text">无早餐</span>
+                            </label>
+                        </div>
+                        <div class="radio hide">
+                            <label>
+                                <input name="dinner" type="radio">
+                                <span class="text"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">宽带</label>
+                    <div class="col-lg-6" style="padding:0;">
+                        <div class="radio pull-left">
+                            <label>
+                                <input name="online" type="radio" value="0" <notempty name="info"><eq name="info.online" value="0">checked="checked"</eq><else />checked="checked"</notempty>>
+                                <span class="text">免费WIFI上网</span>
+                            </label>
+                        </div>
+                        <div class="radio pull-left">
+                            <label>
+                                <input name="online" type="radio" value="1" <notempty name="info"><eq name="info.online" value="1">checked="checked"</eq></notempty>>
+                                <span class="text">免费有线宽带</span>
+                            </label>
+                        </div>
+                        <div class="radio pull-left">
+                            <label>
+                                <input name="online" type="radio" value="2" <notempty name="info"><eq name="info.online" value="2">checked="checked"</eq></notempty>>
+                                <span class="text">免费WIFI/有线宽带</span>
+                            </label>
+                        </div>
+                        <div class="radio hide">
+                            <label>
+                                <input name="online" type="radio">
+                                <span class="text"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">班期</label>
+                    <div class="col-lg-8">
+                        <div id='container' class="col-lg-4"></div>
+                        <div class="col-lg-4">
+                            <ol class="date-events" id="date-events">
+                                <notempty name="info">
+                                    <volist name="info.events" id="event">
+                                        <li>
+                                            <span>{$event.date}</span><span>{$event.events}</span>
+                                            <a href="javascript:;" title="删除事件" data-id="{$event.date1}"
+                                               class="delete-events"><i class="fa fa-trash-o"></i></a>
+                                        </li>
+                                    </volist>
+                                </notempty>
+                            </ol>
+                        </div>
+                        <notempty name="info">
+                            <volist name="info.events" id="event1">
+                                <div id="{$event1.date1}">
+                                    <input type="hidden" name="events[{$event1.date1}]" value="{$event1.events}">
+                                    <input type="hidden" name="dates[{$event1.date1}]" value="{$event1.date}">
+                                    <input type="hidden" name="prices[{$event1.date1}]" value="{$event1.prices}">
+                                </div>
+                            </volist>
+                        </notempty>
+                    </div>
+                    <style>
+                        .date-events li{line-height:20px;list-style:decimal;}
+                        .date-events li span{margin-right:10px;}
+                    </style>
+                </div>
+                <!--<div class="form-group">-->
+                    <!--<label class="col-lg-2 control-label">添加房间</label>-->
+                    <!--<div class="col-lg-6">-->
+                        <!--<div class="col-lg-2">-->
+                            <!--<label>房号</label>-->
+                            <!--<input type="text" name="r_no[]" class="form-control">-->
+                        <!--</div>-->
+                        <!--<button type="button" class="btn btn-primary mt10 ml10 fa fa-plus" data-id="{$id}">添加</button>-->
+                    <!--</div>-->
+                <!--</div>-->
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">排序</label>
+                    <div class="col-lg-2">
+                        <input name="sort" value="<notempty name='info'>{$info.sort}<else />100</notempty>" class="form-control" placeholder="文档排序"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">状态</label>
+                    <div class="col-lg-6" style="padding:0;">
+                        <div class="radio pull-left">
+                            <label>
+                                <input name="status" type="radio" value="0" class="colored-success" <notempty name="info"><eq name="info.status" value="0">checked="checked"</eq><else />checked="checked"</notempty>>
+                                <span class="text">是</span>
+                            </label>
+                        </div>
+                        <div class="radio pull-left">
+                            <label>
+                                <input name="status" type="radio" value="1" class="colored-danger" <notempty name="info"><eq name="info.status" value="1">checked="checked"</eq></notempty>>
+                                <span class="text">否</span>
+                            </label>
+                        </div>
+                        <div class="radio hide">
+                            <label>
+                                <input name="status" type="radio" class="colored-blueberry">
+                                <span class="text"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <hr class="wide" />
+                <div class="form-group">
+                    <div class="col-lg-4 col-lg-offset-2">
+                        <button type="submit" class="btn btn-danger col-lg-2">提交</button>
+                        <button type="button" class="btn btn-warning col-lg-2 ml10" onclick="window.history.go(-1);">返回</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<link rel="stylesheet" type="text/css" href="__PLUG__/kindeditor/themes/default/default.css">
+<link rel="stylesheet" href="__PLUG__/kindeditor/plugins/code/prettify.css" />
+<script charset="utf-8" src="__PLUG__/kindeditor/kindeditor-all.js"></script>
+<script charset="utf-8" src="__PLUG__/kindeditor/lang/zh_CN.js"></script>
+<script charset="utf-8" src="__PLUG__/kindeditor/plugins/code/prettify.js"></script>
+<link rel="stylesheet" href="__PLUG__/Uploadify/uploadify.css" />
+<script type="text/javascript" src="__PLUG__/Uploadify/jquery.uploadify.min.js"></script>
+<js file="__JS__/validation/bootstrapValidator.js"/>
+<link rel="stylesheet" href="__PLUG__/simple-calendar/stylesheets/simple-calendar.css">
+<script src="__PLUG__/simple-calendar/javascripts/simple-calendar.js"></script>
+<script type="text/javascript">
+    $(function(){
+        var options = {
+            mark:{$json_events}
+        };
+        console.log(options);
+        var myCalendar = new SimpleCalendar('#container',options);
+
+        $(document).on('click','.sc-item',function () {
+            if(!$(this).hasClass('sc-othermenth')){
+                var year = $('.sc-select-year').val(),
+                    month = $('.sc-select-month').val(),
+                    day = $(this).children('.day').text(),
+                    full_day='';
+                //month = parseInt(month)>10 ? month : '0' + month;
+                //day = parseInt(day)>10 ? day : '0' + day;
+                let _id= year+month+day;
+                if($('#'+_id).html()!=undefined){
+                    layer.msg('日期事件已经存在,请先删除在添加');
+                    return;
+                }
+                full_day = year + "-" + month + "-" + day;
+                layer.open({
+                    type: 2,
+                    title: '选填事件',
+                    shadeClose: true,
+                    shade: 0.8,
+                    area: ['40%', '50%'],
+                    content: ['{:Url("article/events")}?date='+full_day, 'no'],
+                });
+            }
+        });
+
+        $(document).on('click','.delete-events',function () {
+            let date = $(this).attr('data-id'),
+                li =$(this).parent();
+            let index = layer.confirm('是否移除事件？', {
+                btn: ['是的','不了'] //按钮
+            }, function(){
+                $('#'+date).remove();
+                li.remove();
+                layer.close(index);
+            });
+        });
+
+
+
+        $(document).on('click','.fa-times',function(){
+            var p = $(this).parent(),
+                image = $(this).attr('data-image');
+            if(p.hasClass('label-blue')){
+                layer.alert('对不起,房间已预订出去,不可删除',{icon:5});
+                return;
+            }
+            if(image){
+                $.post('__URL__/delete_image',{url:image},function (result) {
+                    layer.msg(result.msg);
+                });
+            }
+            $(this).parent().remove();
+        });
+
+        $('.btn-group button').on('click',function(){
+            if($(this).hasClass('active')){
+                $(this).removeClass('active');
+            }else {
+                $(this).addClass('active');
+            }
+        });
+
+        var editor1;
+        KindEditor.ready(function(K) {
+            var option = {
+                cssPath : '__PLUG__/kindeditor/plugins/code/prettify.css',
+                uploadJson : "{:Url('Uploadify/KindEditorUpload')}",
+                height:350,
+                width:750,
+                newlineTag:"p",
+                filterMode : false,
+                allowFlashUpload : false,
+                allowMediaUpload : false,
+                allowFileManager : false,
+                afterBlur: function(){this.sync();}
+            };
+            editor1 = K.create('textarea[name="content"]',option);
+            prettyPrint();
+        });
+
+        $('#togglingForm').bootstrapValidator({
+            message: '验证没有通过',
+            feedbackIcons: {
+                valid: 'glyphicon glyphicon-ok',
+                invalid: 'glyphicon glyphicon-remove',
+                validating: 'glyphicon glyphicon-refresh'
+            },
+            submitHandler: function (validator, form, submitButton) {
+                var index = layer.load(2,{
+                    shade: [0.4,'#000'] //0.1透明度的白色背景
+                });
+                $.post(form.attr('action'),form.serialize(),function(data){
+                    layer.close(index);
+                    if(data.status==1){
+                        layer.alert(data.msg,{icon:6,end:function(){
+                            window.location.href = data.redirect;
+                        }});
+                    }else {
+                        layer.alert(data.msg,{icon:5});
+                    }
+                });
+            },
+            fields: {
+                title: {
+                    validators: {
+                        notEmpty: {
+                            message: '请输入房间名称'
+                        }
+                    }
+                },
+                price:{
+                    validators: {
+                        notEmpty: {
+                            message: '请输入房间价格'
+                        }
+                    }
+                },
+                nums:{
+                    validators: {
+                        notEmpty: {
+                            message: '请输入房间数'
+                        },
+                        numeric:{
+                            message: '请输入数字'
+                        }
+                    }
+                }
+            }
+        })
+        .find('button[data-toggle]')
+        .on('click', function () {
+            let $target = $($(this).attr('data-toggle'));
+            $target.toggle();
+            if (!$target.is(':visible')) {
+                $('#togglingForm').data('bootstrapValidator').disableSubmitButtons(false);
+            }
+        });
+
+        $('select[name="provid"]').change(function(){
+            var id = $(this).val(),
+                type = $("select[name='provid'] option:selected").attr('data-type');
+            $('input[name="s_type"]').val(type);
+            $.post('__URL__/get_city',{id:id},function(result){
+                if(result.status==1){
+                    var html = '',
+                        data = result.data,
+                        city_id = data[0].id;
+                    $.post('__URL__/get_custom',{id:city_id},function(result){
+                        var html = '';
+                        if(result.status==1 && result.data.length>0){
+                            for (var i = 0; i < result.data.length; i++) {
+                                html +=`<option value="${result.data[i].id}">${result.data[i].province}</option>`;
+                            }
+                        }else{
+                            html +=`<option value="0">暂无自定义</option>`;
+                        }
+                        $('select[name="custom"]').empty().html(html);
+                    });
+                    for (var i = 0; i < result.data.length; i++) {
+                        html +=`<option value="${result.data[i].id}">${result.data[i].city}</option>`;
+                    }
+                }
+                $('select[name="city_id"]').empty().html(html);
+            });
+        });
+        $('select[name="city_id"]').change(function(){
+            var id = $(this).val();
+            $.post('__URL__/get_custom',{id:id},function(result){
+                var html = '';
+                if(result.status==1 && result.data.length>0){
+                    for (var i = 0; i < result.data.length; i++) {
+                        html +=`<option value="${result.data[i].id}">${result.data[i].province}</option>`;
+                    }
+                }else{
+                    html +=`<option value="0">暂无自定义</option>`;
+                }
+                $('select[name="custom"]').empty().html(html);
+            });
+        });
+
+        var uploader = WebUploader.create({
+            swf:'__PLUG__/webuploader/Uploader.swf',
+            server: '{:Url("Uploadify/webUploader")}',
+            pick: '#picker',
+            resize : true,      //压缩上传
+            duplicate :true,    //多次上传
+            accept: {           // 只允许选择图片文件。
+                title: 'Images',
+                extensions: 'gif,jpg,jpeg,bmp,png',
+                mimeTypes: 'image/*'
+            }
+        });
+        // 当有文件添加进来的时候
+        uploader.on( 'fileQueued', function( file ) {
+            $('.progress-bar1').css('display','block');
+            uploader.upload();
+        });
+        // 文件上传过程中创建进度条实时显示。
+        uploader.on( 'uploadProgress', function( file, percentage ) {
+            $('.progress-bar1')
+                .css( 'width', percentage * 100 + '%' );
+            $('#progress').text('上传成功');
+        });
+
+        // 文件上传成功，给item添加成功class, 用样式标记上传成功。
+        uploader.on( 'uploadSuccess', function( file,response ) {
+            if(response.result.code==200){
+                var src = response.result.file;
+                var html=`<li class="preview-item">
+                    <i class="fa fa-times" data-image="${src}"></i>
+                    <img src="${src}"
+                         width="250" height="auto">
+                    <input type="hidden" name="pics[]" value="${src}">
+                </li>`;
+                $('#_preview').append(html);
+            }
+        });
+    });
+    function imgView(pic_url,str){
+        if(pic_url == 'master'){
+            pic_url = str?$('#reply_pc_img').val():$('#reply_img').val();
+        }
+        if(pic_url==''){
+            layer.alert('你还没有上传图片',{icon:5});
+            return false;
+        }
+        layer.open({
+            type: 1,
+            title: '查看图片',
+            skin: 'layui-layer-rim', //加上边框
+            area: ['500px', '400px'], //宽高
+            content: "<div style='max-width:500px; max-height:400px; overflow:auto;'><img style='max-width:500px; max-height:400px; overflow:auto;' src='"+pic_url+"'  /></div>"
+        });
+    }
+
+    //照片
+    $("#fileImg").uploadify({
+        fileTypeDesc    : '图片文件',
+        fileTypeExts    : '*.png;*.jpg;*.jpeg;*.gif;',
+        buttonText      : '选择图片',
+        buttonClass     : 'upload_button',
+        fileObjName     : 'image',          //上传文件接收名
+        swf             : '__PLUG__/Uploadify/uploadify.swf',
+        uploader        : "{:Url('Uploadify/uploadimg')}",
+        multi           : false,
+        onUploadSuccess : function(file, data, response) {
+            $("#reply_img").val(data);
+            $("#images_preview").attr('src',data);
+            $('#images_preview').show();
+        }
+    });
+    $('#reply_pc_img').uploadify({
+        fileTypeDesc    : '图片文件',
+        fileTypeExts    : '*.png;*.jpg;*.jpeg;*.gif;',
+        buttonText      : '选择图片',
+        buttonClass     : 'upload_button',
+        fileObjName     : 'image',          //上传文件接收名
+        swf             : '__PLUG__/Uploadify/uploadify.swf',
+        uploader        : "{:Url('Uploadify/uploadimg')}",
+        multi           : false,
+        onUploadSuccess : function(file, data, response) {
+            $("#reply_pc_img1").val(data);
+            $("#images_pc_preview").attr('src',data);
+            $('#images_pc_preview').show();
+        }
+    });
+
+    function noMasterImg(str){
+        $src = str?$("#images_pc_preview").attr('src'):$("#images_preview").attr('src');
+        if($src==''){
+            layer.alert('您好没有上传图片',{icon:5});
+            return false;
+        }
+        $.post("{:Url('Uploadify/delmg')}",{src:$src},function(data){
+            if(data.status==1){
+                layer.msg(data.msg,{icon:1});
+                if(str){
+                    $("#reply_pc_img1").val('');
+                    $('#images_pc_preview').attr('src','');
+                    $('#images_pc_preview').hide();
+                }else{
+                    $("#reply_img").val('');
+                    $('#images_preview').attr('src','');
+                    $('#images_preview').hide();
+                }
+
+            }else{
+                layer.alert(data.msg,{icon:5});
+            }
+        });
+    }
+</script>
+<include file="public/footer"/>

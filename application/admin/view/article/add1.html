@@ -1,0 +1,867 @@
+<include file="public/header" title="{$model.name}" keywords="{$model.name}"/>
+<link href="__PLUG__/webuploader-0.1.5/webuploader.css" rel="stylesheet">
+<script src="__PLUG__/webuploader-0.1.5/webuploader.min.js"></script>
+<div class="col-lg-12 col-sm-12 col-xs-12">
+    <div class="widget  radius-bordered">
+        <div class="widget-header">
+            <span class="widget-caption">文档操作</span>
+        </div>
+        <div class="widget-body">
+            <form id="togglingForm" action="__URL__/add_handler" method="post" enctype="multipart/form-data" class="form-horizontal" autocomplete="off">
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">栏目<sup class="text-danger">*</sup></label>
+                    <div class="col-lg-2">
+                        <select class="span4 m-wrap" name="column_id">
+                            <!--<option value="">顶级</option>-->
+                            <volist name="column_list" id="cate">
+                                <option value="{$cate.id}" <notempty name="info.column_id"><eq name="cate.id" value="$info.column_id">selected</eq><else /><eq name="cate.id" value="$aid">selected</eq></notempty>>{$cate.html}{$cate.title}</option>
+                            </volist>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                	<label class="col-lg-2 control-label">区域<sup class="text-danger">*</sup></label>
+                    <div class="col-lg-6">
+                        <select class="span4 m-wrap inline" name="provid">
+                            <option value="">请选择省份</option>
+                            <volist name="province_list" id="prov">
+                                <option value="{$prov.id}" data-type="{$prov.type}" <notempty name="info.id"><eq name="prov.id" value="$info.provid">selected</eq></notempty>>{$prov.province}</option>
+                            </volist>
+                        </select>
+                        <select class="span4 m-wrap inline" name="city_id">
+                        	<notempty name="info">
+                                <volist name="city_list" id="ci">
+                                    <option value="{$ci.id}" <notempty name="info"><eq name="ci.id" value="$info.city_id">selected</eq></notempty>>{$ci.city}</option>
+                                </volist>
+	                        	<else />
+                        		<option value="">请选择城市</option>
+                        	</notempty>
+                        </select>
+                    </div>
+                </div>
+                <if condition="$fid eq 20">
+                    <div class="form-group">
+                        <label class="col-lg-2 control-label">自定义区域<sup class="text-danger">*</sup></label>
+                        <div class="col-lg-6">
+                            <select class="span4 m-wrap inline" name="custom">
+                                <option value="0">请选择</option>
+                                <notempty name="$info['custom']">
+                                    <volist name="$custom" id="cs">
+                                        <option value="{$cs.id}" <eq name="cs.id" value="$info.custom">selected</eq>>
+                                            {$cs.province}
+                                        </option>
+                                    </volist>
+                                </notempty>
+                            </select>
+                        </div>
+                    </div>
+                </if>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">标题<sup class="text-danger">*</sup></label>
+                    <div class="col-lg-4">
+                        <input type="text" name="title" value="<notempty name="info.title">{$info.title}</notempty>" class="form-control" id="name" placeholder="文档标题"/>
+                        <input type="hidden" name="id" value="<notempty name='info'>{$info.id}</notempty>">
+                        <input type="hidden" name="aid" value="{$column.id}">
+                        <input type="hidden" name="p" value="{:input('p')}">
+                        <input type="hidden" name="fid" value="{:input('fid')}">
+                        <input type="hidden" name="type" value="0">
+                        <input type="hidden" name="s_type" value="<notempty name='info'>{$info.s_type}</notempty>">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">发布者</label>
+                    <div class="col-lg-4">
+                        <input type="text" name="author" value="<notempty name="info">{$info.author}</notempty>" class="form-control" placeholder="发布者"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">封面图片(WAP)</label>
+                    <div class="col-lg-4">
+                        <div>
+                            <div style="float:left; margin-top:8px;margin-right:6px;"><input type="button" name="image" id="fileImg" size="16" value="上传" class="table_btn"/></div>
+                            <div class="btn btn-warning btn-xs" onclick="imgView('master');return false;" id="img_b"><i class="fa fa-search-plus" style="cursor:pointer;display:block"></i></div>
+                            <div class="btn btn-danger btn-xs" onclick="noMasterImg('')"><i class="fa fa-trash-o" style="cursor:pointer;display:block"></i></div>
+                            <div style="clear:both;"></div>
+                        </div>
+                        <div>
+                            <notempty name="info.image">
+                                <img src="{$info.image}" id="images_preview" width="380" height="auto">
+                                <input type="hidden" value="{$info.image}" name="image" id="reply_img">
+                                <else />
+                                <img src="" id="images_preview" width="380" height="auto" style="display:none;">
+                                <input type="hidden"  name="image" id="reply_img">
+                            </notempty>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">封面图片(PC)</label>
+                    <div class="col-lg-4">
+                        <div>
+                            <div style="float:left; margin-top:8px;margin-right:6px;"><input type="button" name="image" id="reply_pc_img" size="16" value="上传" class="table_btn"/></div>
+                            <div class="btn btn-warning btn-xs" onclick="imgView('master','pc_');return false;"><i class="fa fa-search-plus" style="cursor:pointer;display:block"></i></div>
+                            <div class="btn btn-danger btn-xs" onclick="noMasterImg('pc_')"><i class="fa fa-trash-o" style="cursor:pointer;display:block"></i></div>
+                            <div style="clear:both;"></div>
+                        </div>
+                        <div>
+                            <notempty name="info.image">
+                                <img src="{$info.pc_image}" id="images_pc_preview" width="380" height="auto">
+                                <input type="hidden" value="{$info.pc_image}" name="pc_image" id="reply_pc_img1">
+                                <else />
+                                <img src="" id="images_pc_preview" width="380" height="auto" style="display:none;">
+                                <input type="hidden" name="pc_image" id="reply_pc_img1">
+                            </notempty>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">关键词</label>
+                    <div class="col-lg-4">
+                        <textarea name="keywords" class="form-control" rows="5" placeholder="文档关键词"><notempty name="info">{$info.keywords}<else />{$column.description}</notempty></textarea>                        
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">说明</label>
+                    <div class="col-lg-4">
+                        <textarea name="description" class="form-control" rows="5" placeholder="文档说明"><notempty name="info">{$info.description}<else />{$column.description}</notempty></textarea>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">内容</label>
+                    <div class="col-lg-6">
+                        <textarea name="content" class="form-control" rows="5" placeholder="主要内容"><notempty name="info">{$info.content}</notempty></textarea>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">费用详情</label>
+                    <div class="col-lg-6">
+                        <textarea name="attention" class="form-control" rows="5" placeholder="费用详情"><notempty name="info">{$info.attention}</notempty></textarea>
+                    </div>
+                </div>
+				<div class="form-group">
+                    <label class="col-lg-2 control-label">注意事项</label>
+                    <div class="col-lg-6">
+                        <textarea name="note" class="form-control" rows="5" placeholder="注意事项"><notempty name="info">{$info.note}</notempty></textarea>
+                    </div>
+                </div>
+
+				<if condition="input('fid') eq 9 or $_fid eq 16">
+					<div class="form-group">
+						<label class="col-lg-2 control-label">活动日期</label>
+						<div class="col-lg-4">
+							<textarea name="active_date" class="form-control" rows="5" placeholder="活动日期"><notempty name="info">{$info.active_date}</notempty></textarea>
+							<div class="text-danger">*填写日期,多个使用','隔开</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label">活动图集</label>
+						<div class="col-sm-4">
+							<div id="uploader-demo">
+								<!--用来存放item-->
+								<div id="fileList" class="uploader-list"></div>
+								<div id="picker">选择图片</div>
+							</div>
+							<div class="progress" style="padding:0">
+								<div class="progress-bar progress-bar1 progress-bar-danger" role="progressbar"
+									 aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"
+									 style="display:none;">
+									<span class="" id="progress"></span>
+								</div>
+							</div>
+							<div class="clearfix"></div>
+							<div>
+								<p>上传的活动图集</p>
+								<ul class="image-preview" id="_preview">
+                                    <notempty name="info">
+                                        <volist name="info.pics" id="imf">
+                                            <li class="preview-item">
+                                                <i class="fa fa-times" data-image="{$imf}"></i>
+                                                <img src="{$imf}"
+                                                     width="250" height="auto">
+                                                <input type="hidden" name="pics[]" value="{$imf}">
+                                            </li>
+                                        </volist>
+                                    </notempty>
+								</ul>
+							</div>
+						</div>
+					</div>
+                    <style>
+                        .image-preview{
+                            width:100%;
+                            height:auto;
+                            padding-bottom:5px;
+                            margin-top:10px;
+                        }
+                        .preview-item{
+                            float: left;
+                            width:110px;
+                            height:auto;
+                            margin-right:10px;
+                            position:relative;
+                        }
+                        .preview-item i{
+                            position:absolute;
+                            right:0;
+                            top:-2px;
+                            color:mediumvioletred;
+                            cursor:pointer;
+                        }
+                        .preview-item img{
+                            width: 100px;
+                            height:120px;
+                        }
+                    </style>
+				</if>
+                <php>
+                    $_id = input('_id');
+                </php>
+                <eq name="$_id" value="16">
+                    <div class="form-group">
+                        <label class="col-lg-2 control-label">价格</label>
+                        <div class="col-lg-2">
+                            <input type="text" name="price" class="form-control" placeholder="价格" value="<notempty name="info">{$info.price}</notempty>">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-lg-2 control-label">民宿设备</label>
+                        <div class="col-lg-4">
+                            <volist name="version" id="ves">
+                                <div class="radio pull-left">
+                                    <label>
+                                        <input name="facilities[]" type="checkbox" value="{$ves.id}" <notempty name="info['facilities']"><if condition="in_array($ves['id'],$info['facilities'])">checked</if></notempty>  >
+                                        <span class="text">{$ves.title}</span>
+                                    </label>
+                                </div>
+                            </volist>
+                            <div class="radio pull-left hide">
+                                <label>
+                                    <input name="facilities[]" type="checkbox">
+                                    <span class="text"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-lg-2 control-label">可用房型</label>
+                        <div class="col-lg-10">
+                            <volist name="list1" id="vol1">
+                                <div class="col-lg-7 col-sm-7 col-xs-12 clearfix padding-none">
+                                    <div class="widget" data-id="{$vol1.id}" data-title="{$vol1.title}">
+                                        <div class="widget-header <notempty name='vol1.room'>bg-magenta</notempty>">
+                                            <i class="widget-icon fa fa-home"></i>
+                                            <span class="widget-caption">{$vol1.title}</span>
+                                            <div class="widget-buttons">
+                                            </div><!--Widget Buttons-->
+                                        </div><!--Widget Header-->
+                                        <div class="widget-body">
+                                            <p>介绍(规格):{$vol1.description}</p>
+                                            <p>价格:<i class=""></i>{$vol1.price}</p>
+                                            <p>
+                                                房型: <img src="{$vol1.image}" alt="" class="img-responsive">
+                                            </p>
+                                            <!--<p>设备:<volist name="vol1.facilities" id="fa">-->
+                                                <!--<div class="col-lg-3 col-md-3 col-sm-5 text-center pt10">-->
+                                                    <!--<img src="{$fa.image}" alt="{$fa.title}" height="50">-->
+                                                    <!--{$fa.title}-->
+                                                <!--</div>-->
+                                            <!--</volist>-->
+                                            <!--</p>-->
+                                        </div><!--Widget Body-->
+                                    </div><!--Widget-->
+                                    <div class="add-rooms clearfix" <empty name='vol1.room'>style="display:none;"</empty>>
+                                    	<div class="widget">
+	                                        <div class="widget-header">
+	                                            <span class="widget-caption">{$vol1.title}</span>
+	                                        </div>
+	                                        <div class="widget-body bordered-top bordered-pink">
+	                                            <div class="collapse in">
+                                                    <div class="form-group">
+                                                        <input type="text" class="form-control input-group-xl" placeholder="房间号" style="width:180px;margin-left:10px;">
+                                                        <button type="button" class="btn btn-primary mt10 ml10 fa fa-plus" data-id="{$vol1.id}">添加</button>
+                                                        <hr />
+                                                        <div class="room-list pl10">
+                                                        	<notempty name="$vol1['room']">
+                                                        		<volist name="$vol1['room']" id="rms">
+	                                                        		<a href="javascript:void(0);" class="btn btn-sky" <eq name="$rms['r_status']" value="1">disabled</eq>>
+															    		{$rms['r_no']}&nbsp;&nbsp;
+                                                                        <i class="fa fa-times"  style="margin-top:5px;margin-right:5px;"></i>
+                                                                        <eq name="$rms['r_status']" value="1">
+                                                                            <a href="__URL__/flush_room?aid={$info.id}&r_id={$rms['r_id']}&r_no={$rms['r_no']}" class="flush_room">释放房间</a>
+                                                                        </eq>
+															    		<input type="hidden" name="rooms[{$rms['r_id']}][]" value="{$rms['r_no']}|{$rms['r_status']}"/>
+														    		</a>
+	                                                        	</volist>
+                                                        	</notempty>
+                                                        </div>
+                                                    </div>
+	                                            </div>
+	                                        </div>
+	                                    </div>
+                                    </div>
+                                </div>
+                            </volist>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-lg-2 control-label">开业时间</label>
+                        <div class="col-lg-3">
+                            <input type="text" name="start" value="<notempty name="info">{$info.start}</notempty>" class="form-control" placeholder="开业时间"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-lg-2 control-label">联系电话</label>
+                        <div class="col-lg-3">
+                            <input type="text" name="tel" value="<notempty name="info">{$info.tel}</notempty>" class="form-control" placeholder="联系电话"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-lg-2 control-label">入住时间</label>
+                        <div class="col-lg-3">
+                            <input type="text" name="goin" value="<notempty name="info">{$info.goin}</notempty>" class="form-control" placeholder="入住时间"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-lg-2 control-label">离店时间</label>
+                        <div class="col-lg-3">
+                            <input type="text" name="leave" value="<notempty name="info">{$info.leave}</notempty>" class="form-control" placeholder="离店时间"/>
+                        </div>
+                    </div>
+                    <!--<div class="form-group">-->
+                        <!--<label class="col-lg-2 control-label">攻略</label>-->
+                        <!--<div class="col-lg-6">-->
+                            <!--<textarea name="strategy" class="form-control" rows="5" placeholder="攻略"><notempty name="info">{$info.strategy}<else />{$column.description}</notempty></textarea>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                </eq>
+				<if condition="$_id eq 16">
+                    <div class="form-group">
+                        <label class="col-lg-2 control-label">天数</label>
+                        <div class="col-lg-3">
+                            <input type="text" name="days" value="<notempty name="info">{$info.days}</notempty>" class="form-control" placeholder="天数"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-lg-2 control-label">地址</label>
+                        <div class="col-lg-3">
+                            <input type="text" name="address" value="<notempty name="info">{$info.address}</notempty>" class="form-control" placeholder="地址"/>
+                        </div>
+                    </div>
+                </if>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">标签</label>
+                    <div class="col-lg-6">
+                        <div class="marks">
+                            <notempty name="info['attrs']">
+                                <volist name="info['attrs']" id="mk">
+                                    <lable class="label label-sky" style="margin-right:10px;">
+                                        {$mk}
+                                        <i class="fa fa-times"></i>
+                                        <input type="hidden" name="attrs[]" value="{$mk}"/>
+                                    </lable>
+                                </volist>
+                            </notempty>
+                        </div>
+                        <div class="mt10"></div>
+                        <div class="">
+                            <input type="text" class="form-control mark" style="width:120px"/>
+                            <div class="mt10"></div>
+                            <button type="button" class="btn btn-sky btn-sm add_mark">添加标签</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">类型</label>
+                    <div class="col-lg-6" style="padding:0;">
+                        <div class="checkbox checkbox-inline">
+                            <label>
+                                <input type="checkbox" name="attr[com]" value="1" class="colored-success" <notempty name="info"><eq name="info.com" value="1">checked="checked"</eq></notempty>>
+                                <span class="text">推荐</span>
+                            </label>
+                        </div>
+                        <div class="checkbox hide">
+                            <label>
+                                <input type="checkbox" name="attr[com]" class="colored-success" >
+                                <span class="text">推荐</span>
+                            </label>
+                        </div>
+                        <div class="checkbox checkbox-inline">
+                            <label>
+                                <input type="checkbox" name="attr[hot]" value="1" class="colored-success" <notempty name="info"><eq name="info.hot" value="1">checked="checked"</eq></notempty>>
+                                <span class="text">最热</span>
+                                <input type="hidden" name="attr[none]" value="1" class="colored-success" >
+                            </label>
+                        </div>
+                        <div class="checkbox hide">
+                            <label>
+                                <input type="checkbox" name="attr[hot]" class="colored-success" >
+                                <span class="text">最热</span>
+                            </label>
+                        </div>
+                        <div class="checkbox checkbox-inline">
+                            <label>
+                                <input type="checkbox" name="attr[new]" value="1" class="colored-success" <notempty name="info"><eq name="info.new" value="1">checked="checked"</eq></notempty>>
+                                <span class="text">最新</span>
+                            </label>
+                        </div>
+                        <div class="checkbox hide">
+                            <label>
+                                <input type="checkbox" name="attr[new]" class="colored-success" >
+                                <span class="text">最新</span>
+                            </label>
+                        </div>
+                        <div class="checkbox checkbox-inline">
+                            <label>
+                                <input type="checkbox" name="attr[head]" value="1" class="colored-success" <notempty name="info"><eq name="info.head" value="1">checked="checked"</eq></notempty>>
+                                <span class="text">头条</span>
+                            </label>
+                        </div>
+                        <div class="checkbox hide">
+                            <label>
+                                <input type="checkbox" name="attr[head]" class="colored-success" >
+                                <span class="text">头条</span>
+                            </label>
+                        </div>
+                        <div class="checkbox checkbox-inline">
+                            <label>
+                                <input type="checkbox" name="attr[top]" value="1" class="colored-success" <notempty name="info"><eq name="info.top" value="1">checked="checked"</eq></notempty>>
+                                <span class="text">置顶</span>
+                            </label>
+                        </div>
+                        <div class="checkbox hide">
+                            <label>
+                                <input type="checkbox" name="attr[top]" class="colored-success" >
+                                <span class="text">置顶</span>
+                            </label>
+                        </div>
+                        <div class="checkbox checkbox-inline">
+                            <label>
+                                <input type="checkbox" name="attr[img]" value="1" class="colored-success" <notempty name="info"><eq name="info.img" value="1">checked="checked"</eq></notempty>>
+                                <span class="text">图文</span>
+                            </label>
+                        </div>
+                        <div class="checkbox hide">
+                            <label>
+                                <input type="checkbox" name="attr[img]" class="colored-success" >
+                                <span class="text">图文</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">排序</label>
+                    <div class="col-lg-2">
+                        <input name="sort" value="<notempty name='info'>{$info.sort}<else />100</notempty>" class="form-control" placeholder="文档排序"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">状态</label>
+                    <div class="col-lg-6" style="padding:0;">
+                        <div class="radio pull-left">
+                            <label>
+                                <input name="status" type="radio" value="0" class="colored-success" <notempty name="info"><eq name="info.status" value="0">checked="checked"</eq><else />checked="checked"</notempty>>
+                                <span class="text">是</span>
+                            </label>
+                        </div>
+                        <div class="radio pull-left">
+                            <label>
+                                <input name="status" type="radio" value="1" class="colored-danger" <notempty name="info"><eq name="info.status" value="1">checked="checked"</eq></notempty>>
+                                <span class="text">否</span>
+                            </label>
+                        </div>
+                        <div class="radio hide">
+                            <label>
+                                <input name="status" type="radio" class="colored-blueberry">
+                                <span class="text"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <hr class="wide" />
+                <div class="form-group">
+                    <div class="col-lg-4 col-lg-offset-2">
+                        <button type="submit" class="btn btn-danger col-lg-2">提交</button>
+                        <button type="button" class="btn btn-warning col-lg-2 ml10" onclick="window.history.go(-1);">返回</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<link rel="stylesheet" type="text/css" href="__PLUG__/kindeditor/themes/default/default.css">
+<link rel="stylesheet" href="__PLUG__/kindeditor/plugins/code/prettify.css" />
+<script charset="utf-8" src="__PLUG__/kindeditor/kindeditor.js"></script>
+<script charset="utf-8" src="__PLUG__/kindeditor/lang/zh_CN.js"></script>
+<script charset="utf-8" src="__PLUG__/kindeditor/plugins/code/prettify.js"></script>
+<link rel="stylesheet" href="__PLUG__/Uploadify/uploadify.css" />
+<script type="text/javascript" src="__PLUG__/Uploadify/jquery.uploadify.min.js"></script>
+<js file="__JS__/validation/bootstrapValidator.js"/>
+<script type="text/javascript">
+    $(function(){
+        $(document).on('click','.add_mark',function () {
+            var val =  $('input.mark').val(),
+                mark = $('#mark').val();
+            if(val==''){
+                layer.msg('请填写标签,再添加');
+                return false;
+            }
+            $('.marks').append('<lable class="label label-sky" style="margin-right:10px;">'+val+'<i class="fa fa-times"></i><input type="hidden" name="attrs[]" value="'+val+'"/></lable>');
+            $('input.mark').val('');
+        });
+        $(document).on('click','.fa-times',function(){
+            $(this).parent().remove();
+        });
+
+        $('.btn-group button').on('click',function(){
+            if($(this).hasClass('active')){
+                $(this).removeClass('active');
+            }else {
+                $(this).addClass('active');
+            }
+        });
+        $(document).on('click','.widget .widget-header',function () {
+            var t  = $(this),
+            	p  = $(this).parent(),
+                id = $(this).parent().attr('data-id'),
+                title = $(this).parent().attr('data-title');
+            t.hasClass('bg-magenta')?t.removeClass('bg-magenta'):t.addClass('bg-magenta');
+            
+            if(t.hasClass('bg-magenta')){
+              p.siblings('.add-rooms').show();
+          	}else{
+          	    layer.confirm('您确定要取消选定的房型？', {
+				  btn: ['是的确定','不没想好'] //按钮
+				}, function(){
+				 	p.siblings('.add-rooms').hide();
+				 	p.siblings('.add-rooms').find('.room-list').empty();
+				 	layer.closeAll();
+				});
+          	}
+        });
+        $('.flush_room').click(function (e) {
+            e.preventDefault();
+            let url = $(this).attr('href');
+            $.get(url,function (result) {
+                if(result.status==0){
+                    layer.alert(result.msg,{icon:5});
+                }else{
+                    layer.alert(result.msg,{icon:6,end:function () {
+                        location.reload();
+                    }});
+                }
+            });
+        });
+        $('.fa-plus').on('click',function () {
+           var val = $(this).prev().val(),
+           	   id = $(this).attr('data-id');
+           if(val && /^[0-9]+.?[0-9]*$/.test(val)){
+           		$(this).prev().css('border','1px solid #d5d5d5');
+               var html = `<a href="javascript:void(0);" class="btn btn-sky" style="margin-top:5px;margin-right:5px;">
+    		${val}&nbsp;&nbsp;<i class="fa fa-times"></i>
+    		<input type="hidden" name="rooms[${id}][]" value="${val}|0" />
+    	</a>`;
+               $(this).siblings('.room-list').append(html);
+               $(this).prev().val(++val);
+           }else{
+           	   $(this).prev().css('border','1px solid red');
+           }
+        });
+        $(document).on('click','.fa-times',function () {
+            var p = $(this).parent(),
+                image = $(this).attr('data-image');
+            if(p.hasClass('label-blue')){
+                layer.alert('对不起,房间已预订出去,不可删除',{icon:5});
+                return;
+            }
+            if(image){
+                $.post('__URL__/delete_image',{url:image},function (result) {
+                    layer.msg(result.msg);
+                });
+            }
+            $(this).parent().remove();
+        });
+    	var editor1,editor2,editor3;
+        KindEditor.ready(function(K) {
+        	var option = {
+                cssPath : '__PLUG__/kindeditor/plugins/code/prettify.css',
+                uploadJson : "{:Url('Uploadify/KindEditorUpload')}",
+                height:350,
+                width:750,
+                newlineTag:"p",
+                filterMode : true,  
+                allowFlashUpload : false,  
+				allowMediaUpload : false,  
+				allowFileManager : false, 
+                extraFileUploadParams:{     //配置多图上传水印.
+                    'water':-1,      //不填:默认无水印,-1/无水印,0:网址水印,1:LOGO水印,2:文字水印
+                    'font':'{$site.title|default='魏巍是个大帅锅'}',      //与2:文字水印配合使用
+                },
+                afterBlur: function(){this.sync();},
+            };
+            editor1 = K.create('textarea[name="content"],textarea[name="note"]',option);
+            editor2 = K.create('textarea[name="attention"]',option);
+            editor3 = K.create('textarea[name="map"]',{
+                height:350,
+                width:750,
+                cssPath : '__PLUG__/kindeditor/plugins/code/prettify.css',
+                uploadJson : "{:Url('Uploadify/KindEditorUpload')}",
+                items: ["source", "|", "undo", "redo", "clearhtml", "quickformat", "selectall", "|","forecolor", "hilitecolor", "bold", "italic", "underline", "strikethrough", "lineheight", "removeformat", "|", "table", "hr",  "baidumap", "pagebreak", "anchor", "link", "unlink", "|", "about"],
+                afterBlur: function(){this.sync();}
+            });
+            prettyPrint();
+        });
+
+        $('#togglingForm').bootstrapValidator({
+            message: '验证没有通过',
+            feedbackIcons: {
+                valid: 'glyphicon glyphicon-ok',
+                invalid: 'glyphicon glyphicon-remove',
+                validating: 'glyphicon glyphicon-refresh'
+            },
+            submitHandler: function (validator, form, submitButton) {
+                var facilities='',rooms='';
+                $('.btn-group button.active').each(function(){
+                    facilities +=','+$(this).attr('data-action');
+                });
+                $('.rooms>.label').each(function(){
+                    rooms +=','+$(this).attr('data-role');
+                });
+                facilities = facilities.substr(1);
+                rooms = rooms.substr(1);
+                $('.facilities').val(facilities);
+                $('.rooms').val(rooms);
+                var index = layer.load(2,{
+                    shade: [0.4,'#000'] //0.1透明度的白色背景
+                });
+//              $('input[type="editor1"').val(editor1.html());
+//              $('input[type="editor2"').val(editor2.html());
+                $.post(form.attr('action'),form.serialize(),function(data){
+                    layer.close(index);
+                    if(data.status==1){
+                        layer.alert(data.msg,{icon:6,end:function(){
+                            location.href = data.redirect;
+                        }});
+                    }else {
+                        layer.alert(data.msg,{icon:5});
+                    }
+                });
+            },
+            fields: {
+                title: {
+                    validators: {
+                        notEmpty: {
+                            message: '请输入文档名称'
+                        }
+                    }
+                },
+                column_id:{
+                    validators: {
+                        notEmpty: {
+                            message: '请选择栏目'
+                        }
+                    }
+                },
+                provid:{
+                	 validators: {
+                        notEmpty: {
+                            message: '请选择省份'
+                        }
+                    }
+                }
+            }
+        })
+        .find('button[data-toggle]')
+        .on('click', function () {
+            var $target = $($(this).attr('data-toggle'));
+            $target.toggle();
+            if (!$target.is(':visible')) {
+                $('#togglingForm').data('bootstrapValidator').disableSubmitButtons(false);
+            }
+        });
+        
+        $('select[name="provid"]').change(function(){
+        	var id = $(this).val(),
+                type = $("select[name='provid'] option:selected").attr('data-type');
+        	$('input[name="s_type"]').val(type);
+        	$.post('__URL__/get_city',{id:id},function(result){
+                if(result.status==1){
+        		    var html = '',
+                    data = result.data,
+                    city_id = data[0].id;
+                    $.post('__URL__/get_custom',{id:city_id},function(result){
+                        var html = '';
+                        if(result.status==1 && result.data.length>0){
+                            for (var i = 0; i < result.data.length; i++) {
+                                html +=`<option value="${result.data[i].id}">${result.data[i].province}</option>`;
+                            }
+                        }else{
+                            html +=`<option value="0">暂无自定义</option>`;
+                        }
+                        $('select[name="custom"]').empty().html(html);
+                    });
+        			for (var i = 0; i < result.data.length; i++) {
+        				html +=`<option value="${result.data[i].id}">${result.data[i].city}</option>`;
+        			}
+        		}
+        		$('select[name="city_id"]').empty().html(html);
+        	});
+        });
+        $('select[name="city_id"]').change(function(){
+            var id = $(this).val();
+            $.post('__URL__/get_custom',{id:id},function(result){
+                var html = '';
+                if(result.status==1 && result.data.length>0){
+                    for (var i = 0; i < result.data.length; i++) {
+                        html +=`<option value="${result.data[i].id}">${result.data[i].province}</option>`;
+                    }
+                }else{
+                    html +=`<option value="0">暂无自定义</option>`;
+                }
+                $('select[name="custom"]').empty().html(html);
+            });
+        });
+
+		var uploader = WebUploader.create({
+            swf:'__PLUG__/webuploader/Uploader.swf',
+            server: '{:Url("Uploadify/webUploader")}',
+            pick: '#picker',
+            resize : true,      //压缩上传
+            duplicate :true,    //多次上传
+            accept: {           // 只允许选择图片文件。
+                title: 'Images',
+                extensions: 'gif,jpg,jpeg,bmp,png',
+                mimeTypes: 'image/*'
+            }
+        });
+        // 当有文件添加进来的时候
+        uploader.on( 'fileQueued', function( file ) {
+            $('.progress-bar1').css('display','block');
+            uploader.upload();
+        });
+        // 文件上传过程中创建进度条实时显示。
+        uploader.on( 'uploadProgress', function( file, percentage ) {
+            $('.progress-bar1')
+                .css( 'width', percentage * 100 + '%' );
+            $('#progress').text('上传成功');
+        });
+
+        // 文件上传成功，给item添加成功class, 用样式标记上传成功。
+        uploader.on( 'uploadSuccess', function( file,response ) {
+            if(response.result.code==200){
+                var src = response.result.file;
+                var html=`<li class="preview-item">
+                    <i class="fa fa-times" data-image="${src}"></i>
+                    <img src="${src}"
+                         width="250" height="auto">
+                    <input type="hidden" name="pics[]" value="${src}">
+                </li>`;
+                $('#_preview').append(html);
+            }
+        });
+    });
+    function imgView(pic_url,str){
+        if(pic_url == 'master'){
+            pic_url = str?$('#reply_pc_img').val():$('#reply_img').val();
+        }
+        if(pic_url==''){
+            layer.alert('你还没有上传图片',{icon:5});
+            return false;
+        }
+        layer.open({
+            type: 1,
+            title: '查看图片',
+            skin: 'layui-layer-rim', //加上边框
+            area: ['500px', '400px'], //宽高
+            content: "<div style='max-width:500px; max-height:400px; overflow:auto;'><img style='max-width:500px; max-height:400px; overflow:auto;' src='"+pic_url+"'  /></div>"
+        });
+    }
+
+    //照片
+    $("#fileImg").uploadify({
+        fileTypeDesc    : '图片文件',
+        fileTypeExts    : '*.png;*.jpg;*.jpeg;*.gif;',
+        buttonText      : '选择图片',
+        buttonClass     : 'upload_button',
+        fileObjName     : 'image',          //上传文件接收名
+        swf             : '__PLUG__/Uploadify/uploadify.swf',
+        uploader        : "{:Url('Uploadify/uploadimg')}",
+        multi           : false,
+        onUploadSuccess : function(file, data, response) {
+            $("#reply_img").val(data);
+            $("#images_preview").attr('src',data);
+            $('#images_preview').show();
+        }
+    });
+    $('#reply_pc_img').uploadify({
+        fileTypeDesc    : '图片文件',
+        fileTypeExts    : '*.png;*.jpg;*.jpeg;*.gif;',
+        buttonText      : '选择图片',
+        buttonClass     : 'upload_button',
+        fileObjName     : 'image',          //上传文件接收名
+        swf             : '__PLUG__/Uploadify/uploadify.swf',
+        uploader        : "{:Url('Uploadify/uploadimg')}",
+        multi           : false,
+        onUploadSuccess : function(file, data, response) {
+            $("#reply_pc_img1").val(data);
+            $("#images_pc_preview").attr('src',data);
+            $('#images_pc_preview').show();
+        }
+    });
+
+    function noMasterImg(str){
+        $src = str?$("#images_pc_preview").attr('src'):$("#images_preview").attr('src');
+        if($src==''){
+            layer.alert('您好没有上传图片',{icon:5});
+            return false;
+        }
+        $.post("{:Url('Uploadify/delmg')}",{src:$src},function(data){
+            if(data.status==1){
+                layer.msg(data.msg,{icon:1});
+                if(str){
+                    $("#reply_pc_img1").val('');
+                    $('#images_pc_preview').attr('src','');
+                    $('#images_pc_preview').hide();
+                }else{
+                    $("#reply_img").val('');
+                    $('#images_preview').attr('src','');
+                    $('#images_preview').hide();
+                }
+
+            }else{
+                layer.alert(data.msg,{icon:5});
+            }
+        });
+    }
+    function deleteImage(obj) {
+        var url = $(obj).attr('data-path');
+        if(url==''){
+            layer.alert('删除图片不存在',{icon:2});
+        }
+        var index = layer.load(2, {
+            shade: [0.4,'#fff'] //0.1透明度的白色背景
+        });
+        $.post("{:Url('Uploadify/delmg')}",{src:url},function(data){
+            if(data.status==1){
+                layer.msg(data.msg,{icon:1,end:function () {
+                    layer.closeAll();
+                    $(obj).parent('span.imageDiv').remove();
+                }});
+            }else{
+                layer.msg(data.msg,{icon:5});
+            }
+        });
+    }
+
+    function html(obj) {
+        var html='';
+        html=`<div class="col-lg-4 col-sm-4 col-xs-12 room${obj.id}">
+    <label>${obj.title}房间号</label>
+    <textarea class="form-control" rows="5" placeholder="请输入${obj.title}房间号"  name="room[${obj.id}]"></textarea>
+    <div class="text-danger">
+        多个使用','隔开
+    </div>
+</div>`;
+       return html;
+    }
+</script>
+<include file="public/footer"/>

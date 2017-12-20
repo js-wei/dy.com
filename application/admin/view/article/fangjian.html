@@ -1,0 +1,141 @@
+<include file="public/header" title="{$f.title}|{$model.name}" keywords="{$model.name}"/>
+<link href="__CSS__/dataTables.bootstrap.css" rel="stylesheet" />
+<div class="row">
+    <div class="col-xs-12 col-md-12">
+        <div class="widget">
+            <div class="widget-header">
+                <span class="widget-caption pull-left"><i class="fa fa-columns"></i>&nbsp;{$model.name}</span>
+                <div class="widget-buttons">
+                    <a href="#" data-toggle="maximize">
+                        <i class="fa fa-expand"></i>
+                    </a>
+                    <a href="#" data-toggle="collapse">
+                        <i class="fa fa-minus"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="widget-body">
+                <div class="col-xs-4 col-md-6 pb10 zindex">
+                    <a href="__URL__/add_rooms?nid={:input('id')}&aid={:input('aid')}&fid={:input('fid')}&_id={:input('_id')}" class="btn btn-success">添加房间</a>
+                        <a href="__URL__/status_rooms?id={:input('id')}&aid={:input('aid')}&p={:input('p')}&fid={:input('fid')}&_fid={:input('id')}&_id={:input('_id')}" data-role="forbidden" class="btn btn-warning status">选中禁用</a>
+                    <a href="__URL__/status_rooms?id={:input('id')}&aid={:input('aid')}&p={:input('p')}&fid={:input('fid')}&_fid={:input('id')}&_id={:input('_id')}" data-role="enable" class="btn btn-info status">选中启用</a>
+                    <a href="__URL__/status_rooms?id={:input('id')}&aid={:input('aid')}&p={:input('p')}&fid={:input('fid')}&_fid={:input('id')}&_id={:input('_id')}" data-role="delete-all" class="btn btn-danger status">选中删除</a>
+                    <a href="__URL__/index?id={:input('id')}&aid={:input('aid')}&p={:input('p')}&fid={:input('fid')}&_fid={:input('id')}&_id={:input('_id')}" class="btn btn-warning">返回上一级</a>
+                    <include file="public/search" title="请输入名称"/>
+                </div>
+                <table class="table table-striped table-bordered table-hover pt10" id="simpledatatable">
+                    <thead>
+                    <tr>
+                        <th style="width:80px">
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" class="group-checkable">
+                                    <span class="text"></span>
+                                </label>
+                            </div>
+                        </th>
+                        <th>房型</th>
+                        <th class="hidden-xs">民宿</th>
+                        <th class="hidden-xs">房间数</th>
+                        <th class="hidden-xs">价格</th>
+                        <th class="hidden-xs">添加时间</th>
+                        <th style="width:80px;">状态</th>
+                        <th style="width:120px;">操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <volist name="list" id="vo">
+                        <tr>
+                            <td>
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" class="checkboxes" value="{$vo.id}">
+                                        <span class="text"></span>
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="tips" data-role = "{$vo.title}">
+                                {$vo.title|sub_str=0,20,false}
+                            </td>
+                            <td class="hidden-xs">
+                                {$f.title}
+                            </td>
+                            <td class="hidden-xs">{$vo.nums}</td>
+                            <td class="hidden-xs"><span class="badge badge-success badge-square">{$vo.price}</span></td>
+                            <td class="hidden-xs">
+                                {$vo.date|date='Y-m-d H:i:s',###}
+                            </td>
+                            <td>
+                                <eq name="vo.status" value="0"> <span class="text-success">正常</span><else /><span class="text-danger">禁用</span> </eq>
+                            </td>
+                            <td>
+                                <a href="__URL__/add_rooms?id={$vo['id']}&aid={:input('aid')}&fid={:input('fid')}&nid={:input('id')}&_id={:input('_id')}">编辑</a>
+                                <eq name="vo.status" value="0">
+                                    <a href="__URL__/status_rooms?id={$vo['id']}&aid={:input('aid')}&p={:input('p')}&fid={:input('fid')}&_fid={:input('id')}&_id={:input('_id')}" data-role="forbidden" data-id="{$vo.id}" class="status">禁用</a>
+                                    <else />
+                                    <a href="__URL__/status_rooms?id={$vo['id']}&aid={:input('aid')}&p={:input('p')}&fid={:input('fid')}&_fid={:input('id')}&_id={:input('_id')}" data-role="enable" data-id="{$vo.id}" class="status">正常</a>
+                                </eq>
+                                <a href="__URL__/status_rooms" data-role="delete"  data-id="{$vo.id}" class="status">删除</a>
+                            </td>
+                        </tr>
+                    </volist>
+                    </tbody>
+                </table>
+                <div class="mt10">
+                    {$list->render()}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(function(){
+        $('#simpledatatable').dataTable({
+            "sDom": "Tflt",
+            "iDisplayLength": {$count},
+            "searching": false,
+            "paging":false,
+            "oTableTools": {
+                "aButtons": [
+                    "copy", "csv", "xls","pdf"
+                ],
+                "sSwfPath": "//cdn.bootcss.com/datatables-tabletools/2.1.5/swf/copy_csv_xls_pdf.swf"
+            },
+            "language": {
+                "search": "",
+                "sEmptyTable": "暂无数据",
+                "sLengthMenu": "_MENU_",
+                "oPaginate": {
+                    "sPrevious": "Prev",
+                    "sNext": "Next"
+                }
+            },
+            "aoColumns": [
+                { "bSortable": false },
+                { "bSortable": true },
+                { "bSortable": true },
+                { "bSortable": false },
+                { "bSortable": false },
+                { "bSortable": true },
+                { "bSortable": true },
+                { "bSortable": false }
+            ],
+            "aaSorting": []
+        });
+        $('#simpledatatable .group-checkable').change(function () {
+            var set = $(".checkboxes");
+            var checked = $(this).is(":checked");
+            $(set).each(function () {
+                if (checked) {
+                    $(this).prop("checked", true);
+                    $(this).parents('tr').addClass("active");
+                } else {
+                    $(this).prop("checked", false);
+                    $(this).parents('tr').removeClass("active");
+                }
+            });
+
+        });
+    });
+</script>
+<include file="public/footer"/>

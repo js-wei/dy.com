@@ -1,8 +1,125 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module type="WEB_MODULE" version="4">
   <component name="NewModuleRootManager">
-    <content url="file://$MODULE_DIR$" />
+    <content url="file://$MODULE_DIR$">
+      <excludeFolder url="file://$MODULE_DIR$/vendor/WxPayPub/cert" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/aipspeech/lib" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/alipay/lib" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/composer" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/curl/curl" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/guzzlehttp/guzzle" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/guzzlehttp/promises" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/guzzlehttp/psr7" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/h4cc/wkhtmltopdf-amd64" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/h4cc/wkhtmltopdf-i386" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/igetui/template" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/igetui/utils" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/ikimea/browser" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/michelf/php-markdown" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/pclzip/pclzip" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/pdfapi/php-sdk" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/pdfmake/pdfmake" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/phpmailer/phpmailer" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/phpoffice/common" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/phpoffice/phpexcel" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/phpoffice/phpword" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/psr/http-message" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/riverslei/payment" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/sinergi/browser-detector" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/spiritix/html-to-pdf" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/symfony/process" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/tomk79/filesystem" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/tomk79/php-excel2html" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/topthink/think-captcha" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/topthink/think-image" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/topthink/think-installer" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/wrseward/pdf-parser" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/wy0727/getui" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/zendframework/zend-escaper" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/zendframework/zend-stdlib" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/zendframework/zend-validator" />
+    </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module-library">
+      <library name="PHP" type="php">
+        <CLASSES>
+          <root url="file://$MODULE_DIR$/vendor/WxPayPub/cert" />
+          <root url="file://$MODULE_DIR$/vendor/aipspeech/lib" />
+          <root url="file://$MODULE_DIR$/vendor/alipay/lib" />
+          <root url="file://$MODULE_DIR$/vendor/composer" />
+          <root url="file://$MODULE_DIR$/vendor/curl/curl" />
+          <root url="file://$MODULE_DIR$/vendor/guzzlehttp/guzzle" />
+          <root url="file://$MODULE_DIR$/vendor/guzzlehttp/promises" />
+          <root url="file://$MODULE_DIR$/vendor/guzzlehttp/psr7" />
+          <root url="file://$MODULE_DIR$/vendor/h4cc/wkhtmltopdf-amd64" />
+          <root url="file://$MODULE_DIR$/vendor/h4cc/wkhtmltopdf-i386" />
+          <root url="file://$MODULE_DIR$/vendor/igetui/template" />
+          <root url="file://$MODULE_DIR$/vendor/igetui/utils" />
+          <root url="file://$MODULE_DIR$/vendor/ikimea/browser" />
+          <root url="file://$MODULE_DIR$/vendor/michelf/php-markdown" />
+          <root url="file://$MODULE_DIR$/vendor/pclzip/pclzip" />
+          <root url="file://$MODULE_DIR$/vendor/pdfapi/php-sdk" />
+          <root url="file://$MODULE_DIR$/vendor/pdfmake/pdfmake" />
+          <root url="file://$MODULE_DIR$/vendor/phpmailer/phpmailer" />
+          <root url="file://$MODULE_DIR$/vendor/phpoffice/common" />
+          <root url="file://$MODULE_DIR$/vendor/phpoffice/phpexcel" />
+          <root url="file://$MODULE_DIR$/vendor/phpoffice/phpword" />
+          <root url="file://$MODULE_DIR$/vendor/psr/http-message" />
+          <root url="file://$MODULE_DIR$/vendor/riverslei/payment" />
+          <root url="file://$MODULE_DIR$/vendor/sinergi/browser-detector" />
+          <root url="file://$MODULE_DIR$/vendor/spiritix/html-to-pdf" />
+          <root url="file://$MODULE_DIR$/vendor/symfony/process" />
+          <root url="file://$MODULE_DIR$/vendor/tomk79/filesystem" />
+          <root url="file://$MODULE_DIR$/vendor/tomk79/php-excel2html" />
+          <root url="file://$MODULE_DIR$/vendor/topthink/think-captcha" />
+          <root url="file://$MODULE_DIR$/vendor/topthink/think-image" />
+          <root url="file://$MODULE_DIR$/vendor/topthink/think-installer" />
+          <root url="file://$MODULE_DIR$/vendor/wrseward/pdf-parser" />
+          <root url="file://$MODULE_DIR$/vendor/wy0727/getui" />
+          <root url="file://$MODULE_DIR$/vendor/zendframework/zend-escaper" />
+          <root url="file://$MODULE_DIR$/vendor/zendframework/zend-stdlib" />
+          <root url="file://$MODULE_DIR$/vendor/zendframework/zend-validator" />
+        </CLASSES>
+        <SOURCES>
+          <root url="file://$MODULE_DIR$/vendor/WxPayPub/cert" />
+          <root url="file://$MODULE_DIR$/vendor/aipspeech/lib" />
+          <root url="file://$MODULE_DIR$/vendor/alipay/lib" />
+          <root url="file://$MODULE_DIR$/vendor/composer" />
+          <root url="file://$MODULE_DIR$/vendor/curl/curl" />
+          <root url="file://$MODULE_DIR$/vendor/guzzlehttp/guzzle" />
+          <root url="file://$MODULE_DIR$/vendor/guzzlehttp/promises" />
+          <root url="file://$MODULE_DIR$/vendor/guzzlehttp/psr7" />
+          <root url="file://$MODULE_DIR$/vendor/h4cc/wkhtmltopdf-amd64" />
+          <root url="file://$MODULE_DIR$/vendor/h4cc/wkhtmltopdf-i386" />
+          <root url="file://$MODULE_DIR$/vendor/igetui/template" />
+          <root url="file://$MODULE_DIR$/vendor/igetui/utils" />
+          <root url="file://$MODULE_DIR$/vendor/ikimea/browser" />
+          <root url="file://$MODULE_DIR$/vendor/michelf/php-markdown" />
+          <root url="file://$MODULE_DIR$/vendor/pclzip/pclzip" />
+          <root url="file://$MODULE_DIR$/vendor/pdfapi/php-sdk" />
+          <root url="file://$MODULE_DIR$/vendor/pdfmake/pdfmake" />
+          <root url="file://$MODULE_DIR$/vendor/phpmailer/phpmailer" />
+          <root url="file://$MODULE_DIR$/vendor/phpoffice/common" />
+          <root url="file://$MODULE_DIR$/vendor/phpoffice/phpexcel" />
+          <root url="file://$MODULE_DIR$/vendor/phpoffice/phpword" />
+          <root url="file://$MODULE_DIR$/vendor/psr/http-message" />
+          <root url="file://$MODULE_DIR$/vendor/riverslei/payment" />
+          <root url="file://$MODULE_DIR$/vendor/sinergi/browser-detector" />
+          <root url="file://$MODULE_DIR$/vendor/spiritix/html-to-pdf" />
+          <root url="file://$MODULE_DIR$/vendor/symfony/process" />
+          <root url="file://$MODULE_DIR$/vendor/tomk79/filesystem" />
+          <root url="file://$MODULE_DIR$/vendor/tomk79/php-excel2html" />
+          <root url="file://$MODULE_DIR$/vendor/topthink/think-captcha" />
+          <root url="file://$MODULE_DIR$/vendor/topthink/think-image" />
+          <root url="file://$MODULE_DIR$/vendor/topthink/think-installer" />
+          <root url="file://$MODULE_DIR$/vendor/wrseward/pdf-parser" />
+          <root url="file://$MODULE_DIR$/vendor/wy0727/getui" />
+          <root url="file://$MODULE_DIR$/vendor/zendframework/zend-escaper" />
+          <root url="file://$MODULE_DIR$/vendor/zendframework/zend-stdlib" />
+          <root url="file://$MODULE_DIR$/vendor/zendframework/zend-validator" />
+        </SOURCES>
+      </library>
+    </orderEntry>
   </component>
 </module>

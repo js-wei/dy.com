@@ -1,3 +1,13 @@
+/**
+ * @Author: 魏巍
+ * @Date:   2017-07-31T16:54:43+08:00
+ * @Email:  524314430@qq.com
+ * @Last modified by:   魏巍
+ * @Last modified time: 2017-12-11T09:34:33+08:00
+ */
+
+
+
 /*ul.points介绍样式*/
 .points{padding-left:16px;margin-left:0px;list-style:decimal;}
 .databox-right>.databox-text>a {display: inline-block;color: #2dc3e8;font-size:14px;}
@@ -21,3 +31,35 @@
 .mb-0{margin-bottom:0;}
 .minicolors-swatch{border:1px solid #eeeeee;}
 .mt5{margin-top:5px;}
+.image-preview{
+    width:100%;
+    height:auto;
+    padding-bottom:5px;
+    margin-top:10px;
+}
+.preview-item{
+    float: left;
+    width:110px;
+    height:auto;
+    margin-right:10px;
+    position:relative;
+}
+.preview-item i{
+    position:absolute;
+    right:0;
+    top:-2px;
+    color:mediumvioletred;
+    cursor:pointer;
+}
+.preview-item img{
+    width: 100px;
+    height:120px;
+}
+.date-events li {
+  line-height: 20px;
+  list-style: decimal;
+}
+
+.date-events li span {
+  margin-right: 10px;
+}
