@@ -29,6 +29,95 @@ class Index extends Base
     {
         return view();
     }
+
+    /**
+     * 语音合成
+     * @param string $text
+     * @return array
+     */
+    public function speech($text=''){
+        if(!$text){
+            return [
+                'status'=>0,
+                'msg'=>'缺少转换文本text'
+            ];
+        }
+        if(mb_strlen($text)>1024){
+            return [
+                'status'=>0,
+                'msg'=>'转换文本过长'
+            ];
+        }
+        vendor('aipspeech.AipSpeech');
+        $client = new \AipSpeech(config('speech.appid'),
+            config('speech.apikey'),
+            config('speech.secretkey'));
+        $result = $client->synthesis($text, 'zh', 1, array(
+            'vol' => 5,
+        ));
+        $error = [
+            500=>'不支持的输入',
+            501=>'输入参数不正确',
+            502=>'token验证失败',
+            503=>'合成后端错误'
+        ];
+        if(is_array($result)){
+            return [
+                'status'=>0,
+                'msg'=>$error[$result['err_no']]
+            ];
+        }
+        $path = config('speech.path');
+        if(!file_exists($path)){
+            mkdir($path,777);
+        }
+        $file_path = $path . DS .date('YmdHis',time()).'.mp3';
+        $data = [
+            'text'=>$text,
+            'path'=>$file_path,
+            'date'=>time(),
+            'type'=>0,
+            'ip'=>request()->ip()
+        ];
+        if(!$id = db('speech')->insert($data)){
+            return [
+                'status'=>0,
+                'msg'=>'语音合成失败'
+            ];
+        }
+        file_put_contents($file_path, $result);
+        return [
+            'status'=>1,
+            'msg'=>'语音合成成功',
+            'data'=>[
+                'media_id'=>$id,
+                'text'=>$text,
+                'expires_in'=>config('speech.expires_in'),
+                'file_path'=>$this->site['url']. DS .str_replace('./','/',$file_path)
+            ]
+        ];
+    }
+
+    /**
+     * 删除语音过期文件
+     * @throws \think\Exception
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     * @throws \think\exception\PDOException
+     */
+    public function delete_speech_expires(){
+        $list = db('speech')->field('id,path,date')->select();
+        $expires = config('speech.expires_in');
+        foreach ($list as $k=>$v){
+            if(time()-$v['date']>$expires){
+                if(unlink($v['path'])){
+                    db('speech')->delete($v['id']);
+                }
+            }
+        }
+    }
+
     public function lbs()
     {
         $amap = new Amap();

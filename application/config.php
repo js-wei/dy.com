@@ -107,6 +107,13 @@ return [
             'ext'=>'jpg,png,gif,txt,zip,rar,tar,xls,pdf,doc,docx,xlsx'
         ],
     ],
+    'speech'=>[
+        'appid'=>'7312072',
+        'apikey'=>'7zk7tQsS5hvq9Lspm5AxEwvU',
+        'secretkey'=>'6eafa685183bddd79e175c924ceee751',
+        'path'=>  '.'.DS.'data'. DS .'speech',
+        'expires_in'=>3600,
+    ],
     'ENCRYPT_KEY'=>'THINK',         //加密key
     'LOG_PATH'=>'/log',
 ];
