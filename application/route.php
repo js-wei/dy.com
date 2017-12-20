@@ -38,3 +38,5 @@ Route::rule('api/upgrade_email', 'index/api/upgrade_email');
 Route::rule('api/set_hobbise', 'index/api/set_hobbise');
 Route::rule('api/push_app', 'index/api/push_app');
 Route::rule('api/push_recive', 'index/api/push_recive');
+Route::rule('api/set_information', 'index/api/set_information');
+

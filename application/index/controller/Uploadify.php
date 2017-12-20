@@ -25,13 +25,15 @@ class Uploadify
     {
         $file = request()->file($file);
         $path = config('UPLOAD.UPLOAD_PATH'). DS .'head';
-        $valid = config('UPLOAD.UPLOAD_IMAGE');
-        $info = $file->validate($valid)->move($path);
+        //$valid = config('UPLOAD.UPLOAD_IMAGE');
+        $ymd = date('Ymd',time());
+        $info = $file->move($path, $ymd. DS .md5(build_order_no()).'.png');
         if ($info) {
+            //$save_name =
             $_path = DS . 'public' .  DS .'uploads' . DS .'head';
             $this->_image_worker($path . DS . $info->getSaveName(), $crop, $quality);
             return [
-                'fullpath'=>$_path. DS .$info->getSaveName(),
+                'fullpath'=>str_replace('/public',' ',$_path). DS .$info->getSaveName(),
                 'filename'=>$info->getSaveName()
             ];
         } else {

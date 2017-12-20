@@ -516,11 +516,10 @@ class Api extends Base
         ])) {
             return ['status'=>0,'msg'=>'用户头像修改失败'];
         }
-
 		if(is_file($member['head'])){
 			unlink($member['head']);
 		}
-		
+
         $full_path = $this->site['url']. $_path;
         return ['status'=>1,'msg'=>'用户性头像改成功','fullpath'=>$full_path."?_id=".time()];
     }
