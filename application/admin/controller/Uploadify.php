@@ -23,9 +23,14 @@ class Uploadify extends Base{
      * @param string $folder    保存目录名
      * @return \think\response\Json
      */
-    public function webUploader($file='file',$folder='image'){
+    public function webUploader($file='file',$folder='image',$type=''){
         $file = request()->file($file);
-        $path = DS .'uploads'. DS . $folder;
+        if(!$type){
+        	$path = DS .'uploads'. DS . $folder;
+        }else{
+        	$path = DS .'uploads'. DS . $type. DS .$folder;
+        }
+        
         $config=[
             'size'=>1024*1024*20,
             'ext'=>'jpg,png,gif'

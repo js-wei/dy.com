@@ -20,7 +20,7 @@
                     <a href="__URL__/status" data-role="forbidden" class="btn btn-warning status">选中禁用</a>
                     <a href="__URL__/status" data-role="enable" class="btn btn-info status">选中启用</a>
                     <a href="__URL__/status" data-role="delete-all" class="btn btn-danger status">选中删除</a>
-                    <include file="public:search"/>
+                    <include file="public:search" title="轮播图名称"/>
                 </div>
                 <table class="table table-striped table-bordered table-hover" id="simpledatatable">
                     <thead>
@@ -45,6 +45,7 @@
                             <th>
                                 添加时间
                             </th>
+                            <th>排序</th>
                             <th>
                                 状态
                             </th>
@@ -75,6 +76,9 @@
 	                            </td>
 	                            <td>
 	                               {$vo.date|date='Y-m-d H:i:s',###}
+	                            </td>
+	                            <td>
+	                               {$vo.sort}
 	                            </td>
 	                            <td class="center ">
 	                               <eq name="vo.status" value="0"> <span class="text-success">正常</span><else /><span class="text-danger">禁用</span> </eq>

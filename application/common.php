@@ -10,6 +10,16 @@ function timestamp()
     list($t1, $t2) = explode(' ', microtime());
     return (float)sprintf('%.0f', (floatval($t1)+floatval($t2))*1000);
 }
+/**
+ * 获取缩略image
+ * @param $image
+ * @return string
+ */
+function get_m_image($image=''){
+    $path = pathinfo($image);
+    $_path = isset($path["dirname"])?$path["dirname"]."/m_".$path["basename"]:"";
+    return $_path;
+}
 
 /**
  * 实时图片
@@ -225,9 +235,9 @@ function check_email($email)
  * @param $end
  * @return array
  */
-function time_diff($start, $end)
+function time_diff($start, $end=0)
 {
-    $end = time();
+    $end = $end?$end:time();
     $cha = $end -$start;
 
     $minute=floor($cha/60);
@@ -579,6 +589,20 @@ function get_client_ip($type = 0, $adv=false)
     return $ip[$type];
 }
 
+/**
+ * 获取公网ip
+ * @return mixed
+ */
+function get_real_client_ip(){
+    $getlink = curl_init();
+    curl_setopt($getlink, CURLOPT_URL, "http://tool.huixiang360.com/zhanzhang/ipaddress.php");
+    curl_setopt($getlink, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($getlink, CURLOPT_HEADER, 0);
+    $ip_str = curl_exec($getlink);
+    preg_match('/\[(.*)\]/', $ip_str, $ip);
+    curl_close($getlink);
+    return $ip[1];
+}
 
 
 /**

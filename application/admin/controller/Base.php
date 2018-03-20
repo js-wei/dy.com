@@ -51,7 +51,7 @@ class Base extends Controller
         if (!$ip['status']) {
             check_ip($ip['rule']);
         }
-        $nav = array_merge($nav, $col);
+        //$nav = array_merge($nav, $col);
         //输出导航
         $this->assign('site', $this->site);
         $this->assign('nav', $nav);

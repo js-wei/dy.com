@@ -16,6 +16,55 @@ class Api extends Base
     protected function _initialize()
     {
         parent::_initialize();
+		
+    }
+
+	public function set_sysconf($uid=0,$notify=1,$power=0){
+		if(!$uid){
+			 return json(['status'=>0,'msg'=>'缺少参数']);
+		}
+
+		$p = db('sysconf')->where('uid','eq',$uid)->where('notify','eq',$notify)->find();
+		
+		if(!$p){
+			if(!db('sysconf')->insert([
+				'power'=>$power,
+				'notify'=>$notify,
+				'uid'=>$uid,
+				'dates'=>time()
+			])){
+				return json(['status'=>0,'msg'=>'设置失败']);
+			}
+			return json(['status'=>1,'msg'=>'设置成功']);
+		}else{
+		
+			if(!db('sysconf')->update([
+				'id'=>$p['id'],
+				'power'=>$power,
+				'dates'=>time()
+			])){
+				return json(['status'=>0,'msg'=>'设置失败']);
+			}
+			return json(['status'=>1,'msg'=>'设置成功']);
+		}
+		
+	}
+
+    public function carousel($limit=5,$order="sort asc,date desc"){
+        $_carousel = db('carousel')
+            ->field('id,title,image,url,date')
+            ->where('status','eq',0)
+            ->limit($limit)
+            ->order($order)
+            ->select();
+        if (!$_carousel) {
+            return json(['status'=>0,'msg'=>'没有查到数据']);
+        }
+        foreach ($_carousel as $k => $v) {
+            $_carousel[$k]['image']=$this->site['url'].$v['image'];
+            $_carousel[$k]['date_format']=date('Y-m-d H:i:s',$v['date']);
+        }
+        return json(['status'=>1,'msg'=>'查询成功','data'=>$_carousel]);
     }
 
     /**
@@ -23,23 +72,33 @@ class Api extends Base
      * @param int $id
      * @return \think\response\Json
      */
-    public function personal_info($id=0)
-    {
-        if (!request()->isPost()) {
-            return json(['status'=>0,'msg'=>'错误的请求方式']);
+    public function personal_info($id=0){
+        if (!request()->isAjax()) {
+            //return json(['status'=>0,'msg'=>'错误的请求方式']);
         }
         $_id = $id?$id:session('_mid');
         if (!$_id) {
             return json(['status'=>0,'msg'=>'缺少必要的条件']);
         }
         $userinfo = db('member')
-          ->field('id,password,openid,last_login_time,last_login_address,last_login_ip,status,dates', true)
-          ->find($_id);
+          ->field('id as user_id,head,last_login_ip,last_login_time,nickname,phone')
+          ->find($id);
         if (!$userinfo) {
             return json(['status'=>0,'msg'=>'查询失败']);
         }
+        $userinfo['settings']=$this->get_setting($userinfo['user_id']);
         return json(['status'=>1,'msg'=>'查询成功','data'=>$userinfo]);
     }
+	
+	public function test($callback="CALLBACK"){
+		$data=[
+			'title'=>'小泽一郎',
+			'msg'=>'浪打浪',
+			'time'=>date('Y-m-d H:i:s',1521114139)
+		];
+		//echo $callback.'('.json_encode($data).')';
+		return jsonp($data);
+	}
 
     /**
      * 检昵称是否存在
@@ -74,6 +133,7 @@ class Api extends Base
             'keywords'=>$this->site['keywords'],
             'description'=>$this->site['description'],
             'url'=>$this->site['url'],
+            'address'=>$this->site['address'],
         ];
         return ['status'=>1,'data'=>$data];
     }
@@ -109,7 +169,7 @@ class Api extends Base
      * @param int $type
      * @return \think\response\Json|\think\response\View
      */
-    public function login($phone='', $password='', $type=0)
+    public function login($phone='', $password='', $type=0,$t=1)
     {
         if (!request()->isPost()) {
             return json(['status'=>0,'msg'=>'错误的请求方式']);
@@ -135,10 +195,10 @@ class Api extends Base
                 ->field('id as user_id,phone,password,nickname,head,email,last_login_time,last_login_ip,status')
                 ->where($where)->find();
             if (!$admin) {
-                return json(['status'=>0,'msg'=>'您的账号输入有误']);
+                return json(['status'=>0,'msg'=>'账号有误或不存在']);
             }
 
-            if ($admin['password']!=$this->get_password($password)) {
+            if ($admin['password']!=$this->get_password($password,$t)) {
                 return json(['status'=>0,'msg'=>'您的密码输入有误']);
             }
         } else {
@@ -150,7 +210,7 @@ class Api extends Base
                 'phone'=>$phone
             ];
             $admin = db("member")
-                ->field('id as user_id,phone,password,nickname,head,email,last_login_time,
+                ->field('id as user_id,phone,password,nickname,head,sex,email,last_login_time,
                 last_login_ip,status')
                 ->where($where)->find();
             if (!$admin) {
@@ -176,11 +236,19 @@ class Api extends Base
         //保存登录状态
         session('_mid', $admin['user_id']);
         session('_m', $admin['phone']);
+		$admin['settings']=$this->get_setting($admin['user_id']);
         //跳转目标页
         unset($admin['password']);
         unset($admin['status']);
         return json(['status'=>1,'msg'=>'登录成功','data'=>$admin]);
     }
+
+	public function get_setting($uid=0){
+		if(!$uid){
+			return;
+		}
+		return db('sysconf')->field('notify,power')->where('uid','eq',$uid)->select();
+	}
 
     /**
      * 用户注册
@@ -189,7 +257,7 @@ class Api extends Base
      * @param string $verify
      * @return \think\response\Json|\think\response\View
      */
-    public function register($phone='', $password='', $verify='')
+    public function register($phone='', $password='', $verify='',$t=1)
     {
         if (!request()->isPost()) {
             return json(['status'=>0,'msg'=>'请求方式错误']);
@@ -209,7 +277,7 @@ class Api extends Base
         }
         $member = [
             'phone'=>$phone,
-            'password'=>$this->get_password($password),
+            'password'=>$this->get_password($password,$t),
             'tel'=>$phone,
             'date'=>time()
         ];
@@ -233,7 +301,7 @@ class Api extends Base
      * @param string $confirm_password
      * @return \think\response\Json
      */
-    public function set_password($phone='', $password='', $confirm_password='')
+    public function set_password($phone='', $password='', $confirm_password='',$t=1)
     {
         if (!request()->isPost()) {
             return json(['status'=>0,'msg'=>'请求方式错误']);
@@ -259,7 +327,7 @@ class Api extends Base
         }
         if (!db('member')->update([
             'id'=>$member['id'],
-            'password'=>$this->get_password($password),
+            'password'=>$this->get_password($password,$t),
             'dates'=>time()
         ])) {
             return ['status'=>0,'msg'=>'修改失败请重试'];
@@ -314,8 +382,8 @@ class Api extends Base
      */
     public function send_message($tel='', $type=0)
     {
-        if (!request()->isPost()) {
-            return ['status'=>0,'msg'=>'请求方式错误'];
+        if (!request()->isAjax()) {
+            //return ['status'=>0,'msg'=>'请求方式错误'];
         }
         if (!$tel) {
             return ['status'=>0,'msg'=>'请输入发送手机号'];
@@ -334,9 +402,11 @@ class Api extends Base
 
         if (substr($arr, 21, 6) == 000000) {
             return ['status'=>1,'msg'=>'验证成功下发,请注意查收'];
-        } else {
-            return ['status'=>0,'msg'=>'验证下发失败'];
-        }
+        } else if(substr($arr, 21, 6) == 105147) {
+            return ['status'=>0,'msg'=>'接受手机使用太频繁'];
+        }else{
+			 return ['status'=>0,'msg'=>'验证下发失败'];
+		}
     }
 
     /**
@@ -522,6 +592,19 @@ class Api extends Base
 
         $full_path = $this->site['url']. $_path;
         return ['status'=>1,'msg'=>'用户性头像改成功','fullpath'=>$full_path."?_id=".time()];
+    }
+
+    /**
+     * 获取ip
+     * @return array
+     */
+    public function get_ip(){
+        $ip = get_real_client_ip();
+        $_ip = get_client_ip();
+        return ['status'=>1,'data'=>[
+            'real_ip'=>$ip,
+            'client_ip'=>$_ip
+        ]];
     }
 
     /**
@@ -841,6 +924,361 @@ class Api extends Base
         return ['status'=>1,'msg'=>'设置成功'];
     }
 
+
+    /**
+     * 获取数据列表
+     * @param string $mod
+     * @param int $id
+     * @return \think\response\Json
+     */
+    public function query($mod='article',$id=0,$p=1,$sql=0){
+        $params = request()->param();
+        $action = isset($params['action'])?$params['action']:'list';
+        $field = isset($params['field'])?$params['field']:'*';
+        $limit = isset($params['limit'])?$params['limit']:'';
+        $order = isset($params['order'])?$params['order']:'';
+        $random = isset($params['random'])?$params['random']:'';
+        $_where = isset($params['where'])?json_decode($params['where'],true):'';
+//        $sub = isset($params['long'])?$params['long']:50;
+//        $suffix = isset($params['suffix'])?$params['suffix']:false;
+        $column_id = isset($params['column_id'])?$params['column_id']:'';
+        $join = isset($params['join'])?$params['join']:'';
+        $content = isset($params['content'])?$params['content']:'';
+        $where['status']=0;
+		
+        if($_where){
+            foreach ($_where as $k => $v){
+                if(isset($v['val'])){
+                    if(trim($v['op'])=='between'){
+                        $val = explode('and',trim($v['val']));
+                        $where[$v['field']]=['between',[$val[0],$val[1]]];
+                    }else if(trim($v['op'])=='like'){
+                        $val = trim($v['val']);
+                        $op=trim($v['op']);
+                        $where[$v['field']]=[$op,"%{$val}%"];
+                    }else{
+                        $val = trim($v['val']);
+                        $op=trim($v['op']);
+                        $where[$v['field']]=[$op,$val];
+                    }
+                    
+                }
+            }
+        }
+
+        if($id){
+            $where['id'] = $id;
+        }
+        if($column_id){
+            $_column =  $this->_get_child($column_id);
+            $where['column_id'] = ['in',$_column];
+        }
+    
+        if(!empty($order)){
+            $order =str_replace('_',' ',$order);
+        }
+
+        switch ($action){
+            case 'page':    //分页数据
+                //p($where);die;
+                $list = db($mod)
+                    ->where($where)
+                    ->field($field)
+                    ->order($order)
+                    ->paginate($limit,false,[
+                        'page'=>$p
+                    ]);
+
+                $list = json_decode(json_encode($list),true);
+                foreach($list['data'] as $k=>$v){
+                    $list['data'][$k]['date_format']=isset($v["date"])?date('Y-m-d',$v['date']):'';
+                    $list['data'][$k]["image"]= isset($v["image"]) && $v["image"]?$this->site['url'] . DS . $v["image"]:'';
+                    $list['data'][$k]["m_image"]=isset($v["image"]) && $v["image"]?$this->site['url'] . DS . get_m_image($v["image"]):'';
+                    //$list['data'][$k]["description"]=isset($v["description"])?sub_str($v["description"],0,$sub,$suffix):'';
+                }
+
+				if($sql){
+					 return json([
+						'status'=>1,
+						'msg'=>'查询成功',
+						'data'=>$list,
+						'sql'=>db($mod)->getlastsql()
+					]);
+				}else{
+					 return json([
+						'status'=>1,
+						'msg'=>'查询成功',
+						'data'=>$list,
+					]);
+				}
+                break;
+            case 'list':    //列表数据
+                if($join){
+                    $list = db($mod)
+                        ->alias('a')
+                        ->join($join['field'].' b',"b.".$join['key']."=a.id")
+                        ->where($where)
+                        ->field($field)
+                        ->order($order)
+                        ->limit($limit)
+                        ->select();
+                }else{
+                    $list = db($mod)
+                        ->where($where)
+                        ->field($field)
+                        ->order($order)
+                        ->limit($limit)
+                        ->select();
+                }
+
+                foreach($list as $k=>$v){
+                    $list[$k]['date_format']=isset($v["date"])?date('Y-m-d H:i:s',$v['date']):'';
+                    $list[$k]["image"]= isset($v["image"]) && $v["image"]?$this->site['url'] . DS . $v["image"]:'';
+                    $list[$k]["m_image"]=isset($v["image"]) && $v["image"]?$this->site['url'] . DS . get_m_image($v["image"]):'';
+                    //$list[$k]["description"]=isset($v["description"])?sub_str($v["description"],0,$sub,$suffix):'';
+                    if(isset($v["pics"]) && !empty($v["pics"])){
+                        $_pics = [];
+                        $pics = explode(',',$v["pics"]);
+                        foreach($pics as $k1=>$v1){
+                            $_pics[]=$this->site['url']  . $v1;
+                        }
+                        $list[$k]["pics"] = $_pics;
+                    }
+                }
+
+                if($sql){
+					 return json([
+						'status'=>1,
+						'msg'=>'查询成功',
+						'data'=>$list,
+						'sql'=>db($mod)->getlastsql()
+					]);
+				}else{
+					 return json([
+						'status'=>1,
+						'msg'=>'查询成功',
+						'data'=>$list,
+					]);
+				}
+                break;
+            case 'details':     //详情数据
+                if(!$where){
+                    return json(['status'=>0,'msg'=>'缺少参数ID']);
+                }
+                $vo = db($mod)->field($field)->where($where)->find();
+                if($mod=='article' || $mod=='comments' || $mod=='taste' || $mod=='line'){
+                    db($mod)->where($where)->setInc('hits');
+                }
+                $vo['date_format']=isset($vo['date'])?date('Y-m-d',$vo['date']):'';
+                $vo['content']=isset($vo['content']) && $vo['content']?htmlspecialchars_decode($vo['content']):'';
+                $vo["image"]=isset($vo["image"]) && $vo["image"]?$this->site['url'] . DS . $vo["image"]:'';
+                //$vo["m_image"]=isset($vo["image"]) && $vo["image"]?$this->site['url'] . DS . get_m_image($vo["image"]):'';
+                //$vo["description"]=sub_str($vo["description"],0,$sub,$suffix);
+                if(isset($vo["pics"]) && !empty($vo["pics"])){
+                    $_pics = [];
+                    $pics = explode(',',$vo["pics"]);
+                    foreach($pics as $k=>$v){
+                        $_pics[$k]=$this->site['url']  . $v;
+                    }
+                    $vo["pics"] = $_pics;
+                }
+
+                if(isset($vo['image']) && strstr($vo['image'],'/uploads/uploadify/')){
+                    $vo['image']= str_replace('/uploads/uploadify/',$this->site['url'].'/uploads/uploadify/',$vo['image']);
+                }
+                
+                $vo['content']=str_replace('/uploads/KindEditor',$this->site['url'].'/uploads/KindEditor',$vo['content']);
+                $vo['content']=str_replace('<img','<img class="img-fluid w-80" class="lazy" data-original=""',$vo['content']);
+                
+                return json([
+                    'status'=>1,
+                    'msg'=>'查询成功',
+                    'data'=>$vo
+                ]);
+               break;
+            case 'decode':  //文本反解析
+                if(!$content){
+                     return json([
+                        'status'=>0,
+                        'msg'=>'失败'
+                    ]); 
+                }
+                $data =  htmlspecialchars_decode($content);
+				if($sql){
+					 return json([
+						'status'=>1,
+						'msg'=>'成功',
+						'data'=>$data
+					]);
+				}else{
+					 return json([
+						'status'=>1,
+						'msg'=>'成功',
+						'data'=>$data,
+					]);
+				}
+            break;
+            case 'count':   //计数
+                $vo = db($mod)->field($field)->where($where)->count('*');
+				if($sql){
+					 return json([
+						'status'=>1,
+						'msg'=>'查询成功',
+						'count'=>$vo,
+						'sql'=>db($mod)->getlastsql()
+					]);
+				}else{
+					 return json([
+						'status'=>1,
+						'msg'=>'查询成功',
+						'count'=>$vo,
+					]);
+				}
+            break;
+            case 'random':  //随机推荐
+                $DB_PREFIX = config('database.prefix');
+                $_random = $random?' and '.$random:'';
+                $limit = $limit?$limit:5;
+                $order = $order?$order:'id';
+                $sql='SELECT '.$field.' FROM `'
+                    .$DB_PREFIX.$mod.'` WHERE id >= (SELECT floor(RAND() * (SELECT MAX(id) FROM `'.$DB_PREFIX.$mod.'`))) '
+                    .$_random.' ORDER BY '.$order.' LIMIT '.$limit;
+                
+                $list = db($mod)->query($sql);
+                foreach($list as $k=>$v){
+                    $list[$k]['date_format']=isset($v["date"])?date('Y-m-d',$v['date']):'';
+                    $list[$k]["image"]= isset($v["image"])?$this->site['url'] . DS . $v["image"]:'';
+                    $list[$k]["m_image"]=isset($v["image"])?$this->site['url'] . DS . get_m_image($v["image"]):'';
+                }
+                return json([
+                    'status'=>1,
+                    'msg'=>'查询成功',
+                    'data'=>$list
+                ]);
+				if($sql){
+					 return json([
+						'status'=>1,
+						'msg'=>'查询成功',
+						'data'=>$list,
+						'sql'=>db($mod)->getlastsql()
+					]);
+				}else{
+					 return json([
+						'status'=>1,
+						'msg'=>'查询成功',
+						'data'=>$list,
+					]);
+				}
+                break;
+            case 'correlation':     //分词搜索
+                $keyword = isset($params['keyword'])?$params['keyword']:'';
+                if(!$keyword){
+                    return json(['status'=>0,'msg'=>'请输入相关词']);
+                }
+
+                $pscws = new \SCWS\PSCWS4('utf8');
+                $pscws->set_dict(VENDOR_PATH.DS.'scws/pscws4/dict/dict.utf8.xdb');
+                $pscws->set_rule(VENDOR_PATH.DS.'/scws/pscws4/etc/rules.ini');
+                $pscws->send_text($keyword);
+                $tops = $pscws->get_tops(10,'ns');
+                
+                $where1 = '';
+                if($tops){
+                    foreach ($tops as $k=>$v){
+                        if($k<count($tops)-1){
+                            $where1 .= 'or `title` like "%'.$v["word"].'%"';
+                        }
+                    }
+                    $where1 .= 'or `title` like "%'.$keyword.'%"';
+                }else{
+                    $where1 .= 'or `title` like "%'.$keyword.'%"';
+                }
+               
+                $where1 = substr($where1,2);
+                
+                $list = db($mod)
+                    ->field($field)
+                    ->where($where)
+                    ->where($where1)
+                    ->limit($limit)
+                    ->order($order)
+                    ->select();
+
+                foreach($list as $k=>$v){
+                    $list[$k]['date_format']=isset($v["date"])?date('Y-m-d',$v['date']):'';
+                    $list[$k]["image"]= isset($v["image"])?$this->site['url'] . DS . $v["image"]:'';
+                    $list[$k]["m_image"]=isset($v["image"])?$this->site['url'] . DS . get_m_image($v["image"]):'';
+                }
+
+				if($sql){
+					 return json([
+						'status'=>1,
+						'msg'=>'查询成功',
+						'data'=>$list,
+						'sql'=>db($mod)->getlastsql()
+					]);
+				}else{
+					 return json([
+						'status'=>1,
+						'msg'=>'查询成功',
+						'data'=>$list,
+					]);
+				}
+                break;
+            case 'form':     //添加表单
+                $form = isset($params['form'])?$params['form']:[];
+                if(!$form){
+                    return json([
+                        'status'=>0,
+                        'msg'=>'请填写表单'
+                    ]);
+                }
+                $model = Model($mod);
+                $result = $model->save($form);
+                return json($result);
+                break;
+			case 'refresh':     //添加表单
+                 $list = db($mod)
+                    ->field($field)
+                    ->where($where)
+                    ->order($order)
+                    ->select();
+				 $count = db($mod)->where($where)->count('*');
+                foreach($list as $k=>$v){
+                    $list[$k]['date_format']=isset($v["date"])?date('Y-m-d',$v['date']):'';
+                    $list[$k]["image"]= (isset($v["image"]) && $v["image"])?$this->site['url'] . DS . $v["image"]:'';
+                    $list[$k]["m_image"]=(isset($v["image"]) && $v["image"])?$this->site['url'] . DS . get_m_image($v["image"]):'';
+                }
+				 $pager = ceil($count/$limit);
+				 return json([
+					'status'=>1,
+					'msg'=>'查询成功',
+					'data'=>$list,
+					'last_page'=>$pager
+				]);
+                break;
+            default:
+                return json([
+                    'status'=>0,
+                    'msg'=>'错误的请求'
+                ]);
+        }
+    }
+    /**
+     * 获取子栏目
+     * @param int $id
+     * @param bool $clear
+     * @return array
+     */
+    protected function _get_child($id){
+        $curr=db('column')->field('dates',true)->find($id);
+        $column=db('column')->field('dates',true)->where('status','eq',0)->select();
+        $data = \service\Category::getChildrenById($column,$curr['id']);
+        $retVal = (!empty($data)) ? implode(',',$data).','.$id : $id;
+        return $retVal;
+    }
+
+
     /**
      * 检测验证码
      * @param string $verify
@@ -857,11 +1295,12 @@ class Api extends Base
         }
         if ($verify!=$d) {
             return ['status'=>0,'msg'=>'验证码不正确'];
-        }
-        if ($clear) {
-            cookie($verify.'_session_code', null, time()-60*2);
-        }
-        return ['status'=>1,'msg'=>'验证码正确'];
+        }else{
+			if ($clear) {
+				cookie($verify.'_session_code', null, time()-60*2);
+			}
+			return ['status'=>1,'msg'=>'验证码正确'];
+		}
     }
 
     /**
@@ -869,8 +1308,8 @@ class Api extends Base
      * @param $pwd
      * @return bool|string
      */
-    protected function get_password($pwd)
+    protected function get_password($pwd,$t=0)
     {
-        return substr(md5($pwd), 10, 15);
+        return $t?substr($pwd, 10, 15):substr(md5($pwd), 10, 15);
     }
 }

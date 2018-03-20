@@ -20,7 +20,7 @@
 return [
     'app_debug'              => true,
     // 默认模块名
-    'default_module'        => 'index',
+    'default_module'        => 'admin',
     // 默认控制器名
     'default_controller'    => 'index',
     // 默认操作名

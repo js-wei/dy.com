@@ -51,7 +51,7 @@ class Config extends Base{
 		if(isset($array['shard'])){
             $param['shard'] = htmlspecialchars($param['shard']);
         }
-        if($param['code']){
+        if(isset($param['code'])){
             $param['code'] = htmlspecialchars($param['code']);
         }
 		if($id){

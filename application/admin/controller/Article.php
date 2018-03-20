@@ -216,7 +216,7 @@ class article extends Base
         $param['attrs']=isset($param['attrs'])?implode(',', $param['attrs']):'';
         $param['content']=htmlspecialchars(input('content/s'));
         $param['pics']=isset($param['pics'])?implode(',', $param['pics']):'';
-
+        $param['author'] = $param['author']?$param['author']:'公司人事部';
 
         if ($param['attr']) {
             $attr=$this->makeAttr($param['attr']);	//重置属性
@@ -229,6 +229,7 @@ class article extends Base
         unset($param['p']);
         unset($param['fid']);
         unset($param['_id']);
+        
 
         if ($id) {
             $param['dates']=time();

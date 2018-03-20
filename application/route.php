@@ -39,4 +39,8 @@ Route::rule('api/set_hobbise', 'index/api/set_hobbise');
 Route::rule('api/push_app', 'index/api/push_app');
 Route::rule('api/push_recive', 'index/api/push_recive');
 Route::rule('api/set_information', 'index/api/set_information');
+Route::rule('api/get_ip', 'index/api/get_ip');
+Route::rule('api/carousel', 'index/api/carousel');
+Route::rule('api/query', 'index/api/query');
+Route::rule('api/push', 'index/api/push');
 

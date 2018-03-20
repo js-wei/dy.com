@@ -9,19 +9,25 @@
         <div class="widget-body">
             <form id="togglingForm" action="__URL__/add_handler" method="post" enctype="multipart/form-data" class="form-horizontal" autocomplete="off">
                 <div class="form-group">
-                    <label class="col-md-2 col-lg-2 control-label">网站标题<sup>*</sup></label>
+                    <label class="col-md-2 col-lg-2 control-label">公司全称<sup>*</sup></label>
                     <div class="col-lg-3">
-                        <input type="text" name="title" value="<notempty name="info">{$info.title}</notempty>" class="form-control" id="name" placeholder="网站标题"/>
+                        <input type="text" name="title" value="<notempty name="info">{$info.title}</notempty>" class="form-control" id="name" placeholder="公司名称"/>
                         <input type="hidden" name="id" value="<notempty name='info'>{$info.id}</notempty>">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="col-md-2 col-lg-2 control-label">网站域名<sup>*</sup></label>
+                    <label class="col-md-2 col-lg-2 control-label">公司简称<sup>*</sup></label>
                     <div class="col-lg-3">
-                        <input type="text" name="url" value="<notempty name="info">{$info.url}</notempty>" class="form-control" id="url" placeholder="网站域名"/>
+                        <input type="text" name="short_title" value="<notempty name="info">{$info.short_title}</notempty>" class="form-control" id="url" placeholder="公司简称"/>
                     </div>
                 </div>
                 <div class="form-group">
+                    <label class="col-md-2 col-lg-2 control-label">服务器域名<sup>*</sup></label>
+                    <div class="col-lg-3">
+                        <input type="text" name="url" value="<notempty name="info">{$info.url}</notempty>" class="form-control" id="url" placeholder="服务器域名"/>
+                    </div>
+                </div>
+                <!-- <div class="form-group">
                     <label class="col-sm-2 control-label">网站关键词</label>
                     <div class="col-lg-3">
                         <textarea name="keywords" class="form-control" rows="5" placeholder="文档关键词"><notempty name="info">{$info.keywords}</notempty></textarea>
@@ -32,9 +38,9 @@
                     <div class="col-lg-3">
                         <textarea name="description" class="form-control" rows="6" placeholder="网站说明"><notempty name="info">{$info.description}</notempty></textarea>
                     </div>
-                </div>
+                </div> -->
                 <div class="form-group">
-                    <label class="col-sm-2 control-label">网站LOGO</label>
+                    <label class="col-sm-2 control-label">公司LOGO</label>
                     <div class="col-sm-3">
                         <div id="uploader-demo">
                             <div id="fileList" class="uploader-list"></div>
@@ -69,9 +75,37 @@
                     </div>
                 </div>
                 <div class="form-group">
+                    <label class="col-md-2 col-lg-2 control-label">上班打卡时间</label>
+                    <div class="col-lg-3">
+                        <input type="text" name="start_push_time" id="start_push_time" value="<notempty name="info"><neq name="info.start_push_time" value="0">{$info.start_push_time}</neq></notempty>" class="form-control"placeholder="上班打卡时间"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-2 col-lg-2 control-label">下班打卡时间</label>
+                    <div class="col-lg-3">
+                        <input type="text" name="end_push_time" id="end_push_time" value="<notempty name="info"><neq name="info.start_push_time" value="0">{$info.start_push_time}</neq></notempty>" class="form-control"placeholder="下班打卡时间"/>
+                    </div>
+                </div>
+                <!--<div class="form-group">-->
+                    <!--<label class="col-md-2 col-lg-2 control-label">最迟上班打卡时间</label>-->
+                    <!--<div class="col-lg-3">-->
+                        <!--<input type="text" name="start_time"-->
+                               <!--value="<notempty name="info">{$info.start_time}</notempty>" class="form-control" placeholder="上班打卡时间"/>-->
+                        <!--<div class="text-danger">*分钟,正点延后的时间</div>-->
+                    <!--</div>-->
+                <!--</div>-->
+                <!--<div class="form-group">-->
+                    <!--<label class="col-md-2 col-lg-2 control-label">最早下班打卡时间</label>-->
+                    <!--<div class="col-lg-3">-->
+                        <!--<input type="text" name="end_time"-->
+                               <!--value="<notempty name="info">{$info.end_time}</notempty>" class="form-control" placeholder="上班打卡时间"/>-->
+                    <!--</div>-->
+                <!--</div>-->
+                <div class="form-group">
                     <label class="col-md-2 col-lg-2 control-label">联系固话</label>
                     <div class="col-lg-3">
-                        <input type="text" name="tel" value="<notempty name="info">{$info.tel}</notempty>" class="form-control" id="tel" placeholder="联系固话"/>
+                        <input type="text" name="tel"
+                               value="<notempty name="info">{$info.tel}</notempty>" class="form-control" placeholder="联系固话"/>
                     </div>
                 </div>
                 <div class="form-group">
@@ -93,23 +127,24 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="col-md-2 col-lg-2 control-label">联系地址</label>
+                    <label class="col-md-2 col-lg-2 control-label">公司地址</label>
                     <div class="col-lg-3">
-                        <input type="text" name="address" value="<notempty name="info">{$info.address}</notempty>" class="form-control" id="address" placeholder="联系地址"/>
+                        <input type="text" name="address" value="<notempty name="info">{$info.address}</notempty>" class="form-control" id="address" placeholder="公司地址"/>
+                        <span class="text-danger">*作为基点打卡地址</span>
                     </div>
                 </div>
-                <div class="form-group">
+               <!--  <div class="form-group">
                     <label class="col-md-2 col-lg-2 control-label">版权信息</label>
                     <div class="col-lg-3">
                         <input type="text" name="copyright" value="<notempty name="info">{$info.copyright}</notempty>" class="form-control" id="copyright" placeholder="版权信息"/>
                     </div>
-                </div>
-                <div class="form-group">
+                </div> -->
+               <!--  <div class="form-group">
                     <label class="col-md-2 col-lg-2 control-label">统计代码</label>
                     <div class="col-lg-3">
                         <textarea name="code" class="form-control" rows="5" placeholder="统计代码"><notempty name="info">{$info.code}</notempty></textarea>
                     </div>
-                </div>
+                </div> -->
                 <hr class="wide" />
                 <div class="form-group">
                     <div class="col-lg-3 col-lg-offset-2">
@@ -124,6 +159,27 @@
 <js file="__JS__/validation/bootstrapValidator.js"/>
 <script type="text/javascript">
     $(function(){
+        var stat = '<notempty name="info">{$info.start_push_time}</notempty>',
+            end= '<notempty name="info">{$info.end_push_time}</notempty>'
+        layui.use('laydate', function(){
+            var laydate = layui.laydate;
+
+            //执行一个laydate实例
+            laydate.render({
+                elem: '#start_push_time',
+                type:'time',
+                format:'HH:mm:ss'
+                ,value:stat||"08:00:00"
+                ,theme: '#393D49'
+            });
+            laydate.render({
+                elem: '#end_push_time',
+                type:'time',
+                format:'HH:mm:ss'
+                ,value:end||"17:00:00"
+                ,theme: '#393D49'
+            });
+        });
         $('#togglingForm').bootstrapValidator({
             message: '验证没有通过',
             feedbackIcons: {
@@ -165,13 +221,6 @@
                     validators: {
                         notEmpty: {
                             message: '请输入域名'
-                        }
-                    }
-                },
-                last_tpl:{
-                    validators: {
-                        notEmpty: {
-                            message: '请输入最终显示模板'
                         }
                     }
                 }

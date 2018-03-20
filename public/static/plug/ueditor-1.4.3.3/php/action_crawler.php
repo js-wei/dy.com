@@ -1,12 +1,4 @@
 <?php
-# @Author: 魏巍
-# @Date:   2017-12-11T09:42:17+08:00
-# @Email:  524314430@qq.com
-# @Last modified by:   魏巍
-# @Last modified time: 2017-12-11T10:53:49+08:00
-
-
-
 /**
  * 抓取远程图片
  * User: Jinqn
