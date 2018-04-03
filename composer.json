@@ -32,9 +32,9 @@
         "spiritix/html-to-pdf": "^2.0",
         "tomk79/php-excel2html": "^0.0.7",
         "phpoffice/phpword": "^0.13.0",
-        "wy0727/getui": "^0.1.0",
         "scws/pscws4": "^1.0",
-        "liushoukun/dawn-api": "^2.0"
+        "liushoukun/dawn-api": "^2.0",
+        "wy0727/getui": "^0.1.0"
     },
     "extra": {
         "think-path": "thinkphp"

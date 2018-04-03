@@ -23,7 +23,7 @@ class GeTui
 
     public function __construct($AppID='', $AppSecret='', $AppKey='', $MasterSecret='', $ClientID='')
     {
-        $this->AppID=$AppID?$appID:Config('GeTui.AppID');
+        $this->AppID=$AppID?$AppID:Config('GeTui.AppID');
         $this->AppSecret=$AppSecret?$AppSecret:Config('GeTui.AppSecret');
         $this->AppKey=$AppKey?$AppKey:Config('GeTui.AppKey');
         $this->MasterSecret=$MasterSecret?$MasterSecret:Config('GeTui.MasterSecret');

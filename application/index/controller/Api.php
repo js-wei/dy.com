@@ -8,8 +8,14 @@
 
 namespace app\index\controller;
 
+use getuisdk\IGtNotificationTemplate;
+use getuisdk\IGtTransmissionTemplate;
 use think\Validate;
 use think\Session;
+use getuisdk\IGeTui;
+use getuisdk\IGtAppMessage;
+use getuisdk\IGtSingleMessage;
+use getuisdk\IGtTarget;
 
 class Api extends Base
 {
@@ -81,11 +87,14 @@ class Api extends Base
             return json(['status'=>0,'msg'=>'缺少必要的条件']);
         }
         $userinfo = db('member')
-          ->field('id as user_id,head,last_login_ip,last_login_time,nickname,phone')
-          ->find($id);
+            ->field('id as user_id,phone,birthday,password,push_client_id,address,information,nickname,head,email,last_login_time,last_login_ip,status')
+            ->find($id);
         if (!$userinfo) {
             return json(['status'=>0,'msg'=>'查询失败']);
         }
+        $userinfo['last_login_time_format']=$userinfo['last_login_time']?date('Y-m-d H:i:s',$userinfo['last_login_time']):'';
+        $userinfo['birthday_format']=$userinfo['birthday']?date('Y-m-d',$userinfo['birthday']):'';
+        $userinfo['head']=$userinfo['head']?$this->site['url'].$userinfo['head']:'';
         $userinfo['settings']=$this->get_setting($userinfo['user_id']);
         return json(['status'=>1,'msg'=>'查询成功','data'=>$userinfo]);
     }
@@ -125,17 +134,53 @@ class Api extends Base
      * 配置站点信息
      * @return array
      */
-    public function get_site()
-    {
-        $data=[
-            'title'=>$this->site['title'],
-            'logo'=>str_replace('//', '/', $this->site['url'].$this->site['logo']),
-            'keywords'=>$this->site['keywords'],
-            'description'=>$this->site['description'],
-            'url'=>$this->site['url'],
-            'address'=>$this->site['address'],
-        ];
-        return ['status'=>1,'data'=>$data];
+    public function get_site(){
+        $site = db('config')
+            ->field('title,short_title,address,copyright,icp,logo,keywords,description,url,radius,address,start_push_time,start_time,end_push_time,end_time,punch_ip,compny')
+            ->find(1);
+        return ['status'=>1,'data'=>$site];
+    }
+
+    public function upgrade_address($uid=0,$address=''){
+        if (!$uid) {
+            return ['status'=>0,'msg'=>'参数错误'];
+        }
+        if (!$address) {
+            return ['status'=>0,'msg'=>'地址不能为空'];
+        }
+        $member = db('member')->find($uid);
+        if (!$member) {
+            return ['status'=>0,'msg'=>'没有用户'];
+        }
+        if(!db('member')->update([
+            'id'=>$uid,
+            'address'=>$address,
+            'dates'=>time()
+        ])){
+            return ['status'=>0,'msg'=>'修改失败'];
+        }
+        return ['status'=>0,'msg'=>'修改成功'];
+    }
+
+    public function upgrade_birthday($uid=0,$date=''){
+        if (!$uid) {
+            return ['status'=>0,'msg'=>'参数错误'];
+        }
+        if (!$date) {
+            return ['status'=>0,'msg'=>'地址不能为空'];
+        }
+        $member = db('member')->find($uid);
+        if (!$member) {
+            return ['status'=>0,'msg'=>'没有用户'];
+        }
+        if(!db('member')->update([
+            'id'=>$uid,
+            'birthday'=>strtotime($date),
+            'dates'=>time()
+        ])){
+            return ['status'=>0,'msg'=>'修改失败'];
+        }
+        return ['status'=>0,'msg'=>'修改成功'];
     }
 
     /**
@@ -163,16 +208,22 @@ class Api extends Base
     }
 
     /**
-     * 用户登陆
      * @param string $phone
      * @param string $password
      * @param int $type
-     * @return \think\response\Json|\think\response\View
+     * @param int $t
+     * @param string $push_client_id
+     * @return \think\response\Json
+     * @throws \think\Exception
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     * @throws \think\exception\PDOException
      */
-    public function login($phone='', $password='', $type=0,$t=1)
+    public function login($phone='', $password='', $type=0,$t=1,$push_client_id='')
     {
         if (!request()->isPost()) {
-            return json(['status'=>0,'msg'=>'错误的请求方式']);
+            //return json(['status'=>0,'msg'=>'错误的请求方式']);
         }
         //逻辑判断
         if (empty($phone)) {
@@ -192,8 +243,9 @@ class Api extends Base
                 ];
             }
             $admin = db("member")
-                ->field('id as user_id,phone,password,nickname,head,email,last_login_time,last_login_ip,status')
+                ->field('id as user_id,phone,birthday,password,push_client_id,address,information,nickname,head,email,last_login_time,last_login_ip,status')
                 ->where($where)->find();
+
             if (!$admin) {
                 return json(['status'=>0,'msg'=>'账号有误或不存在']);
             }
@@ -210,7 +262,7 @@ class Api extends Base
                 'phone'=>$phone
             ];
             $admin = db("member")
-                ->field('id as user_id,phone,password,nickname,head,sex,email,last_login_time,
+                ->field('id as user_id,phone,password,nickname,information,head,sex,email,last_login_time,
                 last_login_ip,status')
                 ->where($where)->find();
             if (!$admin) {
@@ -221,22 +273,30 @@ class Api extends Base
         if ($admin['status']==1) {
             return json(['status'=>0,'msg'=>'非法操作账号已锁定，请联系管理员解封']);
         }
-
-        //更新登录信息
         $data=array(
             'id'=>$admin['user_id'],
             'last_login_time'=>time(),
             'last_login_ip'=>request()->ip(),
             'last_login_address'=>$this->get_location()
         );
-
+        $_cid = input('push_client_id/s');
+        if($_cid){
+            $data['push_client_id']=$_cid;
+        }
+        //p($data);die;
         //更新登陆信息
-        db("member")->update($data);
-
+        if(db("member")->update($data)){
+            $admin = db("member")
+                ->field('id as user_id,phone,birthday,password,push_client_id,address,information,nickname,head,email,last_login_time,last_login_ip,status')
+                ->where($where)->find();
+        }
         //保存登录状态
         session('_mid', $admin['user_id']);
         session('_m', $admin['phone']);
-		$admin['settings']=$this->get_setting($admin['user_id']);
+        $admin['head']=$admin['head']?$this->site['url'].$admin['head']:'';
+        $admin['last_login_time_format']=$admin['last_login_time']?date('Y-m-d H:i:s',$admin['last_login_time']):'';
+        $admin['settings']=$this->get_setting($admin['user_id']);
+        $admin['birthday_format']=$admin['birthday']?date('Y-m-d',$admin['birthday']):'';
         //跳转目标页
         unset($admin['password']);
         unset($admin['status']);
@@ -245,7 +305,10 @@ class Api extends Base
 
 	public function get_setting($uid=0){
 		if(!$uid){
-			return;
+			return[
+			    'status'=>0,
+                'msg'=>'缺少必要参数uid'
+            ];
 		}
 		return db('sysconf')->field('notify,power')->where('uid','eq',$uid)->select();
 	}
@@ -254,10 +317,11 @@ class Api extends Base
      * 用户注册
      * @param string $phone
      * @param string $password
+     * @param string $push_client_id
      * @param string $verify
      * @return \think\response\Json|\think\response\View
      */
-    public function register($phone='', $password='', $verify='',$t=1)
+    public function register($phone='', $password='',$push_client_id='',$verify='',$t=1)
     {
         if (!request()->isPost()) {
             return json(['status'=>0,'msg'=>'请求方式错误']);
@@ -279,6 +343,7 @@ class Api extends Base
             'phone'=>$phone,
             'password'=>$this->get_password($password,$t),
             'tel'=>$phone,
+            'push_client_id'=>$push_client_id,
             'date'=>time()
         ];
         $admin = db('member')->where('phone', 'eq', $phone)->find();
@@ -392,14 +457,14 @@ class Api extends Base
             return ['status'=>0,'msg'=>'请输入正确的手机号'];
         }
 
-        if ($type==0) {
-            $arr = send_sms($tel, '227478');
-        } elseif ($type==1) {
-            $arr = send_sms($tel, '227475');
-        } else {
-            $arr = send_sms($tel, '227477');
-        }
-
+//        if ($type==0) {
+//            $arr = send_sms($tel);
+//        } elseif ($type==1) {
+//            $arr = send_sms($tel);
+//        } else {
+//            $arr = send_sms($tel);
+//        }
+        $arr = send_sms($tel);
         if (substr($arr, 21, 6) == 000000) {
             return ['status'=>1,'msg'=>'验证成功下发,请注意查收'];
         } else if(substr($arr, 21, 6) == 105147) {
@@ -529,6 +594,35 @@ class Api extends Base
         return ['status'=>1,'msg'=>'用户昵称修改成功','nickname'=>$nickname];
     }
 
+    public function upgrade_password($uid=0, $password='',$verify='',$t=1)
+    {
+        if (!request()->isPost()) {
+            return ['status'=>0,'msg'=>'错误请求方式'];
+        }
+        if (!$uid) {
+            return ['status'=>0,'msg'=>'缺少必要参数uid'];
+        }
+        if(!$verify){
+            return ['status'=>0,'msg'=>'请填写验证码'];
+        }
+        $flag = $this->check_verify($verify, true);  //验证码验证
+        if (!$flag['status']) {
+            return $flag;
+        }
+        $member = db('member')->field('id,nickname,phone')->find($uid);
+        if (!$member) {
+            return ['status'=>0,'msg'=>'用户不已存在'];
+        }
+        if (!db('member')->update([
+            'id'=>$member['id'],
+            'password'=>$this->get_password($password,$t),
+            'dates'=>time()
+        ])) {
+            return ['status'=>0,'msg'=>'密码修改错误'];
+        }
+        return ['status'=>1,'msg'=>'密码修改成功'];
+    }
+
     /**
      * 修改性别
      * @param int $uid
@@ -564,9 +658,9 @@ class Api extends Base
      */
     public function upgrade_head($uid=0)
     {
-        //p(request());die;
+        
         if (!request()->isPost()) {
-            //return ['status'=>0,'msg'=>'错误请求方式'];
+           return ['status'=>0,'msg'=>'错误请求方式'];
         }
         if (!$uid) {
             return ['status'=>0,'msg'=>'缺少必要参数uid'];
@@ -824,30 +918,142 @@ class Api extends Base
     }
     /**
      * [push_app 推送消息APP]
+     * @param  string $cid    [用户id]
      * @param  string $title  [消息头]
      * @param  string $text   [消息正文]
      * @param  string $banner [显示图片]
      * @param  string $url    [跳转地址]
+     * @param  string $type    [类型]
      * @return [type]         [description]
      */
-    public function push_app($title='', $text='', $banner='', $url='')
+    public function push_app($cid='',$title='', $text='', $banner='https://www.baidu.com/img/bd_logo1.png',
+    $url='',$type='notification')
     {
+        $appId=config('GeTui.AppID');
+        $appKey =config('GeTui.AppKey');
+        $masterSecret =config('GeTui.MasterSecret');
+
+        $igt = new IGeTui(null,$appKey,$masterSecret);
+        $template = null;
+
+        switch ($type){
+            case 'notification':
+                $template = new IGtNotificationTemplate();
+                $template ->setAppId($appId);                      //应用appid
+                $template ->setAppkey($appKey);                    //应用appkey
+                //通知栏
+                $template->setTransmissionType(1);
+                $template ->setTitle($title);                       //通知栏标题
+                $template ->setText($text);                         //通知栏内容
+                $template->setIsRing(true);
+                $template->setIsClearable(true);
+                $template->setIsVibrate(true);
+                $template->setLogoURL($banner);
+                break;
+            case 'link':
+                if(!$url){
+                    return [
+                        'status'=>0,
+                        'msg'=>'缺少必要参数URL'
+                    ];
+                }
+                $template =  new \getuisdk\IGtLinkTemplate();
+                $template ->setUrl($url); //打开连接地址
+                $template ->setTitle($title);                       //通知栏标题
+                $template ->setText($text);                         //通知栏内容
+                $template->setIsRing(true);
+                $template->setIsClearable(true);
+                $template->setIsVibrate(true);
+                $template->setLogoURL($banner);
+                break;
+            case 'download':
+                if(!input('download')){
+                    return [
+                        'status'=>0,
+                        'msg'=>'缺少必要参数DOWNLOAD'
+                    ];
+                }
+                $_load = input('download');
+                $download = strstr($_load,'&')?json_decode($_load,true):$_load;
+                $template =  new \getuisdk\IGtNotyPopLoadTemplate();
+                //通知栏
+                $template ->setNotyTitle($title);                 //通知栏标题
+                $template ->setNotyContent($text); //通知栏内容
+                $template ->setNotyIcon("");                      //通知栏logo
+                $template ->setIsBelled(true);                    //是否响铃
+                $template ->setIsVibrationed(true);               //是否震动
+                $template ->setIsCleared(true);                   //通知栏是否可清除
+                //弹框
+                $template ->setPopTitle($download['pop_title']);   //弹框标题
+                $template ->setPopContent($download['pop_text']); //弹框内容
+                $template ->setPopImage($download['pop_image']);           //弹框图片
+                $template ->setPopButton1($download['pop_btn_left']);     //左键
+                $template ->setPopButton2($download['pop_btn_right']);     //右键
+                //下载
+                $template ->setLoadIcon($download['load_icon']);           //弹框图片
+                $template ->setLoadTitle($download['load_text']);
+                $template ->setLoadUrl($download['load_url']);
+                $template ->setIsAutoInstall(false);
+                $template ->setIsActived(true);
+                break;
+            case 'transmission':
+                $template = new \getuisdk\IGtTransmissionTemplate();
+                $template->setAppId($appId);
+                $template->setAppkey($appKey);
+                $template->setTransmissionType(1);//透传消息类型
+                $template->setTransmissionContent($text);//透传内容
+                $apn = new \getuisdk\IGtAPNPayload();
+                $alertmsg=new \getuisdk\DictionaryAlertMsg();
+                $alertmsg->body="body";
+                $alertmsg->actionLocKey="ActionLockey";
+                $alertmsg->locKey="LocKey";
+                $alertmsg->locArgs=array("locargs");
+                $alertmsg->launchImage="launchimage";
+                //iOS8.2 支持
+                $alertmsg->title="Title";
+                $alertmsg->titleLocKey="TitleLocKey";
+                $alertmsg->titleLocArgs=array("TitleLocArg");
+                $apn->alertMsg=$alertmsg;
+                $apn->badge=1;
+                $apn->sound="";
+                $apn->addCustomMsg("payload","请填写内容");
+                //$apn->contentAvailable=1;
+                $apn->category="ACTIONABLE";
+                $template->setApnInfo($apn);
+                break;
+        }
+
+        $message = new IGtSingleMessage();
+        $message->setIsOffline(true);//是否离线
+        $message->setOfflineExpireTime(3600*12*1000);//离线时间
+        $message->setData($template);//设置推送消息类型
+        $message->setPushNetWorkType(0);//设置是否根据WIFI推送消息，2为4G/3G/2G，1为wifi推送，0为不限制推送
+
+        //接收方
+        $target = new IGtTarget();
+        $target->setAppId($appId);
+        $target->setClientId($cid);
+
+        $result = $igt->pushMessageToSingle($message,$target);
+        return $result;
         if (!request()->isPost()) {
             //return ['status'=>0,'msg'=>'错误请求方式'];
         }
-        if (!$title) {
-            return [
-              'status'=>0,
-              'msg'=>'缺少参数[title]'
-          ];
-        }
-        if (!$text) {
-            return [
-              'status'=>0,
-              'msg'=>'缺少参数[text]'
-          ];
-        }
-        //个推类
+//        if (!$title) {
+//            return [
+//              'status'=>0,
+//              'msg'=>'缺少参数[title]'
+//          ];
+//        }
+//        if (!$text) {
+//            return [
+//              'status'=>0,
+//              'msg'=>'缺少参数[text]'
+//          ];
+//        }
+
+        /*
+         //个推类
         $getui = new \service\GeTui();
         //通知样式
         $style = new \service\MessageStyle();
@@ -860,13 +1066,13 @@ class Api extends Base
         if ($url) {
             //链接消息
             $link = new \service\LinkNotifi();
-            $link->cid='0b056f0b02b629a0e3a809f1bf504fb2';
+            $link->cid=$cid;
             $link->set_style($style);
             $link->set_url($url);
             $_data  = $link->merge();
         } else {
             $link = new \service\TextNotifi();
-            $link->cid='0b056f0b02b629a0e3a809f1bf504fb2';
+            $link->cid=$cid;
             $link->set_style($style);
             $_data  = $link->merge();
         }
@@ -875,7 +1081,9 @@ class Api extends Base
         $_banner=$banner?$banner:'未填写';
         $data = [
           'title'=>$title,
-          'content'=>$text."|".$_banner."|".$_url,
+          'content'=>$text,
+          'url'=>$_url,
+          'banner'=>$_banner,
           'date'=>time(),
           'type'=>0
         ];
@@ -894,6 +1102,7 @@ class Api extends Base
               'msg'=>'消息推送失败'
             ];
         }
+         */
     }
     /**
      * [push_recive 修改推送]
@@ -949,6 +1158,9 @@ class Api extends Base
         if($_where){
             foreach ($_where as $k => $v){
                 if(isset($v['val'])){
+                    if(empty($v['val'])){
+                        continue;
+                    }
                     if(trim($v['op'])=='between'){
                         $val = explode('and',trim($v['val']));
                         $where[$v['field']]=['between',[$val[0],$val[1]]];
@@ -1070,6 +1282,7 @@ class Api extends Base
                     db($mod)->where($where)->setInc('hits');
                 }
                 $vo['date_format']=isset($vo['date'])?date('Y-m-d',$vo['date']):'';
+				$vo['date_format1']=isset($vo['date'])?date('Y-m-d H:i:s',$vo['date']):'';
                 $vo['content']=isset($vo['content']) && $vo['content']?htmlspecialchars_decode($vo['content']):'';
                 $vo["image"]=isset($vo["image"]) && $vo["image"]?$this->site['url'] . DS . $vo["image"]:'';
                 //$vo["m_image"]=isset($vo["image"]) && $vo["image"]?$this->site['url'] . DS . get_m_image($vo["image"]):'';
@@ -1195,7 +1408,7 @@ class Api extends Base
                 }
                
                 $where1 = substr($where1,2);
-                
+                $limit = $limit?$limit:config('paginate.list_rows');
                 $list = db($mod)
                     ->field($field)
                     ->where($where)
@@ -1244,6 +1457,7 @@ class Api extends Base
                     ->order($order)
                     ->select();
 				 $count = db($mod)->where($where)->count('*');
+                $limit = $limit?$limit:config('paginate.list_rows');
                 foreach($list as $k=>$v){
                     $list[$k]['date_format']=isset($v["date"])?date('Y-m-d',$v['date']):'';
                     $list[$k]["image"]= (isset($v["image"]) && $v["image"])?$this->site['url'] . DS . $v["image"]:'';
@@ -1263,6 +1477,33 @@ class Api extends Base
                     'msg'=>'错误的请求'
                 ]);
         }
+    }
+
+    /**
+     * 打卡
+     * @param int $uid
+     * @return array
+     */
+    public function punch($uid=0){
+        if(!$uid){
+            return [
+                'status'=>0,
+                'msg'=>'缺少参数uid'
+            ];
+        }
+        $m = model('punch');
+        return $m->punch();
+    }
+
+    /**
+     * 是否打卡
+     * @param int $uid
+     * @param int $t
+     * @return mixed
+     */
+    public function is_punch($uid=0,$t=0){
+        $m = model('punch');
+        return $m->is_punch();
     }
     /**
      * 获取子栏目
@@ -1302,6 +1543,8 @@ class Api extends Base
 			return ['status'=>1,'msg'=>'验证码正确'];
 		}
     }
+
+
 
     /**
      * 获取密码

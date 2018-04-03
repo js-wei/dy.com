@@ -79,18 +79,17 @@ return [
     'Ucpaas'=>[
         'accountSid'=>'73ba580fb6aae884362e1ac7c9fc46b2',
         'authToken'=>'b7e16a1d2fe0cf267b0803f82813d621',
-        'appId'=>'47c2f95b586a4ce3ae792cfd4d4d33df',
+        'appId'=>'7ea4faede77749e995fd9ed9abe4d132',
     ],
     'AMAP'=>[
         'KEY'=>'5c34d8399b8beffa18d9b98731385bf3',
         'SECRET'=>'b2a743e44f477fef25fca9596f193402'
     ],
     'GeTui'=>[
-        'AppID'=>'gOgGqTwgRh7vHyFk0r4yIA',
-        'AppSecret'=>'zlNnaU8SYd9VLuQJ2RNBY7',
-        'AppKey'=>'BhwmxGZyBU9EzbKxYXfuE7',
-        'MasterSecret'=>'ZYaWeKKGAL8Y8vTrwiYf9A',
-        'ClientID'=>'0b056f0b02b629a0e3a809f1bf504fb2'
+        'AppID'=>'8lrYkxNeKS7Es2yg4QAFF8',
+        'AppSecret'=>'u6yYf21r7mAzWvqM9I5rFA',
+        'AppKey'=>'rjw33LZqHv84mkK3ojx4R6',
+        'MasterSecret'=>'dPSlFDgKmB8FOoLOLNfGA1'
     ],
     'UPLOAD'=>[
         'UPLOAD_PATH'=>ROOT_PATH . 'public' . DS.'uploads',

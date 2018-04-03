@@ -24,7 +24,7 @@ class Base extends Controller
         $this->controller = request()->controller();
         $this->module = request()->module();
         //判断是否登录
-        $this->check_priv();
+        //$this->check_priv();
         //获取功能导航
         $nav = $this->auth_list();
         //获取栏目导航

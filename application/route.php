@@ -43,4 +43,8 @@ Route::rule('api/get_ip', 'index/api/get_ip');
 Route::rule('api/carousel', 'index/api/carousel');
 Route::rule('api/query', 'index/api/query');
 Route::rule('api/push', 'index/api/push');
-
+Route::rule('api/set_sysconf', 'index/api/set_sysconf');
+Route::rule('api/upgrade_address', 'index/api/upgrade_address');
+Route::rule('api/upgrade_birthday', 'index/api/upgrade_birthday');
+Route::rule('api/punch', 'index/api/punch');
+Route::rule('api/is_punch', 'index/api/is_punch');

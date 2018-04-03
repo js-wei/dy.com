@@ -6,6 +6,9 @@
 # @Last modified time: 2017-11-17T20:51:19+08:00
 
 namespace app\admin\controller;
+use getuisdk\IGeTui;
+use getuisdk\IGtNotificationTemplate;
+use getuisdk\IGtAppMessage;
 
 class Message extends Base{
     protected function  _initialize(){
@@ -57,15 +60,21 @@ class Message extends Base{
     public function add_handler($id=0){
         $param = request()->param();
         $param['date']=time();
-        $param['type']=1;
-        $member = db('member')->where('status','eq',0)->select();
-        foreach ($member as $k => $v){
-            $param['mid']=$v['id'];
-            if(!db('message')->insert($param)){
-                return ['status'=>0,'msg'=>'添加失败请重试'];
-            }
+        $param['type']=0;
+
+//        $member = db('member')->where('status','eq',0)->select();
+//        foreach ($member as $k => $v){
+//            $param['mid']=$v['id'];
+//            if(!db('message')->insert($param)){
+//                return ['status'=>0,'msg'=>'添加失败请重试'];
+//            }
+//        }
+        if(!db('message')->insert($param)){
+            return ['status'=>0,'msg'=>'添加失败请重试'];
         }
-        return ['status'=>1,'msg'=>'添加成功','redirect'=>Url('index')];
+        $push  =$this->pushMessageToApp($param['title'],$param['title']);
+        return $push;
+        //return ['status'=>1,'msg'=>'添加成功','redirect'=>Url('index')];
     }
 
     /**
@@ -107,5 +116,36 @@ class Message extends Base{
         $type = ($type=="delete-all")?"delete":$type;
         $_result = $this->_status($id,'message',$type);
         return $_result;
+    }
+
+    protected  function pushMessageToApp($title='',$content=""){
+        $appId = config('GeTui.AppID');
+        $appSecret = config('GeTui.AppSecret');
+        $appKey = config('GeTui.AppKey');
+        $igt = new IGeTui('',$appId,$appSecret);
+
+        //定义透传模板，设置透传内容，和收到消息是否立即启动启用
+        $template =  new IGtNotificationTemplate();
+        $template->setAppId($appId);                   //应用appid
+        $template->setAppKey($appKey);                 //应用appkey
+        $template->setTransmissionType(1);            //透传消息类型
+        $template->setTransmissionContent($title);//透传内容
+        $template->setTitle($content);      //通知栏标题
+        $template->setText($content);     //通知栏内容
+        $template->setLogo("");                       //通知栏logo
+        $template->setLogoURL("");                    //通知栏logo链接
+        $template->setIsRing(true);                   //是否响铃
+        $template->setIsVibrate(true);                //是否震动
+        $template->setIsClearable(true);              //通知栏是否可清除
+
+        $message = new IGtAppMessage();
+        $message->setIsOffline(true);
+        $message->setOfflineExpireTime(10 * 60 * 1000);//离线时间单位为毫秒，例，两个小时离线为3600*1000*2
+        $message->setData($template);
+
+        $appIdList=[$appId];
+        $message->setAppIdList($appIdList);
+        $rep = $igt->pushMessageToApp($message,"任务组名");
+        return $rep;
     }
 }

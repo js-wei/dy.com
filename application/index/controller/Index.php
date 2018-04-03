@@ -206,7 +206,7 @@ class Index extends Base
         p($text_data);
         p($link_data);
         //return $getui->push_list($text_data);
-        //return $getui->push_single($link_data);
+        return $getui->push_single($link_data);
         /*return $getui->push_app($text_data, ['condition'=> [
           ['key'=>'phonetype','values'=>['ANDROID','IOS'],'opt_type'=>0]]
         ]);*/

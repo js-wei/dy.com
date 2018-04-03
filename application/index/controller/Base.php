@@ -20,7 +20,7 @@ class Base extends Controller
         header('Access-Control-Allow-Origin: *');
         header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
         header('Access-Control-Allow-Methods: GET, POST, PUT,DELETE');
-
+        header('content-type:application:json;charset=utf8');
         set_time_limit(0);
         //常用变量
         $this->action = request()->action();
@@ -33,6 +33,8 @@ class Base extends Controller
         $this->get_massage_new_count();
         session('site', $this->site);
         $this->assign('site', $this->site);
+        //p(substr('e10adc3949ba59abbe56e057f20f883e',10,15));
+        //p(substr(md5('123456'),10,15));die;
     }
 
     protected function get_massage_new_count()
