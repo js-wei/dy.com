@@ -48,3 +48,4 @@ Route::rule('api/upgrade_address', 'index/api/upgrade_address');
 Route::rule('api/upgrade_birthday', 'index/api/upgrade_birthday');
 Route::rule('api/punch', 'index/api/punch');
 Route::rule('api/is_punch', 'index/api/is_punch');
+Route::rule('api/applay', 'index/api/applay');

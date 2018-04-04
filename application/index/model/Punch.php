@@ -58,7 +58,7 @@ class Punch extends Model{
             if($diff<=$start_later){
                 $_result = [
                     'type'=>1,
-                    'title'=>'正点',
+                    'title'=>'正点签到',
                     'later'=>$diff
                 ];
             }else if($diff>$start_later && $diff<150){
@@ -93,8 +93,8 @@ class Punch extends Model{
                 ];
             }else if($diff>=$end_before && $diff<60){
                 $_result = [
-                    'type'=>3,
-                    'title'=>'正点下班',
+                    'type'=>1,
+                    'title'=>'正点签到',
                     'later'=>$diff
                 ];
             }else{
@@ -128,7 +128,8 @@ class Punch extends Model{
             }
             return [
                 'status'=>1,
-                'msg'=>"您今日{$msg}成功"
+                'msg'=>"您今日{$msg}成功",
+				'punch_time'=>$push
             ];
         }else{
             return [

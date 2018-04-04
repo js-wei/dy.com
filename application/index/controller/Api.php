@@ -138,6 +138,7 @@ class Api extends Base
         $site = db('config')
             ->field('title,short_title,address,copyright,icp,logo,keywords,description,url,radius,address,start_push_time,start_time,end_push_time,end_time,punch_ip,compny')
             ->find(1);
+        $site['logo'] = $this->site['url'].$site['logo'];
         return ['status'=>1,'data'=>$site];
     }
 
@@ -1301,8 +1302,8 @@ class Api extends Base
                 }
                 
                 $vo['content']=str_replace('/uploads/KindEditor',$this->site['url'].'/uploads/KindEditor',$vo['content']);
-                $vo['content']=str_replace('<img','<img class="img-fluid w-80" class="lazy" data-original=""',$vo['content']);
-                
+                //$vo['content']=str_replace('<img src=','<img data-src=',$vo['content']);
+                //$vo['content']=preg_replace('/src=/','data-src=',$vo['content']);
                 return json([
                     'status'=>1,
                     'msg'=>'查询成功',
@@ -1477,6 +1478,54 @@ class Api extends Base
                     'msg'=>'错误的请求'
                 ]);
         }
+    }
+
+    public function applay($reason='',$from='',$to='',$type=0,$uid=0){
+        if(!$reason){
+            return [
+                'status'=>0,
+                'msg'=>'请填写请假事由'
+            ];
+        }
+        if(!$from){
+            return [
+                'status'=>0,
+                'msg'=>'请填选择假开始时间'
+            ];
+        }
+        if(!$to){
+            return [
+                'status'=>0,
+                'msg'=>'请填选择假结束时间'
+            ];
+        }
+        if(!$type){
+            return [
+                'status'=>0,
+                'msg'=>'请选择请假类型'
+            ];
+        }
+        if(!$uid){
+            return [
+                'status'=>0,
+                'msg'=>'缺少必要参数'
+            ];
+        }
+        $data = request()->post();
+        $data['title'] = '['.date('Y-m-d',time()).']请假条';
+        $data['from'] = strtotime($from);
+        $data['to']=strtotime($to);
+        $data['date']=time();
+        if(!db('applay')->insert($data)){
+            return [
+                'status'=>0,
+                'msg'=>'操作失败,请重试'
+            ];
+        }
+        return [
+            'status'=>1,
+            'msg'=>'操作成功,等待审批'
+        ];
     }
 
     /**
